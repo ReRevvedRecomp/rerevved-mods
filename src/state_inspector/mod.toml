@@ -1,0 +1,6 @@
+name = "State Inspector"
+version = "1.0.0"
+author = "ReRevved"
+description = "Shows the read-only gameplay state published by ReRevved."
+game_version = ">= 1.0.0"
+code = "state_inspector"

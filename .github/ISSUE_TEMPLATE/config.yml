@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ReRevved runtime and compatibility issues
+    url: https://github.com/ReRevvedRecomp/rerevved/issues/new/choose
+    about: Report title runtime, game compatibility, graphics, input, or save problems here.
+  - name: Community support
+    url: https://discord.gg/j6VttvdnMD
+    about: Ask setup and general support questions in the ReRevved Discord.

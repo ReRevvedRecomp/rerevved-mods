@@ -1,0 +1,13 @@
+# AI agents
+/.claude/
+/.agents/
+/AGENTS.md
+/CLAUDE.md
+/docs/ai_agents/local/
+
+/sdk/
+/out/
+/mods/
+/pkg/
+__pycache__/
+*.pyc

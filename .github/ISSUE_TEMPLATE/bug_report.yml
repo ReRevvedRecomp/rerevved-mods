@@ -1,0 +1,98 @@
+name: Bug report
+description: Report a crash, incorrect behavior, or packaging problem in a ReRevved mod
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for a problem caused by a mod from this repository. For a
+        ReRevved runtime or game-compatibility problem, use the title repository
+        link shown on the issue chooser.
+
+  - type: input
+    id: mod
+    attributes:
+      label: Mod and version
+      description: Name the affected mod and give its version or full commit SHA.
+      placeholder: State Inspector 1.0.0 or 40-character commit SHA
+    validations:
+      required: true
+
+  - type: input
+    id: rerevved
+    attributes:
+      label: ReRevved version
+      description: Give the version or full commit SHA.
+      placeholder: v1.0.0 or 40-character commit SHA
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11
+        - Windows 10
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the incorrect behavior and when it first appeared.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Give the shortest reliable sequence from launch to the problem.
+      placeholder: |
+        1. Install ...
+        2. Launch ...
+        3. Open ...
+        4. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Explain what should have happened instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: other-mods
+    attributes:
+      label: Other installed mods
+      description: List other mods and versions, or write "None".
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs, screenshots, or video
+      description: |
+        Attach the relevant ReRevved log and any useful capture. Remove personal
+        information and do not upload retail files, extracted assets, or saves.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues for this problem.
+          required: true
+        - label: I reproduced the problem with the named mod enabled.
+          required: true
+        - label: This report contains no retail game files or extracted assets.
+          required: true
