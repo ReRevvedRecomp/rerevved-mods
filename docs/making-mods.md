@@ -57,7 +57,8 @@ commit, and version recorded in `rexglue-sdk.lock.json`.
 ## Build and package
 
 For selected code mods, the build script selects the detected native host
-target and requires the matching SDK tree. Optionally select one or more mods:
+target and requires the matching SDK tree. Native Windows, Linux, and macOS
+hosts are supported on x64 and ARM64. Optionally select one or more mods:
 
 ```text
 python scripts/build_mods.py --sdk-dir <sdk> --mod <name>
@@ -74,7 +75,8 @@ python scripts/build_mods.py --sdk-dir <sdk> --mod <name> --package
 ```
 
 Generated target labels describe where this build script assembled output.
-They are not evidence of runtime support.
+Windows uses `.dll`, Linux uses `.so`, and macOS uses `.dylib` plugins under the
+matching `code/<platform>/` directory.
 
 Check manifests, lock files, tracked-file hygiene, whitespace, and C/C++
 formatting with:

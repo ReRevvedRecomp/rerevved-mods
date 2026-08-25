@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -185,6 +186,124 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: rerevved-mods-linux-x64
+          path: pkg/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  macos:
+    name: macOS ${{ matrix.name }}
+    runs-on: ${{ fromJSON('{"macos-x64":"macos-26-intel","macos-arm64":"macos-26"}')[matrix.target] }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Intel
+            target: macos-x64
+            sdk_platform: mac-amd64
+          - name: Apple Silicon
+            target: macos-arm64
+            sdk_platform: mac-arm64
+
+    steps:
+      - name: Checkout mods
+        uses: actions/checkout@v7
+
+      - name: Resolve exact locks
+        id: locks
+        shell: pwsh
+        run: |
+          $sdk = Get-Content rexglue-sdk.lock.json -Raw | ConvertFrom-Json
+          $title = Get-Content rerevved-api.lock.json -Raw | ConvertFrom-Json
+          "sdk_sha=$($sdk.commit)" >> $env:GITHUB_OUTPUT
+          "title_sha=$($title.commit)" >> $env:GITHUB_OUTPUT
+
+      - name: Checkout SDK
+        uses: actions/checkout@v7
+        with:
+          repository: ReRevvedRecomp/rerevved-rexglue-sdk
+          ref: ${{ steps.locks.outputs.sdk_sha }}
+          path: sdk-src
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Checkout title API
+        uses: actions/checkout@v7
+        with:
+          repository: ReRevvedRecomp/rerevved
+          ref: ${{ steps.locks.outputs.title_sha }}
+          path: title-src
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Fetch upstream SDK tags
+        working-directory: sdk-src
+        shell: bash
+        run: >-
+          git fetch --force --no-tags
+          https://github.com/rexglue/rexglue-sdk.git
+          'refs/tags/v*:refs/tags/v*'
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          brew install cmake ninja vulkan-loader molten-vk
+          python -m pip install --disable-pip-version-check clang-format==22.1.8
+
+      - name: Restore SDK install
+        id: sdk-cache
+        uses: actions/cache@v6
+        with:
+          path: sdk-src/out/install/${{ matrix.sdk_platform }}
+          key: rexglue-sdk-${{ matrix.sdk_platform }}-${{ steps.locks.outputs.sdk_sha }}
+
+      - name: Configure SDK
+        if: steps.sdk-cache.outputs.cache-hit != 'true'
+        working-directory: sdk-src
+        shell: bash
+        run: >-
+          cmake --preset '${{ matrix.sdk_platform }}'
+          -DREXGLUE_BUILD_TESTS=OFF
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=13.3
+
+      - name: Build and install SDK
+        if: steps.sdk-cache.outputs.cache-hit != 'true'
+        working-directory: sdk-src
+        shell: bash
+        run: >-
+          cmake --build 'out/build/${{ matrix.sdk_platform }}'
+          --config Release --target install --parallel
+
+      - name: Verify and package mods
+        shell: bash
+        run: >-
+          python scripts/verify.py
+          --title-dir title-src
+          --sdk-dir 'sdk-src/out/install/${{ matrix.sdk_platform }}'
+
+      - name: Validate package target
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib
+          import zipfile
+
+          archive = pathlib.Path("pkg/state_inspector.zip")
+          expected = "state_inspector/code/${{ matrix.target }}/libstate_inspector.dylib"
+          with zipfile.ZipFile(archive) as package:
+              names = set(package.namelist())
+          if expected not in names:
+              raise SystemExit(f"missing macOS plugin: {expected}")
+          print(f"macOS mod package: PASS ({expected})")
+          PY
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: rerevved-mods-${{ matrix.target }}
           path: pkg/*.zip
           if-no-files-found: error
           retention-days: 14

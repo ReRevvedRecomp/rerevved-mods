@@ -14,7 +14,14 @@ from pathlib import Path
 
 TEXT_SUFFIXES = {".cmake", ".cpp", ".h", ".json", ".md", ".py", ".toml", ".yaml", ".yml"}
 FORBIDDEN_RETAIL_SUFFIXES = {".bin", ".iso", ".xex", ".xexp"}
-FORBIDDEN_TRACKED_SUFFIXES = FORBIDDEN_RETAIL_SUFFIXES | {".dll", ".exe", ".pdb", ".so", ".zip"}
+FORBIDDEN_TRACKED_SUFFIXES = FORBIDDEN_RETAIL_SUFFIXES | {
+    ".dll",
+    ".dylib",
+    ".exe",
+    ".pdb",
+    ".so",
+    ".zip",
+}
 FORBIDDEN_TEXT = (
     "agent-" + "islands",
     "docs/ai_agents/" + "local",

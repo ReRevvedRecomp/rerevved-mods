@@ -18,6 +18,8 @@ PLATFORMS = {
     "windows-arm64": {"sdk": "win-arm64", "prefix": "", "extension": ".dll"},
     "linux-x64": {"sdk": "linux-amd64", "prefix": "lib", "extension": ".so"},
     "linux-arm64": {"sdk": "linux-arm64", "prefix": "lib", "extension": ".so"},
+    "macos-x64": {"sdk": "mac-amd64", "prefix": "lib", "extension": ".dylib"},
+    "macos-arm64": {"sdk": "mac-arm64", "prefix": "lib", "extension": ".dylib"},
 }
 POSTFIXES = {"Release": "", "RelWithDebInfo": "rd", "Debug": "d"}
 
@@ -33,6 +35,10 @@ def host_platform():
         return "linux-x64"
     if system == "Linux" and machine in ("arm64", "aarch64"):
         return "linux-arm64"
+    if system == "Darwin" and machine in ("amd64", "x86_64"):
+        return "macos-x64"
+    if system == "Darwin" and machine in ("arm64", "aarch64"):
+        return "macos-arm64"
     return None
 
 
@@ -84,12 +90,12 @@ def discover_mods(source_root):
 
 
 def find_compiler():
-    names = ("clang++",) if os.name == "nt" else ("clang++-22",)
+    names = ("clang++-22",) if platform.system() == "Linux" else ("clang++",)
     for name in names:
         path = shutil.which(name)
         if path:
             return path
-    raise RuntimeError("Clang 22 was not found in PATH")
+    raise RuntimeError("Clang was not found in PATH")
 
 
 def find_binary(build_dir, name, target, config):
@@ -104,20 +110,21 @@ def find_binary(build_dir, name, target, config):
 def build_code_mod(root, name, target, sdk_dir, config):
     source_dir = root / "src" / name
     build_dir = root / "out" / "build" / target / name
-    run(
-        [
-            "cmake",
-            "-S",
-            source_dir,
-            "-B",
-            build_dir,
-            "-G",
-            "Ninja",
-            f"-DCMAKE_BUILD_TYPE={config}",
-            f"-DCMAKE_PREFIX_PATH={sdk_dir}",
-            f"-DCMAKE_CXX_COMPILER={find_compiler()}",
-        ]
-    )
+    configure = [
+        "cmake",
+        "-S",
+        source_dir,
+        "-B",
+        build_dir,
+        "-G",
+        "Ninja",
+        f"-DCMAKE_BUILD_TYPE={config}",
+        f"-DCMAKE_PREFIX_PATH={sdk_dir}",
+        f"-DCMAKE_CXX_COMPILER={find_compiler()}",
+    ]
+    if target.startswith("macos-"):
+        configure.append("-DCMAKE_OSX_DEPLOYMENT_TARGET=13.3")
+    run(configure)
     run(["cmake", "--build", build_dir, "--parallel", str(os.cpu_count() or 1)])
     return find_binary(build_dir, name, target, config)
 
