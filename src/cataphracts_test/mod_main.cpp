@@ -53,7 +53,7 @@ public:
         rule.civilization   = REREVVED_CIVILIZATION_ROMAN;
         rule.base_unit_type = REREVVED_UNIT_TYPE_KNIGHTS;
         rule.identity       = REREVVED_UNIT_IDENTITY_CATAPHRACT;
-        rule.property       = REREVVED_UNIQUE_UNIT_SCALAR_EFFECTIVE_ATTACK;
+        rule.property       = REREVVED_UNIQUE_UNIT_SCALAR_BASE_ATTACK;
         rule.operation      = REREVVED_UNIQUE_UNIT_SCALAR_REPLACE;
         rule.value          = 50;
         std::memcpy(rule.provider_id, kProviderId, sizeof(kProviderId));

@@ -58,6 +58,8 @@ Unique Unit (UU) scalar rules are registered through `unique_unit_rules.h`.
 Use a stable lowercase provider ID owned by the mod author. Treat each provider
 and rule ID pair as immutable for the process lifetime. Rules normally load
 before starting a game; the title does not restrict mid-game registration.
+Base attack and defense rules compose before the title applies civilization,
+era, unit, army, and earned combat modifiers.
 
 `Cataphracts Test` is the permanent minimal reference for this API. Its
 deliberately conspicuous attack value of 50 is a test baseline, not a balance
