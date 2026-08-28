@@ -65,6 +65,16 @@ era, unit, army, and earned combat modifiers.
 deliberately conspicuous attack value of 50 is a test baseline, not a balance
 recommendation.
 
+Unique Era Ability (UEA) replacements are registered through
+`unique_era_abilities.h`. ABI 1 replaces one civilization and unlock-era cell
+with another accepted UEA. Distinct cells compose. Multiple replacements for
+the same cell leave that cell at its native UEA, independent of plugin order.
+The API does not change Unique Abilities or exact-era lookup mode.
+
+`Roman Rush Test` is the developer reference for this API. It replaces the
+Roman Medieval UEA, Wonders cost half as much, with Unit rush costs are halved.
+The replacement is a runtime test discriminator, not a balance recommendation.
+
 ## Build and package
 
 For selected code mods, the build script selects the detected native host
