@@ -72,6 +72,8 @@ def verify_locks(root):
         raise RuntimeError(f"SDK version does not match its commit: {sdk.get('version')}")
     if title.get("gameplay_abi") != 1:
         raise RuntimeError("rerevved-api.lock.json must pin gameplay ABI 1")
+    if title.get("world_abi") != 1:
+        raise RuntimeError("rerevved-api.lock.json must pin World ABI 1")
     return sdk, title
 
 
@@ -112,10 +114,11 @@ def verify_title_mirror(root, title_dir, title_lock):
     actual = run(["git", "rev-parse", "HEAD"], title_dir, capture=True).strip()
     if actual != title_lock["commit"]:
         raise RuntimeError(f"title checkout mismatch: expected {title_lock['commit']}, found {actual}")
-    source = title_dir / "api" / "game_state.h"
-    mirror = root / "src" / "common" / "api" / "game_state.h"
-    if source.read_bytes() != mirror.read_bytes():
-        raise RuntimeError("src/common/api/game_state.h differs from the pinned title header")
+    for name in ("game_ids.h", "game_state.h", "world.h"):
+        source = title_dir / "api" / name
+        mirror = root / "src" / "common" / "api" / name
+        if source.read_bytes() != mirror.read_bytes():
+            raise RuntimeError(f"src/common/api/{name} differs from the pinned title header")
 
 
 def verify_format(root):

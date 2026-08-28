@@ -50,7 +50,7 @@ rexmod_add_plugin(example_mod mod_main.cpp)
 `rexmod_add_plugin` creates a shared library, requires C++23, links
 `rex::runtime`, and adds `src/common/api/` to the private include path.
 
-The title API mirror must match the public header byte for byte at the commit
+The title API mirror must match the public headers byte for byte at the commit
 in `rerevved-api.lock.json`. Build native plugins with the SDK repository,
 commit, and version recorded in `rexglue-sdk.lock.json`.
 

@@ -1,5 +1,6 @@
 {
   "repository": "https://github.com/ReRevvedRecomp/rerevved",
-  "commit": "a017f6fcbe1a17f95f3601290a9393cc42068868",
-  "gameplay_abi": 1
+  "commit": "783b817003f3be8777905f1eb65427e63902b8cb",
+  "gameplay_abi": 1,
+  "world_abi": 1
 }
