@@ -54,6 +54,15 @@ The title API mirror must match the public headers byte for byte at the commit
 in `rerevved-api.lock.json`. Build native plugins with the SDK repository,
 commit, and version recorded in `rexglue-sdk.lock.json`.
 
+Unique Unit (UU) scalar rules are registered through `unique_unit_rules.h`.
+Use a stable lowercase provider ID owned by the mod author. Treat each provider
+and rule ID pair as immutable for the process lifetime. Rules normally load
+before starting a game; the title does not restrict mid-game registration.
+
+`Cataphracts Test` is the permanent minimal reference for this API. Its
+deliberately conspicuous attack value of 50 is a test baseline, not a balance
+recommendation.
+
 ## Build and package
 
 For selected code mods, the build script selects the detected native host

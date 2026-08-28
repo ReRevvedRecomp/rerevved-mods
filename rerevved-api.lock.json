@@ -1,6 +1,7 @@
 {
   "repository": "https://github.com/ReRevvedRecomp/rerevved",
-  "commit": "783b817003f3be8777905f1eb65427e63902b8cb",
+  "commit": "f70d7b342ebc30be33107a75de3210f6aca62e82",
   "gameplay_abi": 1,
-  "world_abi": 1
+  "world_abi": 1,
+  "unique_unit_rules_abi": 1
 }

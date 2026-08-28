@@ -1,0 +1,6 @@
+name = "Cataphracts Test"
+version = "1.0.0"
+author = "Aeshur"
+description = "Sets Roman Cataphract attack to 50 as a Unique Unit Rules API test baseline."
+game_version = ">= 1.0.0"
+code = "cataphracts_test"

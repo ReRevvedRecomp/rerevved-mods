@@ -74,6 +74,8 @@ def verify_locks(root):
         raise RuntimeError("rerevved-api.lock.json must pin gameplay ABI 1")
     if title.get("world_abi") != 1:
         raise RuntimeError("rerevved-api.lock.json must pin World ABI 1")
+    if title.get("unique_unit_rules_abi") != 1:
+        raise RuntimeError("rerevved-api.lock.json must pin Unique Unit Rules ABI 1")
     return sdk, title
 
 
@@ -114,7 +116,7 @@ def verify_title_mirror(root, title_dir, title_lock):
     actual = run(["git", "rev-parse", "HEAD"], title_dir, capture=True).strip()
     if actual != title_lock["commit"]:
         raise RuntimeError(f"title checkout mismatch: expected {title_lock['commit']}, found {actual}")
-    for name in ("game_ids.h", "game_state.h", "world.h"):
+    for name in ("game_ids.h", "game_state.h", "unique_unit_rules.h", "world.h"):
         source = title_dir / "api" / name
         mirror = root / "src" / "common" / "api" / name
         if source.read_bytes() != mirror.read_bytes():
