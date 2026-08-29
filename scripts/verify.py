@@ -76,8 +76,8 @@ def verify_locks(root):
         raise RuntimeError("rerevved-api.lock.json must pin World ABI 1")
     if title.get("unique_unit_rules_abi") != 1:
         raise RuntimeError("rerevved-api.lock.json must pin Unique Unit Rules ABI 1")
-    if title.get("unique_era_abilities_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin Unique Era Abilities ABI 1")
+    if title.get("unique_era_abilities_abi") != 2:
+        raise RuntimeError("rerevved-api.lock.json must pin Unique Era Abilities ABI 2")
     return sdk, title
 
 

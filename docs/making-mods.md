@@ -66,14 +66,24 @@ deliberately conspicuous attack value of 50 is a test baseline, not a balance
 recommendation.
 
 Unique Era Ability (UEA) replacements are registered through
-`unique_era_abilities.h`. ABI 1 replaces one civilization and unlock-era cell
+`unique_era_abilities.h`. ABI 2 replaces one civilization and unlock-era cell
 with another accepted UEA. Distinct cells compose. Multiple replacements for
 the same cell leave that cell at its native UEA, independent of plugin order.
-The API does not change Unique Abilities or exact-era lookup mode.
+The API does not change Unique Abilities or exact-era lookup mode. Mods may use
+the title-owned Knowledge of Horseback Riding synthetic UEA, which grants
+technology ID 4 through the normal turn-advance technology path and suppresses
+the displaced Mongolian village-conversion effect at its native gate. Mods
+cannot define synthetic IDs or select a different technology.
 
 `Roman Rush Test` is the developer reference for this API. It replaces the
 Roman Medieval UEA, Wonders cost half as much, with Unit rush costs are halved.
 The replacement is a runtime test discriminator, not a balance recommendation.
+
+`Mongol Horseback Riding` is the permanent minimal reference for the synthetic
+UEA. It replaces the Mongolian Ancient UEA, Captured Barbarian villages become
+cities, with Knowledge of Horseback Riding. Test it in a fresh game. Once the
+technology has been granted, its ordinary saved ownership persists after the
+mod is disabled or removed.
 
 ## Build and package
 
