@@ -29,6 +29,7 @@ FORBIDDEN_TEXT = (
     "Documents" + "\\Repos",
 )
 REQUIRED_MANIFEST_KEYS = {"name", "version", "author", "description"}
+CLANG_FORMAT_MAJOR = 22
 
 
 def run(command, cwd, capture=False):
@@ -134,7 +135,33 @@ def verify_title_mirror(root, title_dir, title_lock):
 def verify_format(root):
     formatter = shutil.which("clang-format")
     if not formatter:
-        raise RuntimeError("clang-format was not found in PATH")
+        raise RuntimeError(f"clang-format {CLANG_FORMAT_MAJOR}.x was not found in PATH")
+    version_result = subprocess.run(
+        [formatter, "--version"],
+        cwd=root,
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+    version_output = " ".join(
+        part.strip() for part in (version_result.stdout, version_result.stderr) if part.strip()
+    )
+    version_match = re.search(
+        r"\bclang-format version (?P<version>\d+\.\d+\.\d+)(?=\s|$|\()",
+        version_output,
+        re.IGNORECASE,
+    )
+    if version_result.returncode != 0:
+        raise RuntimeError(
+            f"clang-format {CLANG_FORMAT_MAJOR}.x version query failed at {formatter}: "
+            f"{version_output}"
+        )
+    if not version_match or int(version_match.group("version").split(".", 1)[0]) != CLANG_FORMAT_MAJOR:
+        reported_version = version_match.group("version") if version_match else "unknown"
+        raise RuntimeError(
+            f"clang-format {CLANG_FORMAT_MAJOR}.x is required; "
+            f"found {reported_version} at {formatter}"
+        )
     mirrored_api = root / "src" / "common" / "api"
     sources = sorted(
         path for path in (root / "src").rglob("*")
