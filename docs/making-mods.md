@@ -31,8 +31,8 @@ description = "A focused example mod."
 code = "example_mod"
 ```
 
-The repository verifier enforces only the manifest rules described above. Do
-not infer behavior for additional keys from their presence in an example.
+The repository verifier enforces only the manifest rules described above.
+Do not infer behavior for additional keys from their presence in an example.
 
 ## Code mod build
 
@@ -97,8 +97,8 @@ python scripts/build_mods.py --sdk-dir <sdk> --mod <name>
 
 The script configures and builds code mods, assembles selected mods under
 `mods/<name>/`, and places a code mod binary under its generated target
-subdirectory. It can also assemble asset mod source directories, but this does
-not establish runtime asset loading support. Add `--package` to create
+subdirectory. It can also assemble asset mod source directories, but this
+does not establish runtime asset loading support. Add `--package` to create
 `pkg/<name>.zip` with `<name>/` as its archive root:
 
 ```text

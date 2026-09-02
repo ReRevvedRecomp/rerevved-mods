@@ -1,8 +1,7 @@
 # Automated and AI-assisted contributions
 
-If automated or AI assistance is used, the work follows the same contribution
-and evidence rules as any other work. The contributor owns every submitted claim
-and must be able to explain its source, scope, and supporting evidence.
+If automated or AI assistance is used, the work follows the same contribution and evidence rules as any other work.
+The contributor owns every submitted claim and must be able to explain its source, scope, and supporting evidence.
 
 Automated output is not guest code or runtime evidence. Gameplay claims require
 the applicable ReRevved analysis and runtime evidence. Build and package success
