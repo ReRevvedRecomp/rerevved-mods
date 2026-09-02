@@ -31,7 +31,7 @@ jobs:
       - name: Checkout SDK
         uses: actions/checkout@v7
         with:
-          repository: ReRevvedRecomp/rerevved-rexglue-sdk
+          repository: ReRevvedRecomp/rerevved-sdk
           ref: ${{ steps.locks.outputs.sdk_sha }}
           path: sdk-src
           submodules: recursive
@@ -106,7 +106,7 @@ jobs:
       - name: Checkout SDK
         uses: actions/checkout@v7
         with:
-          repository: ReRevvedRecomp/rerevved-rexglue-sdk
+          repository: ReRevvedRecomp/rerevved-sdk
           ref: ${{ steps.locks.outputs.sdk_sha }}
           path: sdk-src
           submodules: recursive
@@ -223,7 +223,7 @@ jobs:
       - name: Checkout SDK
         uses: actions/checkout@v7
         with:
-          repository: ReRevvedRecomp/rerevved-rexglue-sdk
+          repository: ReRevvedRecomp/rerevved-sdk
           ref: ${{ steps.locks.outputs.sdk_sha }}
           path: sdk-src
           submodules: recursive

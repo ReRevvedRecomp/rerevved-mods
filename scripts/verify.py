@@ -65,7 +65,7 @@ def load_lock(path, repository):
 def verify_locks(root):
     sdk = load_lock(
         root / "rexglue-sdk.lock.json",
-        "https://github.com/ReRevvedRecomp/rerevved-rexglue-sdk",
+        "https://github.com/ReRevvedRecomp/rerevved-sdk",
     )
     title = load_lock(root / "rerevved-api.lock.json", "https://github.com/ReRevvedRecomp/rerevved")
     expected_suffix = f".g{sdk['commit'][:7]}"

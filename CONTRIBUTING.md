@@ -12,7 +12,7 @@ manifests, packaging, and public documentation. Contributions use the
 - Build native plugins from the SDK repository, commit, and version recorded in
   `rexglue-sdk.lock.json`.
 - Keep plugins focused on their UI and packaging. Put reusable runtime
-  facilities in `rerevved-rexglue-sdk`.
+  facilities in `rerevved-sdk`.
 - Do not submit retail files, extracted assets, generated packages, build
   output, credentials, machine paths, or guest addresses.
 
