@@ -4,7 +4,7 @@
 
 #include <imgui.h>
 
-#include <game_state.h>
+#include <gameplay_state.h>
 
 #include <cinttypes>
 #include <cstdint>

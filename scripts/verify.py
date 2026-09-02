@@ -73,8 +73,8 @@ def verify_locks(root):
         raise RuntimeError(f"SDK version does not match its commit: {sdk.get('version')}")
     if title.get("gameplay_abi") != 1:
         raise RuntimeError("rerevved-api.lock.json must pin gameplay ABI 1")
-    if title.get("world_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin World ABI 1")
+    if title.get("unit_catalog_abi") != 1:
+        raise RuntimeError("rerevved-api.lock.json must pin Unit Catalog ABI 1")
     if title.get("unique_unit_rules_abi") != 1:
         raise RuntimeError("rerevved-api.lock.json must pin Unique Unit Rules ABI 1")
     if title.get("unique_era_abilities_abi") != 2:
@@ -121,10 +121,10 @@ def verify_title_mirror(root, title_dir, title_lock):
         raise RuntimeError(f"title checkout mismatch: expected {title_lock['commit']}, found {actual}")
     for name in (
         "game_ids.h",
-        "game_state.h",
+        "gameplay_state.h",
         "unique_era_abilities.h",
         "unique_unit_rules.h",
-        "world.h",
+        "unit_catalog.h",
     ):
         source = title_dir / "api" / name
         mirror = root / "src" / "common" / "api" / name

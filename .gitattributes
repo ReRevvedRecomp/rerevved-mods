@@ -1,5 +1,5 @@
 src/common/api/game_ids.h text eol=lf
-src/common/api/game_state.h text eol=lf
+src/common/api/gameplay_state.h text eol=lf
 src/common/api/unique_era_abilities.h text eol=lf
 src/common/api/unique_unit_rules.h text eol=lf
-src/common/api/world.h text eol=lf
+src/common/api/unit_catalog.h text eol=lf
