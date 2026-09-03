@@ -140,19 +140,14 @@ jobs:
           wget -q https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
           sudo ./llvm.sh 22
-          sudo apt-get install -y clang-22 lld-22
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-22 220
-          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-22 220
 
       - name: Install Linux build dependencies
         shell: bash
         run: |
-          wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
-          sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-noble.list http://packages.lunarg.com/vulkan/lunarg-vulkan-noble.list
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build build-essential git curl unzip autoconf \
-            libgtk-3-dev libx11-xcb-dev libxss-dev vulkan-sdk \
-            libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libdecor-0-dev \
+          sudo apt-get install -y cmake ninja-build build-essential git \
+            libgtk-3-dev libx11-xcb-dev libxss-dev \
+            libwayland-dev libwayland-bin libxkbcommon-dev libdecor-0-dev \
             libasound2-dev libpulse-dev libpipewire-0.3-dev
           python -m pip install --disable-pip-version-check clang-format==22.1.8
 
@@ -166,9 +161,6 @@ jobs:
       - name: Configure SDK
         if: steps.sdk-cache.outputs.cache-hit != 'true'
         working-directory: sdk-src
-        env:
-          CC: clang-22
-          CXX: clang++-22
         run: cmake --preset linux-amd64 -DREXGLUE_BUILD_TESTS=OFF
 
       - name: Build and install SDK
@@ -252,7 +244,7 @@ jobs:
       - name: Install build dependencies
         shell: bash
         run: |
-          brew install cmake ninja vulkan-loader molten-vk
+          brew install cmake ninja
           python -m pip install --disable-pip-version-check clang-format==22.1.8
 
       - name: Restore SDK install

@@ -151,10 +151,6 @@ def assemble_code_mod(root, name, target, binary):
         manifest.write_text("\n".join(lines) + "\n", encoding="ascii")
 
 
-def assemble_asset_mod(root, name):
-    shutil.copytree(root / "src" / name, root / "mods" / name, dirs_exist_ok=True)
-
-
 def package_mod(root, name):
     package_dir = root / "pkg"
     package_dir.mkdir(parents=True, exist_ok=True)
@@ -195,7 +191,7 @@ def main():
 
     for name in selected:
         if name in asset_mods:
-            assemble_asset_mod(root, name)
+            shutil.copytree(root / "src" / name, root / "mods" / name, dirs_exist_ok=True)
 
     selected_code = [name for name in selected if name in code_mods]
     if selected_code:

@@ -1,78 +1,14 @@
 name: Mod proposal
-description: Propose a mod or a focused improvement to an existing one
-title: "[Proposal]: "
+description: Propose a new mod or an improvement to an existing one
 labels:
   - enhancement
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Describe what you want to improve and how it should work. Link relevant
-        ReRevved analysis or runtime evidence for claims about title behavior.
-
-  - type: input
-    id: name
-    attributes:
-      label: Proposed mod or feature name
-      placeholder: Fast Presentation
-    validations:
-      required: true
-
   - type: textarea
-    id: problem
+    id: proposal
     attributes:
-      label: Problem or limitation
-      description: What problem for a player or mod author would this solve?
-    validations:
-      required: true
-
-  - type: textarea
-    id: behavior
-    attributes:
-      label: Desired behavior
-      description: Describe the smallest useful result for players.
-    validations:
-      required: true
-
-  - type: dropdown
-    id: class
-    attributes:
-      label: Change class
-      options:
-        - Presentation or quality of life
-        - Read-only inspection or authoring tool
-        - Gameplay rules or balance
-        - Asset replacement
-        - Shared mod build or packaging support
-        - Not sure
-    validations:
-      required: true
-
-  - type: textarea
-    id: compatibility
-    attributes:
-      label: Save, multiplayer, and compatibility impact
-      description: Note any expected effect, or explain why there should be none.
-    validations:
-      required: true
-
-  - type: textarea
-    id: references
-    attributes:
-      label: References or observations
+      label: Proposal
       description: |
-        Link related issues or describe observed behavior. Do not upload guest
-        binaries, decompiler output, extracted assets, or private working or
-        analysis files.
-
-  - type: checkboxes
-    id: checks
-    attributes:
-      label: Submission checks
-      options:
-        - label: I searched existing issues and proposals.
-          required: true
-        - label: I understand this proposal will be reviewed for scope and evidence.
-          required: true
-        - label: This proposal contains no retail game files or extracted assets.
-          required: true
+        Describe the mod or change, what it should do for players, and any known
+        compatibility or dependency requirements.
+    validations:
+      required: true
