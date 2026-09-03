@@ -53,6 +53,7 @@ rexmod_add_plugin(example_mod mod_main.cpp)
 The title API mirror must match the public headers byte for byte at the commit
 in `rerevved-api.lock.json`. Build native plugins with the SDK repository,
 commit, and version recorded in `rexglue-sdk.lock.json`.
+See the title's [Mod APIs guide](https://github.com/ReRevvedRecomp/rerevved/blob/main/docs/modding-api.md) for supported public interfaces and ownership boundaries.
 
 Unique Unit (UU) scalar rules are registered through `unique_unit_rules.h`.
 Use a stable lowercase provider ID owned by the mod author. Treat each provider
