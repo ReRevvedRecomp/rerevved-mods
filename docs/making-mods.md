@@ -98,9 +98,9 @@ cities, with Knowledge of Horseback Riding. Test it in a fresh game. Once the
 technology has been granted, its ordinary saved ownership persists after the
 mod is disabled or removed.
 
-`State Inspector` is an optional development tool that shows the read-only
-gameplay state published by ReRevved. Keep it available when checking overlay
-regressions.
+`State Inspector` is an optional development tool that provides a read-only
+state overlay for debugging and probing graphical errors. Keep it available
+when checking overlay regressions.
 
 ## Build and package
 
