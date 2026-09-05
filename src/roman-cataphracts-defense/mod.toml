@@ -3,7 +3,7 @@ manifest_version = 1
 [mod]
 id = "roman-cataphracts-defense"
 name = "Roman Cataphracts Defense"
-version = "1.0.0"
+version = "1.0"
 author = "Aeshur"
 description = "Roman Cataphracts gain +1 base Defense compared with ordinary Knights, reflecting their heavily armored cavalry theme."
 code = "roman_cataphracts_defense"

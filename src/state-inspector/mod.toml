@@ -3,7 +3,7 @@ manifest_version = 1
 [mod]
 id = "state-inspector"
 name = "State Inspector"
-version = "1.0.0"
+version = "1.0"
 author = "ReRevved"
 description = "Shows the read-only gameplay state published by ReRevved."
 code = "state_inspector"

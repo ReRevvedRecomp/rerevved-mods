@@ -25,6 +25,7 @@ PLATFORMS = {
 POSTFIXES = {"Release": "", "RelWithDebInfo": "rd", "Debug": "d"}
 PACKAGE_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
+PACKAGE_VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+$")
 MANIFEST_TOP_LEVEL_KEYS = {"manifest_version", "mod"}
 MANIFEST_KEYS = {
     "id",
@@ -106,11 +107,13 @@ def _require_string(value, field, path, *, nonempty=False):
     return value
 
 
-def _validate_version(value, field, path):
+def _validate_version(
+    value, field, path, version_re=VERSION_RE, syntax="numeric major.minor.patch"
+):
     _require_string(value, field, path)
-    if not VERSION_RE.fullmatch(value):
+    if not version_re.fullmatch(value):
         raise RuntimeError(
-            f"{path}: {field} must use numeric major.minor.patch syntax"
+            f"{path}: {field} must use {syntax} syntax"
         )
 
 
@@ -139,7 +142,13 @@ def parse_manifest_data(value, source, expected_id=None):
             f"{source}: [mod].id {package_id!r} does not match {expected_id!r}"
         )
     _require_string(mod["name"], "[mod].name", source, nonempty=True)
-    _validate_version(mod["version"], "[mod].version", source)
+    _validate_version(
+        mod["version"],
+        "[mod].version",
+        source,
+        PACKAGE_VERSION_RE,
+        "numeric major.minor",
+    )
     code = _require_string(mod["code"], "[mod].code", source, nonempty=True)
     if (
         code in {".", ".."}

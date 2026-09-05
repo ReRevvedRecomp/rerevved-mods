@@ -36,17 +36,18 @@ manifest_version = 1
 [mod]
 id = "roman-cataphracts-defense"
 name = "Roman Cataphracts Defense"
-version = "1.0.0"
+version = "1.0"
 author = "Aeshur"
 description = "Roman Cataphracts gain +1 base Defense compared with ordinary Knights, reflecting their heavily armored cavalry theme."
 code = "roman_cataphracts_defense"
 plugin_abi = 1
 ```
 
-Package and minimum game versions require all three non-negative decimal
-components: `major.minor.patch`. The `code` value is one native filename stem
-with no path component. Unknown version 1 fields produce warnings and have no
-build or runtime meaning.
+Package versions require exactly two non-negative ASCII numeric components:
+`major.minor`. Optional minimum game versions keep three non-negative ASCII
+numeric components: `major.minor.patch`. The `code` value is one native
+filename stem with no path component. Unknown version 1 fields produce
+warnings and have no build or runtime meaning.
 
 ## Code mod build
 

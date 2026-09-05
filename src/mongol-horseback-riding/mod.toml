@@ -3,7 +3,7 @@ manifest_version = 1
 [mod]
 id = "mongol-horseback-riding"
 name = "Mongol Horseback Riding"
-version = "1.0.0"
+version = "1.0"
 author = "Aeshur"
 description = "Replaces the Mongolian Ancient UEA with Knowledge of Horseback Riding."
 code = "mongol_horseback_riding"

@@ -24,7 +24,7 @@ manifest_version = 1
 [mod]
 id = "example-test"
 name = "Example Test"
-version = "1.0.0"
+version = "1.0"
 code = "example_test"
 plugin_abi = 1
 """
@@ -114,7 +114,7 @@ class PackagingTests(unittest.TestCase):
                     "mod": {
                         "id": "example-test",
                         "name": "Example Test",
-                        "version": "1.0.0",
+                        "version": "1.0",
                         "code": "example_test",
                         "plugin_abi": 1,
                     },
@@ -131,7 +131,7 @@ class PackagingTests(unittest.TestCase):
                 "mod": {
                     "id": "example-test",
                     "name": "Example Test",
-                    "version": "1.0.0",
+                    "version": "1.0",
                     "min_game_version": "2.3.4",
                     "code": "example_test",
                     "plugin_abi": 1,
@@ -140,6 +140,70 @@ class PackagingTests(unittest.TestCase):
             "fixture",
         )
         self.assertEqual(manifest["min_game_version"], "2.3.4")
+
+    def test_package_version_requires_exact_numeric_major_minor(self):
+        from build_mods import parse_manifest_data
+
+        for version in (
+            "1",
+            "1.0.0",
+            "",
+            "1..0",
+            "-1.0",
+            "+1.0",
+            "1.0-alpha",
+            chr(0x0661) + ".0",
+        ):
+            with self.subTest(version=version):
+                with self.assertRaisesRegex(
+                    RuntimeError, "version must use numeric major.minor syntax"
+                ):
+                    parse_manifest_data(
+                        {
+                            "manifest_version": 1,
+                            "mod": {
+                                "id": "example-test",
+                                "name": "Example Test",
+                                "version": version,
+                                "code": "example_test",
+                                "plugin_abi": 1,
+                            },
+                        },
+                        "fixture",
+                    )
+
+    def test_minimum_game_version_keeps_strict_three_component_grammar(self):
+        from build_mods import parse_manifest_data
+
+        for version in (
+            "2.3",
+            "2.3.4.5",
+            "",
+            "2..4",
+            "-2.3.4",
+            "+2.3.4",
+            "2.3.4-dev",
+            chr(0x0662) + ".3.4",
+        ):
+            with self.subTest(version=version):
+                with self.assertRaisesRegex(
+                    RuntimeError,
+                    "min_game_version must use numeric major.minor.patch syntax",
+                ):
+                    parse_manifest_data(
+                        {
+                            "manifest_version": 1,
+                            "mod": {
+                                "id": "example-test",
+                                "name": "Example Test",
+                                "version": "1.0",
+                                "min_game_version": version,
+                                "code": "example_test",
+                                "plugin_abi": 1,
+                            },
+                        },
+                        "fixture",
+                    )
 
     def test_generated_cleanup_stays_bounded_and_refuses_reparse_points(self):
         with tempfile.TemporaryDirectory() as directory:
