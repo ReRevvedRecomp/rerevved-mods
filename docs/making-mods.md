@@ -98,6 +98,19 @@ cities, with Knowledge of Horseback Riding. Test it in a fresh game. Once the
 technology has been granted, its ordinary saved ownership persists after the
 mod is disabled or removed.
 
+Terrain Yield Rules are registered through `terrain_yield_rules.h`. ABI 1 lets
+mods add or replace one base Food, Production, or Trade value for a semantic
+terrain. Resolve `ReRevvedTerrainYieldRulesAbiVersion` and
+`ReRevvedRegisterTerrainYieldRule` from the host, check that the version is
+`REREVVED_TERRAIN_YIELD_RULES_ABI_VERSION`, then register a complete rule with
+stable lowercase provider and rule IDs. The title owns terrain conversion and
+yield composition; a mod only declares its target and scalar operation.
+
+`Fertile Plains` is the reference terrain-yield mod. It registers
+`aeshur.fertile-plains/plains-food` as Plains, Food, Add, 1, so every player's
+Plains base Food increases by one. Load gameplay mods before starting a game;
+loadout changes apply after restart.
+
 `State Inspector` is an optional development tool that provides a read-only
 state overlay for debugging and probing graphical errors. Keep it available
 when checking overlay regressions.

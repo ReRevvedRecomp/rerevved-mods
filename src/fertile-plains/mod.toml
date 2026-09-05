@@ -1,0 +1,11 @@
+manifest_version = 1
+
+[mod]
+id = "fertile-plains"
+name = "Fertile Plains"
+version = "1.0"
+author = "Aeshur"
+description = "Plains provide +1 base Food for every player."
+min_game_version = "1.0.0"
+code = "fertile_plains"
+plugin_abi = 1
