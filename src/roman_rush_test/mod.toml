@@ -1,6 +1,0 @@
-name = "Roman Rush Test"
-version = "1.0.0"
-author = "Aeshur"
-description = "Replaces the Roman Medieval UEA with halved unit rush costs as an API test baseline."
-game_version = ">= 1.0.0"
-code = "roman_rush_test"

@@ -17,8 +17,8 @@
 namespace
 {
 
-constexpr char kProviderId[] = "aeshur.cataphracts-test";
-constexpr char kRuleId[]     = "cataphract-attack";
+constexpr char kProviderId[] = "aeshur.roman-cataphracts-defense";
+constexpr char kRuleId[]     = "cataphract-defense";
 
 template <typename Function>
 Function ResolveHostFunction(const char* name)
@@ -31,7 +31,7 @@ Function ResolveHostFunction(const char* name)
 #endif
 }
 
-class CataphractsTestPlugin final : public rex::system::IModPlugin
+class RomanCataphractsDefensePlugin final : public rex::system::IModPlugin
 {
 public:
     void OnModuleLaunched() override
@@ -53,9 +53,9 @@ public:
         rule.civilization   = REREVVED_CIVILIZATION_ROMAN;
         rule.base_unit_type = REREVVED_UNIT_TYPE_KNIGHTS;
         rule.identity       = REREVVED_UNIT_IDENTITY_CATAPHRACT;
-        rule.property       = REREVVED_UNIQUE_UNIT_SCALAR_BASE_ATTACK;
-        rule.operation      = REREVVED_UNIQUE_UNIT_SCALAR_REPLACE;
-        rule.value          = 50;
+        rule.property       = REREVVED_UNIQUE_UNIT_SCALAR_BASE_DEFENSE;
+        rule.operation      = REREVVED_UNIQUE_UNIT_SCALAR_ADD;
+        rule.value          = 1;
         std::memcpy(rule.provider_id, kProviderId, sizeof(kProviderId));
         std::memcpy(rule.rule_id, kRuleId, sizeof(kRuleId));
         register_rule(&rule);
@@ -78,5 +78,5 @@ extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
     {
         return nullptr;
     }
-    return new CataphractsTestPlugin();
+    return new RomanCataphractsDefensePlugin();
 }

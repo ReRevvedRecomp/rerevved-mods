@@ -5,16 +5,27 @@ import argparse
 import json
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tomllib
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+
+from build_mods import (
+    PACKAGE_ID_RE,
+    _validate_runtime_relative,
+    load_manifest,
+    parse_manifest_data,
+)
 
 
 TEXT_SUFFIXES = {".cmake", ".cpp", ".h", ".json", ".md", ".py", ".toml", ".yaml", ".yml"}
-FORBIDDEN_RETAIL_SUFFIXES = {".bin", ".iso", ".xex", ".xexp"}
-FORBIDDEN_TRACKED_SUFFIXES = FORBIDDEN_RETAIL_SUFFIXES | {
+FORBIDDEN_TRACKED_SUFFIXES = {
+    ".bin",
+    ".iso",
+    ".xex",
+    ".xexp",
     ".dll",
     ".dylib",
     ".exe",
@@ -28,7 +39,6 @@ FORBIDDEN_TEXT = (
     "Documents/" + "Repos",
     "Documents" + "\\Repos",
 )
-REQUIRED_MANIFEST_KEYS = {"name", "version", "author", "description"}
 CLANG_FORMAT_MAJOR = 22
 
 
@@ -49,7 +59,7 @@ def tracked_files(root):
         root,
         capture=True,
     )
-    return [root / item for item in output.split("\0") if item]
+    return [root / item for item in output.split("\0") if item and (root / item).is_file()]
 
 
 def load_lock(path, repository):
@@ -100,15 +110,16 @@ def verify_manifests(root):
     for directory in sorted((root / "src").iterdir()):
         if not directory.is_dir() or directory.name == "common":
             continue
+        if not PACKAGE_ID_RE.fullmatch(directory.name) or len(directory.name) > 63:
+            raise RuntimeError(f"invalid package source directory: {directory.name}")
         manifest_path = directory / "mod.toml"
         if not manifest_path.is_file():
             raise RuntimeError(f"mod has no manifest: {directory.name}")
-        manifest = tomllib.loads(manifest_path.read_text(encoding="ascii"))
-        missing = REQUIRED_MANIFEST_KEYS - manifest.keys()
-        if missing:
-            raise RuntimeError(f"{directory.name} manifest is missing: {', '.join(sorted(missing))}")
-        if (directory / "CMakeLists.txt").is_file() and manifest.get("code") != directory.name:
-            raise RuntimeError(f"{directory.name} code key must match its directory")
+        load_manifest(manifest_path, directory.name)
+        if not (directory / "CMakeLists.txt").is_file():
+            raise RuntimeError(
+                f"{directory.name}: native packages require a CMakeLists.txt payload"
+            )
         mods.append(directory.name)
     if not mods:
         raise RuntimeError("no mods found under src/")
@@ -159,12 +170,12 @@ def verify_format(root):
     if not version_match or int(version_match.group("version").split(".", 1)[0]) != CLANG_FORMAT_MAJOR:
         reported_version = version_match.group("version") if version_match else "unknown"
         raise RuntimeError(
-            f"clang-format {CLANG_FORMAT_MAJOR}.x is required; "
-            f"found {reported_version} at {formatter}"
+            f"clang-format {CLANG_FORMAT_MAJOR}.x is required; found {reported_version} at {formatter}"
         )
     mirrored_api = root / "src" / "common" / "api"
     sources = sorted(
-        path for path in (root / "src").rglob("*")
+        path
+        for path in (root / "src").rglob("*")
         if path.is_file()
         and path.suffix.lower() in {".cpp", ".h"}
         and not path.is_relative_to(mirrored_api)
@@ -172,18 +183,77 @@ def verify_format(root):
     run([formatter, "--dry-run", "--Werror", *sources], root)
 
 
+def verify_focused_tests(root):
+    run(
+        [
+            sys.executable,
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-p",
+            "test_*.py",
+        ],
+        root,
+    )
+
+
+def _zip_entry_path(archive, name):
+    if not name or name.endswith("/") or "\\" in name or "//" in name:
+        raise RuntimeError(f"malformed archive entry in {archive.name}: {name}")
+    path = PurePosixPath(name)
+    if path.is_absolute() or ".." in path.parts:
+        raise RuntimeError(f"archive entry escapes its root in {archive.name}: {name}")
+    return path
+
+
+def verify_package_archive(archive, package_id, source_mod):
+    with zipfile.ZipFile(archive) as package:
+        entries = package.infolist()
+        seen = set()
+        manifest_entry = PurePosixPath("mods") / package_id / "mod.toml"
+        for info in entries:
+            if info.filename in seen:
+                raise RuntimeError(f"duplicate package entry: {info.filename}")
+            seen.add(info.filename)
+            if info.is_dir() or stat.S_ISLNK(info.external_attr >> 16):
+                raise RuntimeError(f"non-regular package entry: {info.filename}")
+            path = _zip_entry_path(archive, info.filename)
+            if path.parts[:2] != ("mods", package_id):
+                raise RuntimeError(f"package entry is not rooted at mods/{package_id}/: {info.filename}")
+        if manifest_entry.as_posix() not in seen:
+            raise RuntimeError(f"package has no manifest: {archive.name}")
+        try:
+            manifest = tomllib.loads(package.read(manifest_entry.as_posix()).decode("ascii"))
+        except (UnicodeError, tomllib.TOMLDecodeError) as error:
+            raise RuntimeError(f"invalid package manifest in {archive.name}: {error}") from error
+        mod = parse_manifest_data(manifest, f"{archive.name}:{manifest_entry}", package_id)
+        if mod != source_mod:
+            raise RuntimeError(f"package manifest differs from source manifest: {archive.name}")
+
+        platforms = set()
+        root = PurePosixPath("mods") / package_id
+        for info in entries:
+            path = _zip_entry_path(archive, info.filename)
+            relative = PurePosixPath(*path.parts[len(root.parts):])
+            platform_name = _validate_runtime_relative(relative, mod["code"])
+            if platform_name:
+                platforms.add(platform_name)
+        if not platforms:
+            raise RuntimeError(f"package has no qualified native binary: {archive.name}")
+        return sorted(platforms)
+
+
 def verify_packages(root, mods):
+    inventory = {}
     for name in mods:
         archive = root / "pkg" / f"{name}.zip"
         if not archive.is_file():
             raise RuntimeError(f"missing package: {archive}")
-        with zipfile.ZipFile(archive) as package:
-            for entry in package.namelist():
-                path = Path(entry)
-                if not path.parts or path.parts[0] != name:
-                    raise RuntimeError(f"package entry escapes {name}/: {entry}")
-                if path.suffix.lower() in FORBIDDEN_RETAIL_SUFFIXES:
-                    raise RuntimeError(f"retail file in package: {entry}")
+        source_mod = load_manifest(root / "src" / name / "mod.toml", name)
+        inventory[name] = verify_package_archive(archive, name, source_mod)
+    return inventory
 
 
 def main():
@@ -199,6 +269,7 @@ def main():
     mods = verify_manifests(root)
     run(["git", "diff", "--check"], root)
     verify_format(root)
+    verify_focused_tests(root)
 
     if args.title_dir:
         verify_title_mirror(root, args.title_dir.resolve(), title_lock)
@@ -213,7 +284,11 @@ def main():
             ],
             root,
         )
-        verify_packages(root, mods)
+        inventory = verify_packages(root, mods)
+        print(
+            "Package inventory: "
+            + ", ".join(f"{name} ({'/'.join(platforms)})" for name, platforms in inventory.items())
+        )
 
     print(f"Verified {len(mods)} mod(s) against SDK {sdk_lock['version']}.")
 

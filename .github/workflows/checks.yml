@@ -285,8 +285,8 @@ jobs:
           import pathlib
           import zipfile
 
-          archive = pathlib.Path("pkg/state_inspector.zip")
-          expected = "state_inspector/code/${{ matrix.target }}/libstate_inspector.dylib"
+          archive = pathlib.Path("pkg/state-inspector.zip")
+          expected = "mods/state-inspector/code/${{ matrix.target }}/libstate_inspector.dylib"
           with zipfile.ZipFile(archive) as package:
               names = set(package.namelist())
           if expected not in names:
