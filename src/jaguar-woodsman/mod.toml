@@ -1,10 +1,10 @@
 manifest_version = 1
 
 [mod]
-id = "aztec-jaguar-forest-combat"
+id = "jaguar-woodsman"
 name = "Jaguar Woodsman"
 version = "1.0"
 author = "Aeshur"
 description = "Aztec Jaguar Warriors gain +50% Attack and Defense on Forest tiles."
-code = "aztec_jaguar_forest_combat"
+code = "jaguar_woodsman"
 plugin_abi = 1

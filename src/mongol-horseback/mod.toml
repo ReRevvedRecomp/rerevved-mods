@@ -1,10 +1,10 @@
 manifest_version = 1
 
 [mod]
-id = "mongol-horseback-riding"
+id = "mongol-horseback"
 name = "Mongol Horseback"
 version = "1.0"
 author = "Aeshur"
 description = "Replaces the Mongolian Ancient UEA with Knowledge of Horseback Riding."
-code = "mongol_horseback_riding"
+code = "mongol_horseback"
 plugin_abi = 1

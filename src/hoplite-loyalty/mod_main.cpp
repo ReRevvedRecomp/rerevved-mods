@@ -18,7 +18,7 @@
 namespace
 {
 
-constexpr char kProviderId[]           = "aeshur.greek-hoplite-training";
+constexpr char kProviderId[]           = "aeshur.hoplite-loyalty";
 constexpr char kLoyaltyRuleId[]        = "hoplite-loyalty";
 constexpr char kProductionCostRuleId[] = "hoplite-production-cost";
 

@@ -17,7 +17,7 @@
 namespace
 {
 
-constexpr char kProviderId[] = "aeshur.aztec-jaguar-forest-combat";
+constexpr char kProviderId[] = "aeshur.jaguar-woodsman";
 
 template <typename Function>
 Function ResolveHostFunction(const char* name)

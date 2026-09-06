@@ -1,10 +1,10 @@
 manifest_version = 1
 
 [mod]
-id = "greek-hoplite-training"
+id = "hoplite-loyalty"
 name = "Hoplite Loyalty"
 version = "1.0"
 author = "Aeshur"
 description = "Greek Hoplites are created with Loyalty and cost 10 Production instead of 15."
-code = "greek_hoplite_training"
+code = "hoplite_loyalty"
 plugin_abi = 1

@@ -1,10 +1,10 @@
 manifest_version = 1
 
 [mod]
-id = "mongol-keshik-movement"
+id = "keshik-movement"
 name = "Keshik Movement"
 version = "1.0"
 author = "Aeshur"
 description = "Mongolian Keshiks gain +1 Movement."
-code = "mongol_keshik_movement"
+code = "keshik_movement"
 plugin_abi = 1

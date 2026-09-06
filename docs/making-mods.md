@@ -8,14 +8,14 @@ package commands.
 Put each native mod directly under `src/<id>/`. The directory name is the
 package ID and must match the manifest ID. Package IDs use one to 63 lowercase
 ASCII letters or digits separated by single hyphens, such as
-`roman-cataphracts-defense`.
+`cataphracts-defense`.
 
 - A native mod has `src/<id>/CMakeLists.txt`, `mod.toml`, and its C++ sources.
 - `src/common/` is reserved for shared helpers and the mirrored title API.
 
 The CMake project and target may keep an underscore stem when the native binary
-uses one, so `roman-cataphracts-defense` can build
-`roman_cataphracts_defense.dll`.
+uses one, so `cataphracts-defense` can build
+`cataphracts_defense.dll`.
 
 List the discovered package IDs with:
 
@@ -34,12 +34,12 @@ are `id`, nonempty display `name`, strict numeric `version`, native `code`, and
 manifest_version = 1
 
 [mod]
-id = "roman-cataphracts-defense"
+id = "cataphracts-defense"
 name = "Cataphracts Defense"
 version = "1.0"
 author = "Aeshur"
 description = "Roman Cataphracts gain +1 base Defense compared with ordinary Knights."
-code = "roman_cataphracts_defense"
+code = "cataphracts_defense"
 plugin_abi = 1
 ```
 
@@ -211,7 +211,7 @@ files rooted at `mods/<id>/`; source files, CMake files, object files, build
 trees, and repository metadata are excluded.
 
 ```text
-python scripts/build_mods.py --sdk-dir <sdk> --mod roman-cataphracts-defense --package
+python scripts/build_mods.py --sdk-dir <sdk> --mod cataphracts-defense --package
 ```
 
 Generated target labels describe where this build script assembled output.

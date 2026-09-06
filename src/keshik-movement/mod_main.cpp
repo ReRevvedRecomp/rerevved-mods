@@ -18,7 +18,7 @@
 namespace
 {
 
-constexpr char kProviderId[] = "aeshur.mongol-keshik-movement";
+constexpr char kProviderId[] = "aeshur.keshik-movement";
 constexpr char kRuleId[]     = "keshik-movement";
 
 template <typename Function>

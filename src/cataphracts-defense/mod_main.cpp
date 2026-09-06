@@ -17,7 +17,7 @@
 namespace
 {
 
-constexpr char kProviderId[] = "aeshur.roman-cataphracts-defense";
+constexpr char kProviderId[] = "aeshur.cataphracts-defense";
 constexpr char kRuleId[]     = "cataphract-defense";
 
 template <typename Function>

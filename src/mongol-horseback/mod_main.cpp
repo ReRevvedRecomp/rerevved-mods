@@ -18,7 +18,7 @@
 namespace
 {
 
-constexpr char kProviderId[] = "aeshur.mongol-horseback-riding";
+constexpr char kProviderId[] = "aeshur.mongol-horseback";
 constexpr char kRuleId[]     = "mongol-ancient-horseback-riding";
 
 template <typename Function>

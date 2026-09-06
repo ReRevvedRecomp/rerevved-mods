@@ -1,10 +1,10 @@
 manifest_version = 1
 
 [mod]
-id = "roman-cataphracts-defense"
+id = "cataphracts-defense"
 name = "Cataphracts Defense"
 version = "1.0"
 author = "Aeshur"
 description = "Roman Cataphracts gain +1 base Defense compared with ordinary Knights."
-code = "roman_cataphracts_defense"
+code = "cataphracts_defense"
 plugin_abi = 1
