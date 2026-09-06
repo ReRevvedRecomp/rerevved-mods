@@ -37,6 +37,7 @@ class PackagingTests(unittest.TestCase):
             [
                 "aztec-jaguar-guerilla",
                 "aztec-jaguar-movement",
+                "aztec-jaguar-production-cost",
                 "aztec-jaguar-veterans",
                 "fertile-plains",
                 "mongol-horseback-riding",

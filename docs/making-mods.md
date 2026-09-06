@@ -122,6 +122,20 @@ native reference identities are not additional targets.
 Aztec Warrior with the Jaguar Warrior identity. Impi remains a native reference
 and is not targeted by the mod.
 
+Unit Production Cost Rules are registered through
+`unit_production_cost_rules.h`. ABI 1 lets mods add signed percentage points to
+the native 100 percent production cost for an exact civilization, base unit
+type, and Unit Catalog identity. Resolve
+`ReRevvedUnitProductionCostRulesAbiVersion` and
+`ReRevvedRegisterUnitProductionCostRule` from the host, check the ABI version,
+then register a complete rule. The title applies the resulting positive
+percentage after native production discounts.
+
+`Aztec Jaguar Production Cost` registers -50 percentage points for the Aztec
+Warrior with the Jaguar Warrior identity. A Jaguar's native cost of 10 becomes
+5 Production. A Windows x64 runtime check confirmed the displayed cost and a
+three-turn queue at +2 Production.
+
 Unit Effect Rules are registered through `unit_effect_rules.h`. ABI 2 exposes
 the creation-time Veteran grant and the nine named native special upgrades:
 Blitz, Infiltration, Guerilla, Loyalty, Engineer, Leadership, March, Medic, and

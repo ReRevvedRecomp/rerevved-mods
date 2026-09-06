@@ -5,4 +5,5 @@ src/common/api/unique_unit_rules.h text eol=lf
 src/common/api/unit_catalog.h text eol=lf
 src/common/api/terrain_yield_rules.h text eol=lf
 src/common/api/unit_movement_rules.h text eol=lf
+src/common/api/unit_production_cost_rules.h text eol=lf
 src/common/api/unit_effect_rules.h text eol=lf

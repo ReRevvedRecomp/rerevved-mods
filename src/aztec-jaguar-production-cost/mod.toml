@@ -1,0 +1,10 @@
+manifest_version = 1
+
+[mod]
+id = "aztec-jaguar-production-cost"
+name = "Aztec Jaguar Production Cost"
+version = "1.0"
+author = "Aeshur"
+description = "Aztec Jaguar Warriors cost 5 Production."
+code = "aztec_jaguar_production_cost"
+plugin_abi = 1
