@@ -35,12 +35,11 @@ class PackagingTests(unittest.TestCase):
         self.assertEqual(
             discover_mods(Path(__file__).resolve().parents[1] / "src"),
             [
-                "aztec-jaguar-guerilla",
-                "aztec-jaguar-movement",
-                "aztec-jaguar-production-cost",
-                "aztec-jaguar-veterans",
-                "fertile-plains",
+                "aztec-jaguar-forest-combat",
+                "greek-hoplite-training",
+                "hills-production",
                 "mongol-horseback-riding",
+                "mongol-keshik-movement",
                 "roman-cataphracts-defense",
                 "state-inspector",
             ],

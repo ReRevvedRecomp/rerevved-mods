@@ -1,0 +1,11 @@
+manifest_version = 1
+
+[mod]
+id = "hills-production"
+name = "Hills Production"
+version = "1.0"
+author = "Aeshur"
+description = "Hills provide +1 base Production for every player."
+min_game_version = "1.0.0"
+code = "hills_production"
+plugin_abi = 1

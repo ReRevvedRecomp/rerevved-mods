@@ -99,6 +99,8 @@ def verify_locks(root):
         )
     if title.get("unit_effect_rules_abi") != 2:
         raise RuntimeError("rerevved-api.lock.json must pin Unit Effect Rules ABI 2")
+    if title.get("unit_combat_rules_abi") != 1:
+        raise RuntimeError("rerevved-api.lock.json must pin Unit Combat Rules ABI 1")
     return sdk, title
 
 
@@ -150,6 +152,7 @@ def verify_title_mirror(root, title_dir, title_lock):
         "unit_movement_rules.h",
         "unit_production_cost_rules.h",
         "unit_effect_rules.h",
+        "unit_combat_rules.h",
     ):
         source = title_dir / "api" / name
         mirror = root / "src" / "common" / "api" / name

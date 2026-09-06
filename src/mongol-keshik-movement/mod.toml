@@ -1,0 +1,10 @@
+manifest_version = 1
+
+[mod]
+id = "mongol-keshik-movement"
+name = "Keshik Movement"
+version = "1.0"
+author = "Aeshur"
+description = "Mongolian Keshiks gain +1 Movement."
+code = "mongol_keshik_movement"
+plugin_abi = 1

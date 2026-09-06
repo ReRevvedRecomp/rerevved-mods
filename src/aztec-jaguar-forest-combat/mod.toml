@@ -1,0 +1,10 @@
+manifest_version = 1
+
+[mod]
+id = "aztec-jaguar-forest-combat"
+name = "Jaguar Woodsman"
+version = "1.0"
+author = "Aeshur"
+description = "Aztec Jaguar Warriors gain +50% Attack and Defense on Forest battle squares."
+code = "aztec_jaguar_forest_combat"
+plugin_abi = 1

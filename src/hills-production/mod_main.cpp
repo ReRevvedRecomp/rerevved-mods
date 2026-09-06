@@ -1,6 +1,6 @@
 #include <rex/system/mod_plugin.h>
 
-#include <unit_effect_rules.h>
+#include <terrain_yield_rules.h>
 
 #include <cstdint>
 #include <cstring>
@@ -17,8 +17,8 @@
 namespace
 {
 
-constexpr char kProviderId[] = "aeshur.aztec-jaguar-veterans";
-constexpr char kRuleId[]     = "jaguar-warrior-veteran";
+constexpr char kProviderId[] = "aeshur.hills-production";
+constexpr char kRuleId[]     = "hills-production";
 
 template <typename Function>
 Function ResolveHostFunction(const char* name)
@@ -31,29 +31,29 @@ Function ResolveHostFunction(const char* name)
 #endif
 }
 
-class AztecJaguarVeteransPlugin final : public rex::system::IModPlugin
+class HillsProductionPlugin final : public rex::system::IModPlugin
 {
 public:
     void OnModuleLaunched() override
     {
-        const auto version =
-            ResolveHostFunction<ReRevvedUnitEffectRulesAbiVersionFn>(
-                "ReRevvedUnitEffectRulesAbiVersion");
-        const auto register_rule =
-            ResolveHostFunction<ReRevvedRegisterUnitEffectRuleFn>(
-                "ReRevvedRegisterUnitEffectRule");
+        const auto version = ResolveHostFunction<
+            ReRevvedTerrainYieldRulesAbiVersionFn>(
+            "ReRevvedTerrainYieldRulesAbiVersion");
+        const auto register_rule = ResolveHostFunction<
+            ReRevvedRegisterTerrainYieldRuleFn>(
+            "ReRevvedRegisterTerrainYieldRule");
         if (!version || !register_rule ||
-            version() != REREVVED_UNIT_EFFECT_RULES_ABI_VERSION)
+            version() != REREVVED_TERRAIN_YIELD_RULES_ABI_VERSION)
         {
             return;
         }
 
-        ReRevvedUnitEffectRule rule{};
-        rule.struct_size    = sizeof(rule);
-        rule.civilization   = REREVVED_CIVILIZATION_AZTEC;
-        rule.base_unit_type = REREVVED_UNIT_TYPE_WARRIOR;
-        rule.identity       = REREVVED_UNIT_IDENTITY_JAGUAR_WARRIOR;
-        rule.effect         = REREVVED_UNIT_EFFECT_CREATION_VETERAN;
+        ReRevvedTerrainYieldRule rule{};
+        rule.struct_size = sizeof(rule);
+        rule.terrain     = REREVVED_TERRAIN_HILL;
+        rule.component   = REREVVED_TERRAIN_YIELD_PRODUCTION;
+        rule.operation   = REREVVED_TERRAIN_YIELD_ADD;
+        rule.value       = 1;
         std::memcpy(rule.provider_id, kProviderId, sizeof(kProviderId));
         std::memcpy(rule.rule_id, kRuleId, sizeof(kRuleId));
         register_rule(&rule);
@@ -76,5 +76,5 @@ extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
     {
         return nullptr;
     }
-    return new AztecJaguarVeteransPlugin();
+    return new HillsProductionPlugin();
 }

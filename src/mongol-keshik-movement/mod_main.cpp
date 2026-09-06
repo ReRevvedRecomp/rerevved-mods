@@ -1,6 +1,6 @@
 #include <rex/system/mod_plugin.h>
 
-#include <unit_effect_rules.h>
+#include <unit_movement_rules.h>
 
 #include <cstdint>
 #include <cstring>
@@ -17,8 +17,8 @@
 namespace
 {
 
-constexpr char kProviderId[] = "aeshur.aztec-jaguar-guerilla";
-constexpr char kRuleId[]     = "jaguar-warrior-guerilla";
+constexpr char kProviderId[] = "aeshur.mongol-keshik-movement";
+constexpr char kRuleId[]     = "keshik-movement";
 
 template <typename Function>
 Function ResolveHostFunction(const char* name)
@@ -31,29 +31,29 @@ Function ResolveHostFunction(const char* name)
 #endif
 }
 
-class AztecJaguarGuerillaPlugin final : public rex::system::IModPlugin
+class MongolKeshikMovementPlugin final : public rex::system::IModPlugin
 {
 public:
     void OnModuleLaunched() override
     {
-        const auto version =
-            ResolveHostFunction<ReRevvedUnitEffectRulesAbiVersionFn>(
-                "ReRevvedUnitEffectRulesAbiVersion");
-        const auto register_rule =
-            ResolveHostFunction<ReRevvedRegisterUnitEffectRuleFn>(
-                "ReRevvedRegisterUnitEffectRule");
+        const auto version = ResolveHostFunction<
+            ReRevvedUnitMovementRulesAbiVersionFn>(
+            "ReRevvedUnitMovementRulesAbiVersion");
+        const auto register_rule = ResolveHostFunction<
+            ReRevvedRegisterUnitMovementRuleFn>(
+            "ReRevvedRegisterUnitMovementRule");
         if (!version || !register_rule ||
-            version() != REREVVED_UNIT_EFFECT_RULES_ABI_VERSION)
+            version() != REREVVED_UNIT_MOVEMENT_RULES_ABI_VERSION)
         {
             return;
         }
 
-        ReRevvedUnitEffectRule rule{};
+        ReRevvedUnitMovementRule rule{};
         rule.struct_size    = sizeof(rule);
-        rule.civilization   = REREVVED_CIVILIZATION_AZTEC;
-        rule.base_unit_type = REREVVED_UNIT_TYPE_WARRIOR;
-        rule.identity       = REREVVED_UNIT_IDENTITY_JAGUAR_WARRIOR;
-        rule.effect         = REREVVED_UNIT_EFFECT_CREATION_GUERILLA;
+        rule.civilization   = REREVVED_CIVILIZATION_MONGOLIAN;
+        rule.base_unit_type = REREVVED_UNIT_TYPE_KNIGHTS;
+        rule.identity       = REREVVED_UNIT_IDENTITY_KESHIK;
+        rule.value          = 1;
         std::memcpy(rule.provider_id, kProviderId, sizeof(kProviderId));
         std::memcpy(rule.rule_id, kRuleId, sizeof(kRuleId));
         register_rule(&rule);
@@ -76,5 +76,5 @@ extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
     {
         return nullptr;
     }
-    return new AztecJaguarGuerillaPlugin();
+    return new MongolKeshikMovementPlugin();
 }

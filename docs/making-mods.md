@@ -35,7 +35,7 @@ manifest_version = 1
 
 [mod]
 id = "roman-cataphracts-defense"
-name = "Roman Cataphracts Defense"
+name = "Cataphracts Defense"
 version = "1.0"
 author = "Aeshur"
 description = "Roman Cataphracts gain +1 base Defense compared with ordinary Knights, reflecting their heavily armored cavalry theme."
@@ -77,7 +77,7 @@ before starting a game; the title does not restrict mid-game registration.
 Base attack and defense rules compose before the title applies civilization,
 era, unit, army, and earned combat modifiers.
 
-`Roman Cataphracts Defense` adds one point to the base Defense of Roman Knights
+`Cataphracts Defense` adds one point to the base Defense of Roman Knights
 with the Cataphract identity. The rule is limited to that civilization, base
 unit type, and identity, so ordinary Knights and other civilizations keep their
 native values.
@@ -92,7 +92,7 @@ technology ID 4 through the normal turn-advance technology path and suppresses
 the displaced Mongolian village-conversion effect at its native gate. Mods
 cannot define synthetic IDs or select a different technology.
 
-`Mongol Horseback Riding` is the permanent minimal reference for the synthetic
+`Mongol Horseback` is the permanent minimal reference for the synthetic
 UEA. It replaces the Mongolian Ancient UEA, Captured Barbarian villages become
 cities, with Knowledge of Horseback Riding. Test it in a fresh game. Once the
 technology has been granted, its ordinary saved ownership persists after the
@@ -106,9 +106,10 @@ terrain. Resolve `ReRevvedTerrainYieldRulesAbiVersion` and
 stable lowercase provider and rule IDs. The title owns terrain conversion and
 yield composition; a mod only declares its target and scalar operation.
 
-`Fertile Plains` is the reference terrain-yield mod. It registers
-`aeshur.fertile-plains/plains-food` as Plains, Food, Add, 1, so every player's
-Plains base Food increases by one. Load gameplay mods before starting a game;
+`Hills Production` is the reference terrain-yield mod. It registers
+`aeshur.hills-production/hills-production` as Hills, Production, Add, 1, so
+every player's Hills base Production increases by one. Load gameplay mods
+before starting a game;
 loadout changes apply after restart.
 
 Unit Movement Rules are registered through `unit_movement_rules.h`. ABI 1 lets
@@ -118,9 +119,9 @@ and Unit Catalog identity. Resolve `ReRevvedUnitMovementRulesAbiVersion` and
 register a complete rule. The target identity must be the intended unique unit;
 native reference identities are not additional targets.
 
-`Aztec Jaguar Movement` registers one additive value of 1 for the
-Aztec Warrior with the Jaguar Warrior identity. Impi remains a native reference
-and is not targeted by the mod.
+`Keshik Movement` registers one additive value of 1 for Mongolian
+Knights with the Keshik identity. The target uses the exact semantic
+civilization, base unit type, and identity IDs exposed by the public API.
 
 Unit Production Cost Rules are registered through
 `unit_production_cost_rules.h`. ABI 1 lets mods add signed percentage points to
@@ -131,10 +132,10 @@ type, and Unit Catalog identity. Resolve
 then register a complete rule. The title applies the resulting positive
 percentage after native production discounts.
 
-`Aztec Jaguar Production Cost` registers -50 percentage points for the Aztec
-Warrior with the Jaguar Warrior identity. A Jaguar's native cost of 10 becomes
-5 Production. A Windows x64 runtime check confirmed the displayed cost and a
-three-turn queue at +2 Production.
+`Hoplite Loyalty` registers -33 percentage points
+for Greek Phalanx units with the Hoplite identity. The current percentage API
+composes the native 100 percent cost, so 15 * 67 / 100 truncates to 10
+Production.
 
 Unit Effect Rules are registered through `unit_effect_rules.h`. ABI 2 exposes
 the creation-time Veteran grant and the nine named native special upgrades:
@@ -144,14 +145,27 @@ identity. Resolve `ReRevvedUnitEffectRulesAbiVersion` and
 `ReRevvedRegisterUnitEffectRule` from the host, check the ABI version, then
 register the named effect.
 
-`Aztec Jaguar Veterans` registers the creation-time Veteran effect for the
-Aztec Warrior with the Jaguar Warrior identity. The title preserves higher
-native ranks and applies the grant only at unit creation.
+`Hoplite Loyalty` registers the creation-time
+Loyalty effect for Greek Phalanx units with the Hoplite identity. The same
+package resolves and registers both the Unit Effect Rules and Unit Production
+Cost Rules APIs; the title applies Loyalty only when the unit is created.
 
-`Aztec Jaguar Guerilla` registers the creation-time Guerilla effect for the
-Aztec Warrior with the Jaguar Warrior identity. A Windows x64 runtime check
-confirmed that a newly created Jaguar received and displayed the effect; its
-combat modifier remains outside that bounded check.
+Unit Combat Rules are registered through `unit_combat_rules.h`. ABI 1 lets
+mods add signed percentage points to the native 100 percent combat scalar for
+an exact civilization, base unit type, identity, defender battle tile, and
+ATTACK or DEFENSE property. Resolve `ReRevvedUnitCombatRulesAbiVersion` and
+`ReRevvedRegisterUnitCombatRule` from the host, check the ABI version, then
+register a complete rule. The terrain field is the defender's battle tile.
+
+`Jaguar Woodsman` registers +50 ATTACK and +50 DEFENSE for the
+Aztec Warrior with the Jaguar Warrior identity when the defender's battle
+tile is Forest. Its expected runtime matrix is:
+
+| Case | Defender battle tile | ATTACK delta | DEFENSE delta |
+| --- | --- | ---: | ---: |
+| Jaguar attacks another unit | Forest | +50% | - |
+| Jaguar defends | Forest | - | +50% |
+| Jaguar attacks or defends | Plains | 0% | 0% |
 
 `State Inspector` is an optional development tool that provides a read-only
 state overlay for debugging and probing graphical errors. Keep it available
