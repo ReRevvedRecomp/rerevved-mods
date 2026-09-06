@@ -93,8 +93,8 @@ def verify_locks(root):
         raise RuntimeError("rerevved-api.lock.json must pin Terrain Yield Rules ABI 1")
     if title.get("unit_movement_rules_abi") != 1:
         raise RuntimeError("rerevved-api.lock.json must pin Unit Movement Rules ABI 1")
-    if title.get("unit_effect_rules_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin Unit Effect Rules ABI 1")
+    if title.get("unit_effect_rules_abi") != 2:
+        raise RuntimeError("rerevved-api.lock.json must pin Unit Effect Rules ABI 2")
     return sdk, title
 
 

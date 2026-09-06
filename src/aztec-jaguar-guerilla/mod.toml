@@ -1,0 +1,10 @@
+manifest_version = 1
+
+[mod]
+id = "aztec-jaguar-guerilla"
+name = "Aztec Jaguar Guerilla"
+version = "1.0"
+author = "Aeshur"
+description = "Aztec Jaguar Warriors are created with the Guerilla effect."
+code = "aztec_jaguar_guerilla"
+plugin_abi = 1

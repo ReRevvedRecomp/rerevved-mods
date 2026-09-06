@@ -122,15 +122,22 @@ native reference identities are not additional targets.
 Aztec Warrior with the Jaguar Warrior identity. Impi remains a native reference
 and is not targeted by the mod.
 
-Unit Effect Rules are registered through `unit_effect_rules.h`. ABI 1 exposes
-the creation-time Veteran grant for an exact civilization, base unit type, and
-Unit Catalog identity. Resolve `ReRevvedUnitEffectRulesAbiVersion` and
+Unit Effect Rules are registered through `unit_effect_rules.h`. ABI 2 exposes
+the creation-time Veteran grant and the nine named native special upgrades:
+Blitz, Infiltration, Guerilla, Loyalty, Engineer, Leadership, March, Medic, and
+Scout. Rules target an exact civilization, base unit type, and Unit Catalog
+identity. Resolve `ReRevvedUnitEffectRulesAbiVersion` and
 `ReRevvedRegisterUnitEffectRule` from the host, check the ABI version, then
-register the Veteran effect.
+register the named effect.
 
 `Aztec Jaguar Veterans` registers the creation-time Veteran effect for the
 Aztec Warrior with the Jaguar Warrior identity. The title preserves higher
 native ranks and applies the grant only at unit creation.
+
+`Aztec Jaguar Guerilla` registers the creation-time Guerilla effect for the
+Aztec Warrior with the Jaguar Warrior identity. A Windows x64 runtime check
+confirmed that a newly created Jaguar received and displayed the effect; its
+combat modifier remains outside that bounded check.
 
 `State Inspector` is an optional development tool that provides a read-only
 state overlay for debugging and probing graphical errors. Keep it available
