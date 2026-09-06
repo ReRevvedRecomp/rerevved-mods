@@ -1,0 +1,10 @@
+manifest_version = 1
+
+[mod]
+id = "aztec-jaguar-movement"
+name = "Aztec Jaguar Movement"
+version = "1.0"
+author = "Aeshur"
+description = "Aztec Jaguar Warriors gain +1 Movement."
+code = "aztec_jaguar_movement"
+plugin_abi = 1

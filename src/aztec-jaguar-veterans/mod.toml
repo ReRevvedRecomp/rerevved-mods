@@ -1,0 +1,10 @@
+manifest_version = 1
+
+[mod]
+id = "aztec-jaguar-veterans"
+name = "Aztec Jaguar Veterans"
+version = "1.0"
+author = "Aeshur"
+description = "Aztec Jaguar Warriors are created as Veterans."
+code = "aztec_jaguar_veterans"
+plugin_abi = 1

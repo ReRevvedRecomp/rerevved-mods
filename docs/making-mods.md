@@ -111,6 +111,27 @@ yield composition; a mod only declares its target and scalar operation.
 Plains base Food increases by one. Load gameplay mods before starting a game;
 loadout changes apply after restart.
 
+Unit Movement Rules are registered through `unit_movement_rules.h`. ABI 1 lets
+mods add one signed movement value for an exact civilization, base unit type,
+and Unit Catalog identity. Resolve `ReRevvedUnitMovementRulesAbiVersion` and
+`ReRevvedRegisterUnitMovementRule` from the host, check the ABI version, then
+register a complete rule. The target identity must be the intended unique unit;
+native reference identities are not additional targets.
+
+`Aztec Jaguar Movement` registers one additive value of 1 for the
+Aztec Warrior with the Jaguar Warrior identity. Impi remains a native reference
+and is not targeted by the mod.
+
+Unit Effect Rules are registered through `unit_effect_rules.h`. ABI 1 exposes
+the creation-time Veteran grant for an exact civilization, base unit type, and
+Unit Catalog identity. Resolve `ReRevvedUnitEffectRulesAbiVersion` and
+`ReRevvedRegisterUnitEffectRule` from the host, check the ABI version, then
+register the Veteran effect.
+
+`Aztec Jaguar Veterans` registers the creation-time Veteran effect for the
+Aztec Warrior with the Jaguar Warrior identity. The title preserves higher
+native ranks and applies the grant only at unit creation.
+
 `State Inspector` is an optional development tool that provides a read-only
 state overlay for debugging and probing graphical errors. Keep it available
 when checking overlay regressions.

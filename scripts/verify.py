@@ -91,6 +91,10 @@ def verify_locks(root):
         raise RuntimeError("rerevved-api.lock.json must pin Unique Era Abilities ABI 2")
     if title.get("terrain_yield_rules_abi") != 1:
         raise RuntimeError("rerevved-api.lock.json must pin Terrain Yield Rules ABI 1")
+    if title.get("unit_movement_rules_abi") != 1:
+        raise RuntimeError("rerevved-api.lock.json must pin Unit Movement Rules ABI 1")
+    if title.get("unit_effect_rules_abi") != 1:
+        raise RuntimeError("rerevved-api.lock.json must pin Unit Effect Rules ABI 1")
     return sdk, title
 
 
@@ -139,6 +143,8 @@ def verify_title_mirror(root, title_dir, title_lock):
         "unique_unit_rules.h",
         "unit_catalog.h",
         "terrain_yield_rules.h",
+        "unit_movement_rules.h",
+        "unit_effect_rules.h",
     ):
         source = title_dir / "api" / name
         mirror = root / "src" / "common" / "api" / name
