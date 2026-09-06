@@ -5,6 +5,6 @@ id = "roman-cataphracts-defense"
 name = "Cataphracts Defense"
 version = "1.0"
 author = "Aeshur"
-description = "Roman Cataphracts gain +1 base Defense compared with ordinary Knights, reflecting their heavily armored cavalry theme."
+description = "Roman Cataphracts gain +1 base Defense compared with ordinary Knights."
 code = "roman_cataphracts_defense"
 plugin_abi = 1

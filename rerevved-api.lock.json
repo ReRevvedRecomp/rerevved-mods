@@ -1,8 +1,9 @@
 {
   "repository": "https://github.com/ReRevvedRecomp/rerevved",
-  "commit": "e12f8afbbf0716b3828ce6212cda34eaf90d5d6b",
+  "commit": "1bf60a135515f11320765b81a148e0d56243c6b9",
   "gameplay_abi": 1,
   "unit_catalog_abi": 1,
+  "presentation_text_abi": 1,
   "unique_unit_rules_abi": 1,
   "unique_era_abilities_abi": 2,
   "terrain_yield_rules_abi": 1,

@@ -38,7 +38,7 @@ id = "roman-cataphracts-defense"
 name = "Cataphracts Defense"
 version = "1.0"
 author = "Aeshur"
-description = "Roman Cataphracts gain +1 base Defense compared with ordinary Knights, reflecting their heavily armored cavalry theme."
+description = "Roman Cataphracts gain +1 base Defense compared with ordinary Knights."
 code = "roman_cataphracts_defense"
 plugin_abi = 1
 ```
@@ -120,8 +120,15 @@ register a complete rule. The target identity must be the intended unique unit;
 native reference identities are not additional targets.
 
 `Keshik Movement` registers one additive value of 1 for Mongolian
-Knights with the Keshik identity. The target uses the exact semantic
+Horsemen with the Keshik identity. The target uses the exact semantic
 civilization, base unit type, and identity IDs exposed by the public API.
+
+Presentation Text ABI 1 lets a package replace complete printable ASCII lines
+on the civilization information screen. `Mongol Horseback` replaces the
+Mongolian Ancient line with `Knowledge of Horseback Riding` only when its
+synthetic era ability is effective. `Keshik Movement` replaces the Special
+Units line with `Keshik - Horseman with +1 movement`. Competing registrations
+for the same line preserve the native text.
 
 Unit Production Cost Rules are registered through
 `unit_production_cost_rules.h`. ABI 1 lets mods add signed percentage points to

@@ -1,5 +1,6 @@
 #include <rex/system/mod_plugin.h>
 
+#include <presentation_text.h>
 #include <unit_movement_rules.h>
 
 #include <cstdint>
@@ -42,8 +43,16 @@ public:
         const auto register_rule = ResolveHostFunction<
             ReRevvedRegisterUnitMovementRuleFn>(
             "ReRevvedRegisterUnitMovementRule");
-        if (!version || !register_rule ||
-            version() != REREVVED_UNIT_MOVEMENT_RULES_ABI_VERSION)
+        const auto presentation_version = ResolveHostFunction<
+            ReRevvedPresentationTextAbiVersionFn>(
+            "ReRevvedPresentationTextAbiVersion");
+        const auto register_text = ResolveHostFunction<
+            ReRevvedRegisterPresentationTextRuleFn>(
+            "ReRevvedRegisterPresentationTextRule");
+        if (!version || !register_rule || !presentation_version ||
+            !register_text ||
+            version() != REREVVED_UNIT_MOVEMENT_RULES_ABI_VERSION ||
+            presentation_version() != REREVVED_PRESENTATION_TEXT_ABI_VERSION)
         {
             return;
         }
@@ -51,12 +60,31 @@ public:
         ReRevvedUnitMovementRule rule{};
         rule.struct_size    = sizeof(rule);
         rule.civilization   = REREVVED_CIVILIZATION_MONGOLIAN;
-        rule.base_unit_type = REREVVED_UNIT_TYPE_KNIGHTS;
+        rule.base_unit_type = REREVVED_UNIT_TYPE_HORSEMEN;
         rule.identity       = REREVVED_UNIT_IDENTITY_KESHIK;
         rule.value          = 1;
         std::memcpy(rule.provider_id, kProviderId, sizeof(kProviderId));
         std::memcpy(rule.rule_id, kRuleId, sizeof(kRuleId));
-        register_rule(&rule);
+        if (register_rule(&rule) != REREVVED_UNIT_MOVEMENT_RULES_OK)
+        {
+            return;
+        }
+
+        ReRevvedPresentationTextRule text{};
+        text.struct_size             = sizeof(text);
+        text.surface                 = REREVVED_PRESENTATION_SURFACE_UNIQUE_UNIT;
+        text.civilization            = REREVVED_CIVILIZATION_MONGOLIAN;
+        text.unlock_era              = REREVVED_PRESENTATION_SELECTOR_UNUSED;
+        text.ability                 = 0;
+        text.base_unit_type          = REREVVED_UNIT_TYPE_HORSEMEN;
+        text.identity                = REREVVED_UNIT_IDENTITY_KESHIK;
+        text.display_form            = REREVVED_UNIT_DISPLAY_FORM_UNIT;
+        constexpr char kTextRuleId[] = "keshik-movement-text";
+        constexpr char kText[]       = "Keshik - Horseman with +1 movement";
+        std::memcpy(text.provider_id, kProviderId, sizeof(kProviderId));
+        std::memcpy(text.rule_id, kTextRuleId, sizeof(kTextRuleId));
+        std::memcpy(text.text, kText, sizeof(kText));
+        register_text(&text);
     }
 };
 

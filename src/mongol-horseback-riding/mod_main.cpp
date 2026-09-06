@@ -1,5 +1,6 @@
 #include <rex/system/mod_plugin.h>
 
+#include <presentation_text.h>
 #include <unique_era_abilities.h>
 
 #include <cstdint>
@@ -42,8 +43,16 @@ public:
         const auto register_rule = ResolveHostFunction<
             ReRevvedRegisterUniqueEraAbilityReplacementFn>(
             "ReRevvedRegisterUniqueEraAbilityReplacement");
-        if (!version || !register_rule ||
-            version() != REREVVED_UNIQUE_ERA_ABILITIES_ABI_VERSION)
+        const auto presentation_version = ResolveHostFunction<
+            ReRevvedPresentationTextAbiVersionFn>(
+            "ReRevvedPresentationTextAbiVersion");
+        const auto register_text = ResolveHostFunction<
+            ReRevvedRegisterPresentationTextRuleFn>(
+            "ReRevvedRegisterPresentationTextRule");
+        if (!version || !register_rule || !presentation_version ||
+            !register_text ||
+            version() != REREVVED_UNIQUE_ERA_ABILITIES_ABI_VERSION ||
+            presentation_version() != REREVVED_PRESENTATION_TEXT_ABI_VERSION)
         {
             return;
         }
@@ -56,7 +65,27 @@ public:
             REREVVED_UNIQUE_ERA_ABILITY_KNOWLEDGE_OF_HORSEBACK_RIDING;
         std::memcpy(rule.provider_id, kProviderId, sizeof(kProviderId));
         std::memcpy(rule.rule_id, kRuleId, sizeof(kRuleId));
-        register_rule(&rule);
+        if (register_rule(&rule) != REREVVED_UNIQUE_ERA_ABILITIES_OK)
+        {
+            return;
+        }
+
+        ReRevvedPresentationTextRule text{};
+        text.struct_size  = sizeof(text);
+        text.surface      = REREVVED_PRESENTATION_SURFACE_ERA_ABILITY;
+        text.civilization = REREVVED_CIVILIZATION_MONGOLIAN;
+        text.unlock_era   = REREVVED_UNIQUE_ERA_ANCIENT;
+        text.ability =
+            REREVVED_UNIQUE_ERA_ABILITY_KNOWLEDGE_OF_HORSEBACK_RIDING;
+        text.base_unit_type          = REREVVED_PRESENTATION_SELECTOR_UNUSED;
+        text.identity                = REREVVED_PRESENTATION_SELECTOR_UNUSED;
+        text.display_form            = REREVVED_PRESENTATION_SELECTOR_UNUSED;
+        constexpr char kTextRuleId[] = "mongol-ancient-horseback-riding-text";
+        constexpr char kText[]       = "Knowledge of Horseback Riding";
+        std::memcpy(text.provider_id, kProviderId, sizeof(kProviderId));
+        std::memcpy(text.rule_id, kTextRuleId, sizeof(kTextRuleId));
+        std::memcpy(text.text, kText, sizeof(kText));
+        register_text(&text);
     }
 };
 
