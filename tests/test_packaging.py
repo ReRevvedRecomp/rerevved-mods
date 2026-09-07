@@ -108,6 +108,19 @@ class PackagingTests(unittest.TestCase):
                 ["windows-x64"],
             )
 
+    def test_runtime_tree_accepts_regular_asset_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            package = self.write_runtime(Path(directory))
+            asset = package / "assets" / "nested" / "logo.dds"
+            asset.parent.mkdir(parents=True)
+            asset.write_bytes(b"DDS payload")
+            mod = load_manifest(package / "mod.toml", "example-test")
+            files = validate_runtime_tree(package, mod)
+            self.assertIn(
+                "assets/nested/logo.dds",
+                [relative.as_posix() for relative, _ in files],
+            )
+
     def test_manifest_version_requires_an_integer(self):
         with self.assertRaisesRegex(RuntimeError, "manifest_version must be integer 1"):
             from build_mods import parse_manifest_data

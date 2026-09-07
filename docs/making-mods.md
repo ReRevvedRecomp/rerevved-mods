@@ -13,6 +13,11 @@ ASCII letters or digits separated by single hyphens, such as
 - A native mod has `src/<id>/CMakeLists.txt`, `mod.toml`, and its C++ sources.
 - `src/common/` is reserved for shared helpers and the mirrored title API.
 
+Asset packs live in the separate `asset-packs/<id>/` tree. They use
+`asset-pack.toml` and a nonempty `assets/` directory; they do not contain
+native mod sources or native plugin fields. Asset pack IDs follow the same
+lowercase package ID grammar.
+
 The CMake project and target may keep an underscore stem when the native binary
 uses one, so `cataphracts-defense` can build
 `cataphracts_defense.dll`.
@@ -69,6 +74,11 @@ The title API mirror must match the public headers byte for byte at the commit
 in `rerevved-api.lock.json`. Build native plugins with the SDK repository,
 commit, and version recorded in `rexglue-sdk.lock.json`.
 See the title's [Mod APIs guide](https://github.com/ReRevvedRecomp/rerevved/blob/main/docs/modding-api.md) for supported public interfaces and ownership boundaries.
+
+ReRevved ships its default logo pack with the title. This repository keeps the
+generic tooling for authors who want to build independent asset packs. The
+tooling validates safe regular files and does not define a general archive or
+FPK model.
 
 Unique Unit (UU) scalar rules are registered through `unique_unit_rules.h`.
 Use a stable lowercase provider ID owned by the mod author. Treat each provider
@@ -197,6 +207,7 @@ runtime-only package under `mods/<id>/`:
 mods/<id>/
   mod.toml
   icon.png                         optional
+  assets/                          optional mod-owned runtime files
   code/<runtime-platform>/<binary>
   LICENSE*                         optional
   README.md                        optional
@@ -214,9 +225,49 @@ trees, and repository metadata are excluded.
 python scripts/build_mods.py --sdk-dir <sdk> --mod cataphracts-defense --package
 ```
 
-Generated target labels describe where this build script assembled output.
+Generated target labels describe where the native build assembled output.
 Windows uses `.dll`, Linux uses `.so`, and macOS uses `.dylib` plugins under the
 matching `code/<runtime-platform>/` directory.
+
+## Asset pack build and install
+
+Asset packs are built independently from native mods and never require the
+ReXGlue SDK or a native build. List the available packs with:
+
+```text
+python scripts/build_asset_packs.py --list
+```
+
+Assemble and package one pack:
+
+```text
+python scripts/build_asset_packs.py --pack <id> --package
+```
+
+The source and runtime layouts are:
+
+```text
+asset-packs/<id>/
+  asset-pack.toml
+  assets/                          nonempty title-defined files
+
+asset-overrides/<id>/              generated runtime tree
+  asset-pack.toml
+  assets/
+
+pkg/<id>.zip                        rooted at asset-overrides/<id>/
+```
+
+The runtime loader owns asset-pack selection and priority order in its separate
+asset-overrides loadout. A pack's `assets/` paths are package-relative and
+forward-slash based; the title integration defines which paths it consumes.
+Verify source trees with:
+
+```text
+python scripts/verify_asset_packs.py
+```
+
+Add `--package` to verify generated ZIP archives as well.
 
 Check manifests, lock files, tracked-file hygiene, whitespace, C/C++ formatting,
 and package archive layout with:

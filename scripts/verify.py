@@ -18,6 +18,7 @@ from build_mods import (
     load_manifest,
     parse_manifest_data,
 )
+from verify_asset_packs import verify_asset_packs
 
 
 TEXT_SUFFIXES = {".cmake", ".cpp", ".h", ".json", ".md", ".py", ".toml", ".yaml", ".yml"}
@@ -287,6 +288,7 @@ def main():
     sdk_lock, title_lock = verify_locks(root)
     verify_public_tree(root, files)
     mods = verify_manifests(root)
+    asset_packs = verify_asset_packs(root)
     run(["git", "diff", "--check"], root)
     verify_format(root)
     verify_focused_tests(root)
@@ -305,12 +307,24 @@ def main():
             root,
         )
         inventory = verify_packages(root, mods)
+        run(
+            [
+                sys.executable,
+                str(root / "scripts" / "build_asset_packs.py"),
+                "--package",
+            ],
+            root,
+        )
+        verify_asset_packs(root, check_packages=True)
         print(
             "Package inventory: "
             + ", ".join(f"{name} ({'/'.join(platforms)})" for name, platforms in inventory.items())
         )
 
-    print(f"Verified {len(mods)} mod(s) against SDK {sdk_lock['version']}.")
+    print(
+        f"Verified {len(mods)} mod(s) and {len(asset_packs)} asset pack(s) "
+        f"against SDK {sdk_lock['version']}."
+    )
 
 
 if __name__ == "__main__":

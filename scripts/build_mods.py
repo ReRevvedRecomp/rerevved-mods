@@ -38,6 +38,7 @@ MANIFEST_KEYS = {
     "plugin_abi",
 }
 OPTIONAL_PACKAGE_FILES = {"icon.png", "README.md"}
+ASSET_DIRECTORY = "assets"
 
 
 def host_platform():
@@ -307,6 +308,25 @@ def _copy_runtime_file(source, destination):
     shutil.copy2(source, destination)
 
 
+def _copy_runtime_assets(source_dir, destination_dir):
+    if not source_dir.exists():
+        return
+    if not source_dir.is_dir() or _is_reparse_point(source_dir):
+        raise RuntimeError(f"runtime assets must be a regular directory: {source_dir}")
+    for source in sorted(source_dir.rglob("*")):
+        if _is_reparse_point(source):
+            raise RuntimeError(f"reparse point in runtime assets: {source}")
+        relative = source.relative_to(source_dir)
+        destination = destination_dir / relative
+        if source.is_dir():
+            destination.mkdir(parents=True, exist_ok=True)
+        elif source.is_file():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+        else:
+            raise RuntimeError(f"runtime asset must be a regular file: {source}")
+
+
 def assemble_code_mod(root, package_id, target, binary):
     source_dir = root / "src" / package_id
     manifest = source_dir / "mod.toml"
@@ -316,6 +336,7 @@ def assemble_code_mod(root, package_id, target, binary):
     _copy_runtime_file(manifest, destination / "mod.toml")
     for filename in OPTIONAL_PACKAGE_FILES:
         _copy_runtime_file(source_dir / filename, destination / filename)
+    _copy_runtime_assets(source_dir / ASSET_DIRECTORY, destination / ASSET_DIRECTORY)
     for path in source_dir.iterdir():
         if path.name.startswith("LICENSE"):
             _copy_runtime_file(path, destination / path.name)
@@ -351,6 +372,8 @@ def _validate_runtime_relative(path, code):
         if parts[2] not in expected:
             raise RuntimeError(f"binary does not match declared code stem: {path}")
         return parts[1]
+    if len(parts) >= 2 and parts[0] == ASSET_DIRECTORY:
+        return None
     raise RuntimeError(f"unsupported runtime package path: {path}")
 
 
