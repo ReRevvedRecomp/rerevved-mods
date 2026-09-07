@@ -18,6 +18,8 @@ manifests, packaging, and public documentation. Contributions use the
 
 ## Making a change
 
+Follow the [style guide](docs/style-guide.md) for plugin and tooling code.
+
 Follow [Making ReRevved mods](docs/making-mods.md) for the source, manifest,
 build, and package requirements.
 

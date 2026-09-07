@@ -21,6 +21,7 @@ repositories.
 
 ## Development
 
+- [Style guide](docs/style-guide.md)
 - [Making ReRevved mods](docs/making-mods.md)
 
 Pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before you
