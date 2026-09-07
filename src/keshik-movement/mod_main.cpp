@@ -1,6 +1,6 @@
 #include <rex/system/mod_plugin.h>
 
-#include <presentation_text.h>
+#include <nation_select_text.h>
 #include <unit_movement_rules.h>
 
 #include <cstdint>
@@ -44,15 +44,15 @@ public:
             ReRevvedRegisterUnitMovementRuleFn>(
             "ReRevvedRegisterUnitMovementRule");
         const auto presentation_version = ResolveHostFunction<
-            ReRevvedPresentationTextAbiVersionFn>(
-            "ReRevvedPresentationTextAbiVersion");
+            ReRevvedNationSelectTextAbiVersionFn>(
+            "ReRevvedNationSelectTextAbiVersion");
         const auto register_text = ResolveHostFunction<
-            ReRevvedRegisterPresentationTextRuleFn>(
-            "ReRevvedRegisterPresentationTextRule");
+            ReRevvedRegisterNationSelectTextRuleFn>(
+            "ReRevvedRegisterNationSelectTextRule");
         if (!version || !register_rule || !presentation_version ||
             !register_text ||
             version() != REREVVED_UNIT_MOVEMENT_RULES_ABI_VERSION ||
-            presentation_version() != REREVVED_PRESENTATION_TEXT_ABI_VERSION)
+            presentation_version() != REREVVED_NATION_SELECT_TEXT_ABI_VERSION)
         {
             return;
         }
@@ -70,11 +70,11 @@ public:
             return;
         }
 
-        ReRevvedPresentationTextRule text{};
+        ReRevvedNationSelectTextRule text{};
         text.struct_size             = sizeof(text);
-        text.surface                 = REREVVED_PRESENTATION_SURFACE_UNIQUE_UNIT;
+        text.surface                 = REREVVED_NATION_SELECT_TEXT_SURFACE_UNIQUE_UNIT;
         text.civilization            = REREVVED_CIVILIZATION_MONGOLIAN;
-        text.unlock_era              = REREVVED_PRESENTATION_SELECTOR_UNUSED;
+        text.unlock_era              = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
         text.ability                 = 0;
         text.base_unit_type          = REREVVED_UNIT_TYPE_HORSEMEN;
         text.identity                = REREVVED_UNIT_IDENTITY_KESHIK;

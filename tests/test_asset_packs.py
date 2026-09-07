@@ -19,7 +19,6 @@ from build_asset_packs import (
     parse_asset_pack_data,
     validate_runtime_tree,
     verify_asset_pack_archive,
-    verify_asset_pack_sources,
 )
 
 
@@ -48,7 +47,7 @@ class AssetPackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "asset-packs").mkdir()
-            self.assertEqual(verify_asset_pack_sources(root), [])
+            self.assertEqual(discover_asset_packs(root / "asset-packs"), [])
 
     def test_manifest_requires_asset_pack_identity_and_version(self):
         pack = parse_asset_pack_data(
@@ -119,7 +118,7 @@ class AssetPackTests(unittest.TestCase):
             )
             pack = load_asset_pack_manifest(runtime / "asset-pack.toml", "example-pack")
             with self.assertRaisesRegex(RuntimeError, "has no assets"):
-                validate_runtime_tree(runtime, pack)
+                validate_runtime_tree(runtime)
 
     def test_asset_pack_paths_reject_parent_components(self):
         with self.assertRaisesRegex(RuntimeError, "invalid asset path"):
@@ -137,7 +136,7 @@ class AssetPackTests(unittest.TestCase):
             linked = runtime / "assets" / "file-data" / "logo.dds"
             with mock.patch("build_asset_packs._is_reparse_point", side_effect=lambda path: path == linked):
                 with self.assertRaisesRegex(RuntimeError, "reparse point"):
-                    validate_runtime_tree(runtime, pack)
+                    validate_runtime_tree(runtime)
 
 
 if __name__ == "__main__":

@@ -102,8 +102,8 @@ def verify_locks(root):
         raise RuntimeError("rerevved-api.lock.json must pin Unit Effect Rules ABI 2")
     if title.get("unit_combat_rules_abi") != 1:
         raise RuntimeError("rerevved-api.lock.json must pin Unit Combat Rules ABI 1")
-    if title.get("presentation_text_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin Presentation Text ABI 1")
+    if title.get("nation_select_text_abi") != 1:
+        raise RuntimeError("rerevved-api.lock.json must pin Nation Select Text ABI 1")
     return sdk, title
 
 
@@ -148,7 +148,7 @@ def verify_title_mirror(root, title_dir, title_lock):
     for name in (
         "game_ids.h",
         "gameplay_state.h",
-        "presentation_text.h",
+        "nation_select_text.h",
         "unique_era_abilities.h",
         "unique_unit_rules.h",
         "unit_catalog.h",

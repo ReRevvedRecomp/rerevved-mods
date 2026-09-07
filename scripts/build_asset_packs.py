@@ -218,7 +218,7 @@ def _copy_assets(source_dir, destination_dir, owner):
 def assemble_asset_pack(root, package_id):
     source_dir = root / "asset-packs" / package_id
     manifest = source_dir / "asset-pack.toml"
-    pack = load_asset_pack_manifest(manifest, package_id)
+    load_asset_pack_manifest(manifest, package_id)
     destination = root / RUNTIME_ROOT / package_id
     _remove_generated_directory(destination, root / RUNTIME_ROOT)
     _copy_runtime_file(manifest, destination / "asset-pack.toml")
@@ -228,7 +228,7 @@ def assemble_asset_pack(root, package_id):
         if path.name.startswith("LICENSE"):
             _copy_runtime_file(path, destination / path.name)
     _copy_assets(source_dir / ASSET_DIRECTORY, destination / ASSET_DIRECTORY, package_id)
-    validate_runtime_tree(destination, pack)
+    validate_runtime_tree(destination)
 
 
 def _validate_runtime_relative(path):
@@ -247,7 +247,7 @@ def _validate_runtime_relative(path):
     raise RuntimeError(f"unsupported asset pack runtime path: {path}")
 
 
-def validate_runtime_tree(pack_dir, pack):
+def validate_runtime_tree(pack_dir):
     if not pack_dir.is_dir() or _is_reparse_point(pack_dir):
         raise RuntimeError(f"asset pack runtime directory is missing: {pack_dir}")
     files = []
@@ -275,8 +275,8 @@ def package_asset_pack(root, package_id):
     package_dir = root / "pkg"
     package_dir.mkdir(parents=True, exist_ok=True)
     pack_dir = root / RUNTIME_ROOT / package_id
-    pack = load_asset_pack_manifest(pack_dir / "asset-pack.toml", package_id)
-    files = validate_runtime_tree(pack_dir, pack)
+    load_asset_pack_manifest(pack_dir / "asset-pack.toml", package_id)
+    files = validate_runtime_tree(pack_dir)
     archive = package_dir / f"{package_id}.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as output:
         for relative, path in files:
@@ -335,10 +335,6 @@ def verify_asset_pack_archive(archive, package_id, source_pack):
         return sorted(path.as_posix() for path in asset_files)
 
 
-def verify_asset_pack_sources(root):
-    return discover_asset_packs(root / "asset-packs")
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pack", action="append", dest="packs", metavar="ID")
@@ -347,7 +343,7 @@ def main():
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent.parent
-    available = verify_asset_pack_sources(root)
+    available = discover_asset_packs(root / "asset-packs")
     if args.list:
         for name in available:
             print(name)

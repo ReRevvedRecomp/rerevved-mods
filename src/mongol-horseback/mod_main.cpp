@@ -1,6 +1,6 @@
 #include <rex/system/mod_plugin.h>
 
-#include <presentation_text.h>
+#include <nation_select_text.h>
 #include <unique_era_abilities.h>
 
 #include <cstdint>
@@ -44,15 +44,15 @@ public:
             ReRevvedRegisterUniqueEraAbilityReplacementFn>(
             "ReRevvedRegisterUniqueEraAbilityReplacement");
         const auto presentation_version = ResolveHostFunction<
-            ReRevvedPresentationTextAbiVersionFn>(
-            "ReRevvedPresentationTextAbiVersion");
+            ReRevvedNationSelectTextAbiVersionFn>(
+            "ReRevvedNationSelectTextAbiVersion");
         const auto register_text = ResolveHostFunction<
-            ReRevvedRegisterPresentationTextRuleFn>(
-            "ReRevvedRegisterPresentationTextRule");
+            ReRevvedRegisterNationSelectTextRuleFn>(
+            "ReRevvedRegisterNationSelectTextRule");
         if (!version || !register_rule || !presentation_version ||
             !register_text ||
             version() != REREVVED_UNIQUE_ERA_ABILITIES_ABI_VERSION ||
-            presentation_version() != REREVVED_PRESENTATION_TEXT_ABI_VERSION)
+            presentation_version() != REREVVED_NATION_SELECT_TEXT_ABI_VERSION)
         {
             return;
         }
@@ -70,16 +70,16 @@ public:
             return;
         }
 
-        ReRevvedPresentationTextRule text{};
+        ReRevvedNationSelectTextRule text{};
         text.struct_size  = sizeof(text);
-        text.surface      = REREVVED_PRESENTATION_SURFACE_ERA_ABILITY;
+        text.surface      = REREVVED_NATION_SELECT_TEXT_SURFACE_ERA_ABILITY;
         text.civilization = REREVVED_CIVILIZATION_MONGOLIAN;
         text.unlock_era   = REREVVED_UNIQUE_ERA_ANCIENT;
         text.ability =
             REREVVED_UNIQUE_ERA_ABILITY_KNOWLEDGE_OF_HORSEBACK_RIDING;
-        text.base_unit_type          = REREVVED_PRESENTATION_SELECTOR_UNUSED;
-        text.identity                = REREVVED_PRESENTATION_SELECTOR_UNUSED;
-        text.display_form            = REREVVED_PRESENTATION_SELECTOR_UNUSED;
+        text.base_unit_type          = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
+        text.identity                = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
+        text.display_form            = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
         constexpr char kTextRuleId[] = "mongol-ancient-horseback-riding-text";
         constexpr char kText[]       = "Knowledge of Horseback Riding";
         std::memcpy(text.provider_id, kProviderId, sizeof(kProviderId));

@@ -133,7 +133,7 @@ native reference identities are not additional targets.
 Horsemen with the Keshik identity. The target uses the exact semantic
 civilization, base unit type, and identity IDs exposed by the public API.
 
-Presentation Text ABI 1 lets a package replace complete printable ASCII lines
+Nation Select Text ABI 1 lets a package replace complete printable ASCII lines
 on the civilization information screen. `Mongol Horseback` replaces the
 Mongolian Ancient line with `Knowledge of Horseback Riding` only when its
 synthetic era ability is effective. `Keshik Movement` replaces the Special
