@@ -113,11 +113,9 @@ def _validate_asset_relative(path):
         raise RuntimeError(f"invalid asset path: {path}")
 
 
-def _asset_files(source_dir, owner, *, required):
+def _asset_files(source_dir, owner):
     if not source_dir.exists():
-        if required:
-            raise RuntimeError(f"{owner}: asset pack requires a nonempty assets/ tree")
-        return []
+        raise RuntimeError(f"{owner}: asset pack requires a nonempty assets/ tree")
     if not source_dir.is_dir() or _is_reparse_point(source_dir):
         raise RuntimeError(f"{owner}: assets must be a regular directory")
     files = []
@@ -131,13 +129,15 @@ def _asset_files(source_dir, owner, *, required):
         if not source.is_file():
             raise RuntimeError(f"asset must be a regular file: {source}")
         files.append((relative, source))
-    if required and not files:
+    if not files:
         raise RuntimeError(f"{owner}: asset pack requires a nonempty assets/ tree")
     return files
 
 
 def discover_asset_packs(source_root):
     """Return asset pack IDs discovered under the source root."""
+    if not source_root.exists():
+        return []
     packs = []
     for entry in sorted(source_root.iterdir()):
         if not entry.is_dir():
@@ -150,7 +150,7 @@ def discover_asset_packs(source_root):
         if not manifest.is_file() or _is_reparse_point(manifest):
             raise RuntimeError(f"asset pack has no manifest: {entry.name}")
         load_asset_pack_manifest(manifest, entry.name)
-        _asset_files(entry / ASSET_DIRECTORY, entry.name, required=True)
+        _asset_files(entry / ASSET_DIRECTORY, entry.name)
         packs.append(entry.name)
     return packs
 
@@ -209,7 +209,7 @@ def _copy_runtime_file(source, destination):
 
 
 def _copy_assets(source_dir, destination_dir, owner):
-    for relative, source in _asset_files(source_dir, owner, required=True):
+    for relative, source in _asset_files(source_dir, owner):
         destination = destination_dir / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
@@ -272,7 +272,7 @@ def validate_runtime_tree(pack_dir):
 
 
 def package_asset_pack(root, package_id):
-    package_dir = root / "pkg"
+    package_dir = root / "pkg" / RUNTIME_ROOT
     package_dir.mkdir(parents=True, exist_ok=True)
     pack_dir = root / RUNTIME_ROOT / package_id
     load_asset_pack_manifest(pack_dir / "asset-pack.toml", package_id)

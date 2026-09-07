@@ -402,7 +402,7 @@ def validate_runtime_tree(mod_dir, mod):
 
 
 def package_mod(root, package_id):
-    package_dir = root / "pkg"
+    package_dir = root / "pkg" / "mods"
     package_dir.mkdir(parents=True, exist_ok=True)
     mod_dir = root / "mods" / package_id
     mod = load_manifest(mod_dir / "mod.toml", package_id)

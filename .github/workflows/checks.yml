@@ -82,7 +82,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: rerevved-mods-windows-x64
-          path: pkg/*.zip
+          path: |
+            pkg/mods/*.zip
+            pkg/asset-overrides/*.zip
           if-no-files-found: error
           retention-days: 14
 
@@ -180,7 +182,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: rerevved-mods-linux-x64
-          path: pkg/*.zip
+          path: |
+            pkg/mods/*.zip
+            pkg/asset-overrides/*.zip
           if-no-files-found: error
           retention-days: 14
 
@@ -285,7 +289,7 @@ jobs:
           import pathlib
           import zipfile
 
-          archive = pathlib.Path("pkg/state-inspector.zip")
+          archive = pathlib.Path("pkg/mods/state-inspector.zip")
           expected = "mods/state-inspector/code/${{ matrix.target }}/libstate_inspector.dylib"
           with zipfile.ZipFile(archive) as package:
               names = set(package.namelist())
@@ -298,6 +302,8 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: rerevved-mods-${{ matrix.target }}
-          path: pkg/*.zip
+          path: |
+            pkg/mods/*.zip
+            pkg/asset-overrides/*.zip
           if-no-files-found: error
           retention-days: 14

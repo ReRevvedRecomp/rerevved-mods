@@ -13,7 +13,8 @@ ASCII letters or digits separated by single hyphens, such as
 - A native mod has `src/<id>/CMakeLists.txt`, `mod.toml`, and its C++ sources.
 - `src/common/` is reserved for shared helpers and the mirrored title API.
 
-Asset packs live in the separate `asset-packs/<id>/` tree. They use
+Asset packs live in the separate `asset-packs/<id>/` tree. An absent source
+directory means there are no asset packs to build. They use
 `asset-pack.toml` and a nonempty `assets/` directory; they do not contain
 native mod sources or native plugin fields. Asset pack IDs follow the same
 lowercase package ID grammar.
@@ -217,7 +218,7 @@ The recognized runtime-platform names are `windows-x64`, `windows-arm64`,
 `linux-x64`, `linux-arm64`, `macos-x64`, and `macos-arm64`. CMake preset names
 such as `win-amd64` are SDK build targets, not package directory names.
 
-Add `--package` to create `pkg/<id>.zip`. Archives have the same runtime-only
+Add `--package` to create `pkg/mods/<id>.zip`. Archives have the same runtime-only
 files rooted at `mods/<id>/`; source files, CMake files, object files, build
 trees, and repository metadata are excluded.
 
@@ -255,7 +256,7 @@ asset-overrides/<id>/              generated runtime tree
   asset-pack.toml
   assets/
 
-pkg/<id>.zip                        rooted at asset-overrides/<id>/
+pkg/asset-overrides/<id>.zip        rooted at asset-overrides/<id>/
 ```
 
 The runtime loader owns asset-pack selection and priority order in its separate

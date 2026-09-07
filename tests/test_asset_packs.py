@@ -20,6 +20,9 @@ from build_asset_packs import (
     validate_runtime_tree,
     verify_asset_pack_archive,
 )
+from build_mods import package_mod
+from verify import verify_packages
+from verify_asset_packs import verify_asset_packs
 
 
 MANIFEST = """\
@@ -46,6 +49,7 @@ class AssetPackTests(unittest.TestCase):
     def test_empty_source_catalog_is_valid(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            self.assertEqual(discover_asset_packs(root / "asset-packs"), [])
             (root / "asset-packs").mkdir()
             self.assertEqual(discover_asset_packs(root / "asset-packs"), [])
 
@@ -91,7 +95,7 @@ class AssetPackTests(unittest.TestCase):
                 b"DDS payload",
             )
             package_asset_pack(root, "example-pack")
-            archive = root / "pkg" / "example-pack.zip"
+            archive = root / "pkg" / "asset-overrides" / "example-pack.zip"
             source_pack = load_asset_pack_manifest(source / "asset-pack.toml", "example-pack")
             self.assertEqual(
                 verify_asset_pack_archive(archive, "example-pack", source_pack),
@@ -104,6 +108,41 @@ class AssetPackTests(unittest.TestCase):
                         "asset-overrides/example-pack/asset-pack.toml",
                         "asset-overrides/example-pack/assets/file-data/logo.dds",
                     ],
+                )
+
+    def test_same_id_mod_and_asset_archives_coexist(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_source(root)
+            assemble_asset_pack(root, "example-pack")
+            native = root / "mods" / "example-pack"
+            (native / "code" / "windows-x64").mkdir(parents=True)
+            manifest = (
+                'manifest_version = 1\n[mod]\nid = "example-pack"\n'
+                'name = "Example Mod"\nversion = "1.0"\n'
+                'code = "example"\nplugin_abi = 1\n'
+            )
+            (native / "mod.toml").write_text(manifest, encoding="ascii")
+            binary_path = "mods/example-pack/code/windows-x64/example.dll"
+            (root / binary_path).write_bytes(b"native plugin")
+            source = root / "src" / "example-pack"
+            source.mkdir(parents=True)
+            (source / "mod.toml").write_text(manifest, encoding="ascii")
+
+            package_mod(root, "example-pack")
+            package_asset_pack(root, "example-pack")
+
+            self.assertEqual(
+                verify_packages(root, ["example-pack"]),
+                {"example-pack": ["windows-x64"]},
+            )
+            self.assertEqual(verify_asset_packs(root, check_packages=True), ["example-pack"])
+            with zipfile.ZipFile(root / "pkg" / "mods" / "example-pack.zip") as package:
+                self.assertEqual(package.read(binary_path), b"native plugin")
+            with zipfile.ZipFile(root / "pkg" / "asset-overrides" / "example-pack.zip") as package:
+                self.assertEqual(
+                    package.read("asset-overrides/example-pack/assets/file-data/logo.dds"),
+                    b"DDS payload",
                 )
 
     def test_asset_pack_runtime_requires_nonempty_assets(self):

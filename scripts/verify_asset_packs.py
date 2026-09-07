@@ -18,7 +18,7 @@ def verify_asset_packs(root, check_packages=False):
     packs = discover_asset_packs(source_root)
     if check_packages:
         for package_id in packs:
-            archive = root / "pkg" / f"{package_id}.zip"
+            archive = root / "pkg" / "asset-overrides" / f"{package_id}.zip"
             if not archive.is_file():
                 raise RuntimeError(f"missing asset pack package: {archive}")
             source = load_asset_pack_manifest(
@@ -33,7 +33,7 @@ def main():
     parser.add_argument(
         "--package",
         action="store_true",
-        help="also verify generated pkg/<id>.zip archives",
+        help="also verify generated pkg/asset-overrides/<id>.zip archives",
     )
     args = parser.parse_args()
     root = Path(__file__).resolve().parent.parent

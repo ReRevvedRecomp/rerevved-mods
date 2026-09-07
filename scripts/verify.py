@@ -269,7 +269,7 @@ def verify_package_archive(archive, package_id, source_mod):
 def verify_packages(root, mods):
     inventory = {}
     for name in mods:
-        archive = root / "pkg" / f"{name}.zip"
+        archive = root / "pkg" / "mods" / f"{name}.zip"
         if not archive.is_file():
             raise RuntimeError(f"missing package: {archive}")
         source_mod = load_manifest(root / "src" / name / "mod.toml", name)
