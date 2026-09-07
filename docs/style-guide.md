@@ -30,9 +30,9 @@ Keep the guide and formatter consistent when changing a formatting rule.
   Keep SDK override names unchanged.
 - Keep one statement per line. Use early returns for unavailable host APIs or
   rejected registrations where the existing lifecycle contract requires them.
-- Let the formatter align consecutive declarations, assignments, macros, and
-  trailing comments. The current configuration also aligns parameter names
-  in multiline declarations.
+- Use one space between a type and its variable, field, or parameter name.
+  Do not pad names into vertical columns. Let the formatter align consecutive
+  assignments, enum values, macros, and trailing comments separately.
 - There is no fixed column limit. Wrap long declarations at meaningful
   boundaries, using one parameter per line when multiline.
 - Include direct dependencies and keep private helpers in the implementation.

@@ -31,8 +31,8 @@ Function ResolveHostFunction(const char* name)
 }
 
 void RegisterRule(ReRevvedRegisterUnitCombatRuleFn register_rule,
-                  const char*                      rule_id,
-                  ReRevvedUnitCombatProperty       property)
+                  const char* rule_id,
+                  ReRevvedUnitCombatProperty property)
 {
     ReRevvedUnitCombatRule rule{};
     rule.struct_size      = sizeof(rule);
@@ -77,7 +77,7 @@ extern "C" REX_MOD_PLUGIN_EXPORT uint32_t rex_mod_abi_version()
 }
 
 extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
-    uint32_t                           abi_version,
+    uint32_t abi_version,
     const rex::system::ModHostContext* context)
 {
     if (abi_version != rex::system::kModPluginAbiVersion || !context ||
