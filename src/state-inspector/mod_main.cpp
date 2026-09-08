@@ -106,7 +106,7 @@ private:
         }
 
         ReRevvedGameplayState state{};
-        const int result = api_.get_state(&state, sizeof(state));
+        const int             result = api_.get_state(&state, sizeof(state));
         if (result == REREVVED_GAMEPLAY_ERR_UNAVAILABLE)
         {
             ImGui::TextUnformatted("Waiting for the first gameplay frame.");
@@ -150,7 +150,7 @@ private:
     }
 
     GameplayApi api_;
-    bool visible_ = false;
+    bool        visible_ = false;
 };
 
 class StateInspectorPlugin final : public rex::system::IModPlugin
@@ -190,9 +190,9 @@ private:
         dialog_.reset();
     }
 
-    GameplayApi api_;
+    GameplayApi                           api_;
     std::unique_ptr<StateInspectorDialog> dialog_;
-    bool bind_registered_ = false;
+    bool                                  bind_registered_ = false;
 };
 
 } // namespace
@@ -203,7 +203,7 @@ extern "C" REX_MOD_PLUGIN_EXPORT uint32_t rex_mod_abi_version()
 }
 
 extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
-    uint32_t abi_version,
+    uint32_t                           abi_version,
     const rex::system::ModHostContext* context)
 {
     if (abi_version != rex::system::kModPluginAbiVersion || !context ||

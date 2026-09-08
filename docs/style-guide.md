@@ -25,19 +25,27 @@ Keep the guide and formatter consistent when changing a formatting rule.
 
 - Use Allman braces, four spaces, no tabs, and braced control-flow bodies.
 - Use `Type* pointer`, `const Type* pointer`, and `Type& reference`.
-- Follow existing plugin code: `PascalCase` classes and methods,
-  `lower_snake_case` locals and parameters, and `kPascalCase` constants.
-  Keep SDK override names unchanged.
+- Use `UpperCamelCase` for types, scoped enum values, and namespaced functions;
+  `lowerCamelCase` for variables, parameters, fields, and private helpers; and
+  `kLowerCamelCase` for internal constants. Plain enum values use
+  `UPPER_SNAKE_CASE`.
+- Use namespaces and descriptive internal names instead of repeating the
+  product name. Scoped enum values do not repeat their enum's name.
+  Preserve SDK overrides, plugin entry points, and public title API names,
+  including their prefixes. Do not add aliases solely to hide an API prefix.
 - Keep one statement per line. Use early returns for unavailable host APIs or
   rejected registrations where the existing lifecycle contract requires them.
-- Use one space between a type and its variable, field, or parameter name.
-  Do not pad names into vertical columns. Let the formatter align consecutive
-  assignments, enum values, macros, and trailing comments separately.
+- Align consecutive declarations, assignments, enum values, macros, and
+  trailing comments with the formatter. Declaration alignment also applies
+  to parameter names in multiline function-pointer declarations.
 - There is no fixed column limit. Wrap long declarations at meaningful
   boundaries, using one parameter per line when multiline.
 - Include direct dependencies and keep private helpers in the implementation.
   Use explicit types when width, signedness, or ownership would otherwise be
   unclear. Keep platform-specific symbol resolution at the host API boundary.
+- Use `static_cast` for intentional value conversions and `dynamic_cast` for
+  checked downcasts of polymorphic C++ objects. Avoid C-style casts. Exceptions
+  must not escape a C ABI boundary.
 
 Use descriptive kebab-case package IDs and `lower_snake_case` CMake targets,
 as in `keshik-movement` and `keshik_movement`. Provider IDs and rule IDs are
