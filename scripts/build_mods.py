@@ -13,7 +13,6 @@ import tomllib
 import zipfile
 from pathlib import Path, PurePosixPath
 
-
 PLATFORMS = {
     "windows-x64": {"sdk": "win-amd64", "prefix": "", "extension": ".dll"},
     "windows-arm64": {"sdk": "win-arm64", "prefix": "", "extension": ".dll"},
@@ -113,9 +112,7 @@ def _validate_version(
 ):
     _require_string(value, field, path)
     if not version_re.fullmatch(value):
-        raise RuntimeError(
-            f"{path}: {field} must use {syntax} syntax"
-        )
+        raise RuntimeError(f"{path}: {field} must use {syntax} syntax")
 
 
 def parse_manifest_data(value, source, expected_id=None):
@@ -160,7 +157,11 @@ def parse_manifest_data(value, source, expected_id=None):
     ):
         raise RuntimeError(f"{source}: [mod].code must be one filename stem")
     plugin_abi = mod["plugin_abi"]
-    if isinstance(plugin_abi, bool) or not isinstance(plugin_abi, int) or plugin_abi != 1:
+    if (
+        isinstance(plugin_abi, bool)
+        or not isinstance(plugin_abi, int)
+        or plugin_abi != 1
+    ):
         raise RuntimeError(f"{source}: [mod].plugin_abi must be integer 1")
     for field in ("author", "description"):
         if field in mod:
@@ -275,17 +276,25 @@ def _reparse_points(root):
 def _remove_generated_directory(path, generated_root):
     generated_root = Path(generated_root)
     if _is_reparse_point(generated_root):
-        raise RuntimeError(f"generated package root is a reparse point: {generated_root}")
+        raise RuntimeError(
+            f"generated package root is a reparse point: {generated_root}"
+        )
     resolved_root = generated_root.resolve(strict=False)
     if not PACKAGE_ID_RE.fullmatch(path.name) or len(path.name) > 63:
         raise RuntimeError(f"invalid generated package directory: {path}")
     if path.parent.resolve(strict=False) != resolved_root:
-        raise RuntimeError(f"generated package path is outside {generated_root}: {path}")
+        raise RuntimeError(
+            f"generated package path is outside {generated_root}: {path}"
+        )
     if _is_reparse_point(path):
         raise RuntimeError(f"refusing to remove reparse point: {path}")
     resolved_path = path.resolve(strict=False)
-    if resolved_path.parent != resolved_root or not resolved_path.is_relative_to(resolved_root):
-        raise RuntimeError(f"generated package path is outside {generated_root}: {path}")
+    if resolved_path.parent != resolved_root or not resolved_path.is_relative_to(
+        resolved_root
+    ):
+        raise RuntimeError(
+            f"generated package path is outside {generated_root}: {path}"
+        )
     if path.exists():
         if not path.is_dir():
             raise RuntimeError(f"generated package path is not a directory: {path}")
@@ -346,7 +355,9 @@ def assemble_code_mod(root, package_id, target, binary):
         for postfix in POSTFIXES.values()
     }
     if binary.name not in expected:
-        raise RuntimeError(f"built plugin does not match declared code stem: {binary.name}")
+        raise RuntimeError(
+            f"built plugin does not match declared code stem: {binary.name}"
+        )
     code_dir = destination / "code" / target
     code_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy2(binary, code_dir / binary.name)
@@ -422,7 +433,9 @@ def main():
     parser.add_argument("--target", choices=PLATFORMS, default=host_platform())
     parser.add_argument("--config", choices=POSTFIXES, default="Release")
     parser.add_argument("--package", action="store_true")
-    parser.add_argument("--list", action="store_true", help="List discovered mods and exit")
+    parser.add_argument(
+        "--list", action="store_true", help="List discovered mods and exit"
+    )
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent.parent
@@ -461,6 +474,11 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (OSError, RuntimeError, subprocess.CalledProcessError, UnicodeError) as error:
+    except (
+        OSError,
+        RuntimeError,
+        subprocess.CalledProcessError,
+        UnicodeError,
+    ) as error:
         print(f"error: {error}", file=sys.stderr)
         sys.exit(1)

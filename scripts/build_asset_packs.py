@@ -11,7 +11,6 @@ import tomllib
 import zipfile
 from pathlib import Path, PurePosixPath
 
-
 PACKAGE_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 PACKAGE_VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+$")
 MANIFEST_TOP_LEVEL_KEYS = {"manifest_version", "asset_pack"}
@@ -59,7 +58,9 @@ def parse_asset_pack_data(value, source, expected_id=None):
     required = {"id", "name", "version"}
     missing = sorted(required - pack.keys())
     if missing:
-        raise RuntimeError(f"{source}: missing [asset_pack] field(s): {', '.join(missing)}")
+        raise RuntimeError(
+            f"{source}: missing [asset_pack] field(s): {', '.join(missing)}"
+        )
 
     package_id = _require_string(pack["id"], "[asset_pack].id", source, nonempty=True)
     if not PACKAGE_ID_RE.fullmatch(package_id) or len(package_id) > 63:
@@ -143,7 +144,9 @@ def discover_asset_packs(source_root):
         if not entry.is_dir():
             continue
         if _is_reparse_point(entry):
-            raise RuntimeError(f"asset pack source directory is a reparse point: {entry.name}")
+            raise RuntimeError(
+                f"asset pack source directory is a reparse point: {entry.name}"
+            )
         if not PACKAGE_ID_RE.fullmatch(entry.name) or len(entry.name) > 63:
             raise RuntimeError(f"invalid asset pack source directory: {entry.name}")
         manifest = entry / "asset-pack.toml"
@@ -163,12 +166,18 @@ def _remove_generated_directory(path, generated_root):
     if not PACKAGE_ID_RE.fullmatch(path.name) or len(path.name) > 63:
         raise RuntimeError(f"invalid generated asset pack directory: {path}")
     if path.parent.resolve(strict=False) != resolved_root:
-        raise RuntimeError(f"generated asset pack path is outside {generated_root}: {path}")
+        raise RuntimeError(
+            f"generated asset pack path is outside {generated_root}: {path}"
+        )
     if _is_reparse_point(path):
         raise RuntimeError(f"refusing to remove reparse point: {path}")
     resolved_path = path.resolve(strict=False)
-    if resolved_path.parent != resolved_root or not resolved_path.is_relative_to(resolved_root):
-        raise RuntimeError(f"generated asset pack path is outside {generated_root}: {path}")
+    if resolved_path.parent != resolved_root or not resolved_path.is_relative_to(
+        resolved_root
+    ):
+        raise RuntimeError(
+            f"generated asset pack path is outside {generated_root}: {path}"
+        )
     if path.exists():
         if not path.is_dir():
             raise RuntimeError(f"generated asset pack path is not a directory: {path}")
@@ -227,7 +236,9 @@ def assemble_asset_pack(root, package_id):
     for path in source_dir.iterdir():
         if path.name.startswith("LICENSE"):
             _copy_runtime_file(path, destination / path.name)
-    _copy_assets(source_dir / ASSET_DIRECTORY, destination / ASSET_DIRECTORY, package_id)
+    _copy_assets(
+        source_dir / ASSET_DIRECTORY, destination / ASSET_DIRECTORY, package_id
+    )
     validate_runtime_tree(destination)
 
 
@@ -315,18 +326,26 @@ def verify_asset_pack_archive(archive, package_id, source_pack):
         if manifest_entry.as_posix() not in seen:
             raise RuntimeError(f"asset pack has no manifest: {archive.name}")
         try:
-            manifest = tomllib.loads(package.read(manifest_entry.as_posix()).decode("ascii"))
+            manifest = tomllib.loads(
+                package.read(manifest_entry.as_posix()).decode("ascii")
+            )
         except (UnicodeError, tomllib.TOMLDecodeError) as error:
-            raise RuntimeError(f"invalid asset pack manifest in {archive.name}: {error}") from error
-        pack = parse_asset_pack_data(manifest, f"{archive.name}:{manifest_entry}", package_id)
+            raise RuntimeError(
+                f"invalid asset pack manifest in {archive.name}: {error}"
+            ) from error
+        pack = parse_asset_pack_data(
+            manifest, f"{archive.name}:{manifest_entry}", package_id
+        )
         if pack != source_pack:
-            raise RuntimeError(f"asset pack manifest differs from source: {archive.name}")
+            raise RuntimeError(
+                f"asset pack manifest differs from source: {archive.name}"
+            )
 
         root = PurePosixPath(RUNTIME_ROOT) / package_id
         asset_files = []
         for info in entries:
             path = _zip_entry_path(archive, info.filename)
-            relative = PurePosixPath(*path.parts[len(root.parts):])
+            relative = PurePosixPath(*path.parts[len(root.parts) :])
             _validate_runtime_relative(relative)
             if relative.parts and relative.parts[0] == ASSET_DIRECTORY:
                 asset_files.append(relative)
@@ -339,7 +358,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pack", action="append", dest="packs", metavar="ID")
     parser.add_argument("--package", action="store_true")
-    parser.add_argument("--list", action="store_true", help="List discovered asset packs and exit")
+    parser.add_argument(
+        "--list", action="store_true", help="List discovered asset packs and exit"
+    )
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent.parent

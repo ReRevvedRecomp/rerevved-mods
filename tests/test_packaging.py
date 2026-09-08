@@ -17,7 +17,6 @@ from build_mods import (
 )
 from verify import verify_package_archive
 
-
 MANIFEST = """\
 manifest_version = 1
 
@@ -83,7 +82,9 @@ class PackagingTests(unittest.TestCase):
             malformed = root / "malformed.zip"
             with zipfile.ZipFile(malformed, "w") as output:
                 output.writestr("example-test/mod.toml", MANIFEST)
-                output.writestr("example-test/code/windows-x64/example_test.dll", b"plugin")
+                output.writestr(
+                    "example-test/code/windows-x64/example_test.dll", b"plugin"
+                )
             with self.assertRaisesRegex(RuntimeError, "rooted at mods/example-test"):
                 verify_package_archive(malformed, "example-test", source_mod)
 
@@ -98,7 +99,11 @@ class PackagingTests(unittest.TestCase):
             archive = root / "example-test.zip"
             with zipfile.ZipFile(archive, "w") as output:
                 output.write(package / "mod.toml", "mods/example-test/mod.toml")
-                for binary in ("example_test.dll", "example_testd.dll", "example_testrd.dll"):
+                for binary in (
+                    "example_test.dll",
+                    "example_testd.dll",
+                    "example_testrd.dll",
+                ):
                     output.writestr(
                         f"mods/example-test/code/windows-x64/{binary}",
                         b"plugin",
@@ -233,12 +238,16 @@ class PackagingTests(unittest.TestCase):
             marker.write_text("keep", encoding="ascii")
 
             with self.assertRaisesRegex(RuntimeError, "outside"):
-                _remove_generated_directory(root / "outside" / "example-test", generated)
+                _remove_generated_directory(
+                    root / "outside" / "example-test", generated
+                )
 
             def is_reparse_point(path):
                 return path == linked
 
-            with mock.patch("build_mods._is_reparse_point", side_effect=is_reparse_point):
+            with mock.patch(
+                "build_mods._is_reparse_point", side_effect=is_reparse_point
+            ):
                 with self.assertRaisesRegex(RuntimeError, "reparse point"):
                     _remove_generated_directory(package, generated)
             self.assertTrue(marker.is_file())

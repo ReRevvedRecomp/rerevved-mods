@@ -24,7 +24,6 @@ from build_mods import package_mod
 from verify import verify_packages
 from verify_asset_packs import verify_asset_packs
 
-
 MANIFEST = """\
 manifest_version = 1
 
@@ -86,7 +85,9 @@ class AssetPackTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = self.write_source(root)
-            self.assertEqual(discover_asset_packs(root / "asset-packs"), ["example-pack"])
+            self.assertEqual(
+                discover_asset_packs(root / "asset-packs"), ["example-pack"]
+            )
 
             assemble_asset_pack(root, "example-pack")
             runtime = root / "asset-overrides" / "example-pack"
@@ -96,7 +97,9 @@ class AssetPackTests(unittest.TestCase):
             )
             package_asset_pack(root, "example-pack")
             archive = root / "pkg" / "asset-overrides" / "example-pack.zip"
-            source_pack = load_asset_pack_manifest(source / "asset-pack.toml", "example-pack")
+            source_pack = load_asset_pack_manifest(
+                source / "asset-pack.toml", "example-pack"
+            )
             self.assertEqual(
                 verify_asset_pack_archive(archive, "example-pack", source_pack),
                 ["assets/file-data/logo.dds"],
@@ -136,12 +139,18 @@ class AssetPackTests(unittest.TestCase):
                 verify_packages(root, ["example-pack"]),
                 {"example-pack": ["windows-x64"]},
             )
-            self.assertEqual(verify_asset_packs(root, check_packages=True), ["example-pack"])
+            self.assertEqual(
+                verify_asset_packs(root, check_packages=True), ["example-pack"]
+            )
             with zipfile.ZipFile(root / "pkg" / "mods" / "example-pack.zip") as package:
                 self.assertEqual(package.read(binary_path), b"native plugin")
-            with zipfile.ZipFile(root / "pkg" / "asset-overrides" / "example-pack.zip") as package:
+            with zipfile.ZipFile(
+                root / "pkg" / "asset-overrides" / "example-pack.zip"
+            ) as package:
                 self.assertEqual(
-                    package.read("asset-overrides/example-pack/assets/file-data/logo.dds"),
+                    package.read(
+                        "asset-overrides/example-pack/assets/file-data/logo.dds"
+                    ),
                     b"DDS payload",
                 )
 
@@ -155,7 +164,7 @@ class AssetPackTests(unittest.TestCase):
                 (source / "asset-pack.toml").read_text(encoding="ascii"),
                 encoding="ascii",
             )
-            pack = load_asset_pack_manifest(runtime / "asset-pack.toml", "example-pack")
+            load_asset_pack_manifest(runtime / "asset-pack.toml", "example-pack")
             with self.assertRaisesRegex(RuntimeError, "has no assets"):
                 validate_runtime_tree(runtime)
 
@@ -171,9 +180,12 @@ class AssetPackTests(unittest.TestCase):
             source = self.write_source(root)
             assemble_asset_pack(root, "example-pack")
             runtime = root / "asset-overrides" / "example-pack"
-            pack = load_asset_pack_manifest(source / "asset-pack.toml", "example-pack")
+            load_asset_pack_manifest(source / "asset-pack.toml", "example-pack")
             linked = runtime / "assets" / "file-data" / "logo.dds"
-            with mock.patch("build_asset_packs._is_reparse_point", side_effect=lambda path: path == linked):
+            with mock.patch(
+                "build_asset_packs._is_reparse_point",
+                side_effect=lambda path: path == linked,
+            ):
                 with self.assertRaisesRegex(RuntimeError, "reparse point"):
                     validate_runtime_tree(runtime)
 

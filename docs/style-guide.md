@@ -85,6 +85,26 @@ the [public contribution policy](ai_agents/README.md) defines the boundary.
 - Python uses four spaces, `snake_case` functions and variables, and
   `UPPER_SNAKE_CASE` constants. Follow the existing standard-library scripts
   and `unittest` tests; keep filesystem effects explicit and paths bounded.
+  Ruff is pinned in `scripts/requirements-dev.txt`, targets Python 3.11, and
+  uses an 88-character line length. Install it from the repository root with:
+
+  ```text
+  python -m pip install -r scripts/requirements-dev.txt
+  ```
+
+  Check the scoped scripts and tests with:
+
+  ```text
+  python -m ruff check scripts tests
+  python -m ruff format --check scripts tests
+  ```
+
+  Apply safe lint fixes and formatting with:
+
+  ```text
+  python -m ruff check --fix scripts tests
+  python -m ruff format scripts tests
+  ```
 - Keep CMake target-scoped and package CMake files thin. Shared build behavior
   belongs in the existing helper when multiple plugins need it.
 - Keep TOML manifest keys, package IDs, and archive paths consistent with the

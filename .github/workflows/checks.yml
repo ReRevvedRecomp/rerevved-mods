@@ -48,8 +48,8 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - name: Install formatting tool
-        run: python -m pip install --disable-pip-version-check clang-format==22.1.8
+      - name: Install verification tools
+        run: python -m pip install -r scripts/requirements-dev.txt
 
       - name: Fetch upstream SDK tags
         working-directory: sdk-src
@@ -125,6 +125,8 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+      - name: Install verification tools
+        run: python -m pip install -r scripts/requirements-dev.txt
 
       - name: Fetch upstream SDK tags
         working-directory: sdk-src
@@ -151,7 +153,6 @@ jobs:
             libgtk-3-dev libx11-xcb-dev libxss-dev \
             libwayland-dev libwayland-bin libxkbcommon-dev libdecor-0-dev \
             libasound2-dev libpulse-dev libpipewire-0.3-dev
-          python -m pip install --disable-pip-version-check clang-format==22.1.8
 
       - name: Restore SDK install
         id: sdk-cache
@@ -236,6 +237,8 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+      - name: Install verification tools
+        run: python -m pip install -r scripts/requirements-dev.txt
 
       - name: Fetch upstream SDK tags
         working-directory: sdk-src
@@ -249,7 +252,6 @@ jobs:
         shell: bash
         run: |
           brew install cmake ninja
-          python -m pip install --disable-pip-version-check clang-format==22.1.8
 
       - name: Restore SDK install
         id: sdk-cache

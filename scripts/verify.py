@@ -20,8 +20,17 @@ from build_mods import (
 )
 from verify_asset_packs import verify_asset_packs
 
-
-TEXT_SUFFIXES = {".cmake", ".cpp", ".h", ".json", ".md", ".py", ".toml", ".yaml", ".yml"}
+TEXT_SUFFIXES = {
+    ".cmake",
+    ".cpp",
+    ".h",
+    ".json",
+    ".md",
+    ".py",
+    ".toml",
+    ".yaml",
+    ".yml",
+}
 FORBIDDEN_TRACKED_SUFFIXES = {
     ".bin",
     ".iso",
@@ -60,13 +69,17 @@ def tracked_files(root):
         root,
         capture=True,
     )
-    return [root / item for item in output.split("\0") if item and (root / item).is_file()]
+    return [
+        root / item for item in output.split("\0") if item and (root / item).is_file()
+    ]
 
 
 def load_lock(path, repository):
     value = json.loads(path.read_text(encoding="ascii"))
     if value.get("repository") != repository:
-        raise RuntimeError(f"unexpected repository in {path.name}: {value.get('repository')}")
+        raise RuntimeError(
+            f"unexpected repository in {path.name}: {value.get('repository')}"
+        )
     commit = value.get("commit", "")
     if not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise RuntimeError(f"invalid commit in {path.name}: {commit}")
@@ -78,10 +91,14 @@ def verify_locks(root):
         root / "rexglue-sdk.lock.json",
         "https://github.com/ReRevvedRecomp/rerevved-sdk",
     )
-    title = load_lock(root / "rerevved-api.lock.json", "https://github.com/ReRevvedRecomp/rerevved")
+    title = load_lock(
+        root / "rerevved-api.lock.json", "https://github.com/ReRevvedRecomp/rerevved"
+    )
     expected_suffix = f".g{sdk['commit'][:7]}"
     if not sdk.get("version", "").endswith(expected_suffix):
-        raise RuntimeError(f"SDK version does not match its commit: {sdk.get('version')}")
+        raise RuntimeError(
+            f"SDK version does not match its commit: {sdk.get('version')}"
+        )
     if title.get("gameplay_abi") != 2:
         raise RuntimeError("rerevved-api.lock.json must pin gameplay ABI 2")
     if title.get("unit_catalog_abi") != 2:
@@ -144,7 +161,9 @@ def verify_manifests(root):
 def verify_title_mirror(root, title_dir, title_lock):
     actual = run(["git", "rev-parse", "HEAD"], title_dir, capture=True).strip()
     if actual != title_lock["commit"]:
-        raise RuntimeError(f"title checkout mismatch: expected {title_lock['commit']}, found {actual}")
+        raise RuntimeError(
+            f"title checkout mismatch: expected {title_lock['commit']}, found {actual}"
+        )
     for name in (
         "game_ids.h",
         "gameplay_state.h",
@@ -161,7 +180,9 @@ def verify_title_mirror(root, title_dir, title_lock):
         source = title_dir / "api" / name
         mirror = root / "src" / "common" / "api" / name
         if source.read_bytes() != mirror.read_bytes():
-            raise RuntimeError(f"src/common/api/{name} differs from the pinned title header")
+            raise RuntimeError(
+                f"src/common/api/{name} differs from the pinned title header"
+            )
 
 
 def verify_format(root):
@@ -176,7 +197,9 @@ def verify_format(root):
         capture_output=True,
     )
     version_output = " ".join(
-        part.strip() for part in (version_result.stdout, version_result.stderr) if part.strip()
+        part.strip()
+        for part in (version_result.stdout, version_result.stderr)
+        if part.strip()
     )
     version_match = re.search(
         r"\bclang-format version (?P<version>\d+\.\d+\.\d+)(?=\s|$|\()",
@@ -188,8 +211,13 @@ def verify_format(root):
             f"clang-format {CLANG_FORMAT_MAJOR}.x version query failed at {formatter}: "
             f"{version_output}"
         )
-    if not version_match or int(version_match.group("version").split(".", 1)[0]) != CLANG_FORMAT_MAJOR:
-        reported_version = version_match.group("version") if version_match else "unknown"
+    if (
+        not version_match
+        or int(version_match.group("version").split(".", 1)[0]) != CLANG_FORMAT_MAJOR
+    ):
+        reported_version = (
+            version_match.group("version") if version_match else "unknown"
+        )
         raise RuntimeError(
             f"clang-format {CLANG_FORMAT_MAJOR}.x is required; found {reported_version} at {formatter}"
         )
@@ -202,6 +230,14 @@ def verify_format(root):
         and not path.is_relative_to(mirrored_api)
     )
     run([formatter, "--dry-run", "--Werror", *sources], root)
+
+
+def verify_python(root):
+    run([sys.executable, "-m", "ruff", "check", "scripts", "tests"], root)
+    run(
+        [sys.executable, "-m", "ruff", "format", "--check", "scripts", "tests"],
+        root,
+    )
 
 
 def verify_focused_tests(root):
@@ -242,27 +278,39 @@ def verify_package_archive(archive, package_id, source_mod):
                 raise RuntimeError(f"non-regular package entry: {info.filename}")
             path = _zip_entry_path(archive, info.filename)
             if path.parts[:2] != ("mods", package_id):
-                raise RuntimeError(f"package entry is not rooted at mods/{package_id}/: {info.filename}")
+                raise RuntimeError(
+                    f"package entry is not rooted at mods/{package_id}/: {info.filename}"
+                )
         if manifest_entry.as_posix() not in seen:
             raise RuntimeError(f"package has no manifest: {archive.name}")
         try:
-            manifest = tomllib.loads(package.read(manifest_entry.as_posix()).decode("ascii"))
+            manifest = tomllib.loads(
+                package.read(manifest_entry.as_posix()).decode("ascii")
+            )
         except (UnicodeError, tomllib.TOMLDecodeError) as error:
-            raise RuntimeError(f"invalid package manifest in {archive.name}: {error}") from error
-        mod = parse_manifest_data(manifest, f"{archive.name}:{manifest_entry}", package_id)
+            raise RuntimeError(
+                f"invalid package manifest in {archive.name}: {error}"
+            ) from error
+        mod = parse_manifest_data(
+            manifest, f"{archive.name}:{manifest_entry}", package_id
+        )
         if mod != source_mod:
-            raise RuntimeError(f"package manifest differs from source manifest: {archive.name}")
+            raise RuntimeError(
+                f"package manifest differs from source manifest: {archive.name}"
+            )
 
         platforms = set()
         root = PurePosixPath("mods") / package_id
         for info in entries:
             path = _zip_entry_path(archive, info.filename)
-            relative = PurePosixPath(*path.parts[len(root.parts):])
+            relative = PurePosixPath(*path.parts[len(root.parts) :])
             platform_name = _validate_runtime_relative(relative, mod["code"])
             if platform_name:
                 platforms.add(platform_name)
         if not platforms:
-            raise RuntimeError(f"package has no qualified native binary: {archive.name}")
+            raise RuntimeError(
+                f"package has no qualified native binary: {archive.name}"
+            )
         return sorted(platforms)
 
 
@@ -290,6 +338,7 @@ def main():
     mods = verify_manifests(root)
     asset_packs = verify_asset_packs(root)
     run(["git", "diff", "--check"], root)
+    verify_python(root)
     verify_format(root)
     verify_focused_tests(root)
 
@@ -318,7 +367,10 @@ def main():
         verify_asset_packs(root, check_packages=True)
         print(
             "Package inventory: "
-            + ", ".join(f"{name} ({'/'.join(platforms)})" for name, platforms in inventory.items())
+            + ", ".join(
+                f"{name} ({'/'.join(platforms)})"
+                for name, platforms in inventory.items()
+            )
         )
 
     print(
@@ -330,6 +382,11 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (OSError, RuntimeError, subprocess.CalledProcessError, UnicodeError) as error:
+    except (
+        OSError,
+        RuntimeError,
+        subprocess.CalledProcessError,
+        UnicodeError,
+    ) as error:
         print(f"error: {error}", file=sys.stderr)
         sys.exit(1)
