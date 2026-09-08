@@ -30,16 +30,16 @@ Function resolveHostFunction(const char* name)
 #endif
 }
 
-void registerForestRule(ReRevvedRegisterUnitCombatRuleFn registerRule,
-                        const char*                      ruleId,
-                        ReRevvedUnitCombatProperty       property)
+void registerWoodsmanRule(RegisterUnitCombatRuleFn registerRule,
+                          const char*              ruleId,
+                          UnitCombatProperty       property)
 {
-    ReRevvedUnitCombatRule rule{};
+    UnitCombatRule rule{};
     rule.structSize      = sizeof(rule);
-    rule.civilization    = REREVVED_CIVILIZATION_AZTEC;
-    rule.baseUnitType    = REREVVED_UNIT_TYPE_WARRIOR;
-    rule.identity        = REREVVED_UNIT_IDENTITY_JAGUAR_WARRIOR;
-    rule.terrain         = REREVVED_TERRAIN_FOREST;
+    rule.civilization    = CIVILIZATION_AZTEC;
+    rule.baseUnitType    = UNIT_TYPE_WARRIOR;
+    rule.identity        = UNIT_IDENTITY_JAGUAR_WARRIOR;
+    rule.terrain         = TERRAIN_FOREST;
     rule.property        = property;
     rule.percentageDelta = 50;
     std::memcpy(rule.providerId, kProviderId, sizeof(kProviderId));
@@ -47,25 +47,25 @@ void registerForestRule(ReRevvedRegisterUnitCombatRuleFn registerRule,
     registerRule(&rule);
 }
 
-class AztecJaguarForestCombatPlugin final : public rex::system::IModPlugin
+class JaguarWoodsmanPlugin final : public rex::system::IModPlugin
 {
 public:
     void OnModuleLaunched() override
     {
         const auto version =
-            resolveHostFunction<ReRevvedUnitCombatRulesAbiVersionFn>(
-                "ReRevvedUnitCombatRulesAbiVersion");
+            resolveHostFunction<UnitCombatRulesAbiVersionFn>(
+                "UnitCombatRulesAbiVersion");
         const auto registerRule =
-            resolveHostFunction<ReRevvedRegisterUnitCombatRuleFn>(
-                "ReRevvedRegisterUnitCombatRule");
+            resolveHostFunction<RegisterUnitCombatRuleFn>(
+                "RegisterUnitCombatRule");
         if (!version || !registerRule ||
-            version() != REREVVED_UNIT_COMBAT_RULES_ABI_VERSION)
+            version() != UNIT_COMBAT_RULES_ABI_VERSION)
         {
             return;
         }
 
-        registerForestRule(registerRule, "jaguar-warrior-forest-attack", REREVVED_UNIT_COMBAT_ATTACK);
-        registerForestRule(registerRule, "jaguar-warrior-forest-defense", REREVVED_UNIT_COMBAT_DEFENSE);
+        registerWoodsmanRule(registerRule, "jaguar-warrior-forest-attack", UNIT_COMBAT_ATTACK);
+        registerWoodsmanRule(registerRule, "jaguar-warrior-forest-defense", UNIT_COMBAT_DEFENSE);
     }
 };
 
@@ -85,5 +85,5 @@ extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
     {
         return nullptr;
     }
-    return new AztecJaguarForestCombatPlugin();
+    return new JaguarWoodsmanPlugin();
 }

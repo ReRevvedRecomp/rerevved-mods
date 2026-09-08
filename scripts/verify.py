@@ -82,28 +82,28 @@ def verify_locks(root):
     expected_suffix = f".g{sdk['commit'][:7]}"
     if not sdk.get("version", "").endswith(expected_suffix):
         raise RuntimeError(f"SDK version does not match its commit: {sdk.get('version')}")
-    if title.get("gameplay_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin gameplay ABI 1")
-    if title.get("unit_catalog_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin Unit Catalog ABI 1")
-    if title.get("unique_unit_rules_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin Unique Unit Rules ABI 1")
-    if title.get("unique_era_abilities_abi") != 2:
-        raise RuntimeError("rerevved-api.lock.json must pin Unique Era Abilities ABI 2")
-    if title.get("terrain_yield_rules_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin Terrain Yield Rules ABI 1")
-    if title.get("unit_movement_rules_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin Unit Movement Rules ABI 1")
-    if title.get("unit_production_cost_rules_abi") != 1:
+    if title.get("gameplay_abi") != 2:
+        raise RuntimeError("rerevved-api.lock.json must pin gameplay ABI 2")
+    if title.get("unit_catalog_abi") != 2:
+        raise RuntimeError("rerevved-api.lock.json must pin Unit Catalog ABI 2")
+    if title.get("unique_unit_rules_abi") != 2:
+        raise RuntimeError("rerevved-api.lock.json must pin Unique Unit Rules ABI 2")
+    if title.get("unique_era_abilities_abi") != 3:
+        raise RuntimeError("rerevved-api.lock.json must pin Unique Era Abilities ABI 3")
+    if title.get("terrain_yield_rules_abi") != 2:
+        raise RuntimeError("rerevved-api.lock.json must pin Terrain Yield Rules ABI 2")
+    if title.get("unit_movement_rules_abi") != 2:
+        raise RuntimeError("rerevved-api.lock.json must pin Unit Movement Rules ABI 2")
+    if title.get("unit_production_cost_rules_abi") != 2:
         raise RuntimeError(
-            "rerevved-api.lock.json must pin Unit Production Cost Rules ABI 1"
+            "rerevved-api.lock.json must pin Unit Production Cost Rules ABI 2"
         )
-    if title.get("unit_effect_rules_abi") != 2:
-        raise RuntimeError("rerevved-api.lock.json must pin Unit Effect Rules ABI 2")
-    if title.get("unit_combat_rules_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin Unit Combat Rules ABI 1")
-    if title.get("nation_select_text_abi") != 1:
-        raise RuntimeError("rerevved-api.lock.json must pin Nation Select Text ABI 1")
+    if title.get("unit_effect_rules_abi") != 3:
+        raise RuntimeError("rerevved-api.lock.json must pin Unit Effect Rules ABI 3")
+    if title.get("unit_combat_rules_abi") != 2:
+        raise RuntimeError("rerevved-api.lock.json must pin Unit Combat Rules ABI 2")
+    if title.get("nation_select_text_abi") != 2:
+        raise RuntimeError("rerevved-api.lock.json must pin Nation Select Text ABI 2")
     return sdk, title
 
 

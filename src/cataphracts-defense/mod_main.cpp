@@ -37,24 +37,24 @@ public:
     void OnModuleLaunched() override
     {
         const auto version =
-            resolveHostFunction<ReRevvedUniqueUnitRulesAbiVersionFn>(
-                "ReRevvedUniqueUnitRulesAbiVersion");
+            resolveHostFunction<UniqueUnitRulesAbiVersionFn>(
+                "UniqueUnitRulesAbiVersion");
         const auto registerRule =
-            resolveHostFunction<ReRevvedRegisterUniqueUnitScalarRuleFn>(
-                "ReRevvedRegisterUniqueUnitScalarRule");
+            resolveHostFunction<RegisterUniqueUnitScalarRuleFn>(
+                "RegisterUniqueUnitScalarRule");
         if (!version || !registerRule ||
-            version() != REREVVED_UNIQUE_UNIT_RULES_ABI_VERSION)
+            version() != UNIQUE_UNIT_RULES_ABI_VERSION)
         {
             return;
         }
 
-        ReRevvedUniqueUnitScalarRule rule{};
+        UniqueUnitScalarRule rule{};
         rule.structSize   = sizeof(rule);
-        rule.civilization = REREVVED_CIVILIZATION_ROMAN;
-        rule.baseUnitType = REREVVED_UNIT_TYPE_KNIGHTS;
-        rule.identity     = REREVVED_UNIT_IDENTITY_CATAPHRACT;
-        rule.property     = REREVVED_UNIQUE_UNIT_SCALAR_BASE_DEFENSE;
-        rule.operation    = REREVVED_UNIQUE_UNIT_SCALAR_ADD;
+        rule.civilization = CIVILIZATION_ROMAN;
+        rule.baseUnitType = UNIT_TYPE_KNIGHTS;
+        rule.identity     = UNIT_IDENTITY_CATAPHRACT;
+        rule.property     = UNIQUE_UNIT_SCALAR_BASE_DEFENSE;
+        rule.operation    = UNIQUE_UNIT_SCALAR_ADD;
         rule.value        = 1;
         std::memcpy(rule.providerId, kProviderId, sizeof(kProviderId));
         std::memcpy(rule.ruleId, kRuleId, sizeof(kRuleId));

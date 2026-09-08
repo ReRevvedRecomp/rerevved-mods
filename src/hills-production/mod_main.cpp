@@ -37,22 +37,22 @@ public:
     void OnModuleLaunched() override
     {
         const auto version = resolveHostFunction<
-            ReRevvedTerrainYieldRulesAbiVersionFn>(
-            "ReRevvedTerrainYieldRulesAbiVersion");
+            TerrainYieldRulesAbiVersionFn>(
+            "TerrainYieldRulesAbiVersion");
         const auto registerRule = resolveHostFunction<
-            ReRevvedRegisterTerrainYieldRuleFn>(
-            "ReRevvedRegisterTerrainYieldRule");
+            RegisterTerrainYieldRuleFn>(
+            "RegisterTerrainYieldRule");
         if (!version || !registerRule ||
-            version() != REREVVED_TERRAIN_YIELD_RULES_ABI_VERSION)
+            version() != TERRAIN_YIELD_RULES_ABI_VERSION)
         {
             return;
         }
 
-        ReRevvedTerrainYieldRule rule{};
+        TerrainYieldRule rule{};
         rule.structSize = sizeof(rule);
-        rule.terrain    = REREVVED_TERRAIN_HILL;
-        rule.component  = REREVVED_TERRAIN_YIELD_PRODUCTION;
-        rule.operation  = REREVVED_TERRAIN_YIELD_ADD;
+        rule.terrain    = TERRAIN_HILL;
+        rule.component  = TERRAIN_YIELD_PRODUCTION;
+        rule.operation  = TERRAIN_YIELD_ADD;
         rule.value      = 1;
         std::memcpy(rule.providerId, kProviderId, sizeof(kProviderId));
         std::memcpy(rule.ruleId, kRuleId, sizeof(kRuleId));

@@ -38,12 +38,12 @@ Function resolveHostFunction(const char* name)
 
 struct GameplayApi
 {
-    ReRevvedGameplayAbiVersionFn version =
-        resolveHostFunction<ReRevvedGameplayAbiVersionFn>(
-            "ReRevvedGameplayAbiVersion");
-    ReRevvedGetGameplayStateFn getState =
-        resolveHostFunction<ReRevvedGetGameplayStateFn>(
-            "ReRevvedGetGameplayState");
+    GameplayAbiVersionFn version =
+        resolveHostFunction<GameplayAbiVersionFn>(
+            "GameplayAbiVersion");
+    GetGameplayStateFn getState =
+        resolveHostFunction<GetGameplayStateFn>(
+            "GetGameplayState");
 };
 
 const char* yesNo(int value)
@@ -99,31 +99,31 @@ private:
         }
 
         const uint32_t version = api.version();
-        if (version != REREVVED_GAMEPLAY_ABI_VERSION)
+        if (version != GAMEPLAY_ABI_VERSION)
         {
-            ImGui::Text("Gameplay API mismatch: host %" PRIu32 ", mod %u", version, REREVVED_GAMEPLAY_ABI_VERSION);
+            ImGui::Text("Gameplay API mismatch: host %" PRIu32 ", mod %u", version, GAMEPLAY_ABI_VERSION);
             return;
         }
 
-        ReRevvedGameplayState state{};
-        const int             result = api.getState(&state, sizeof(state));
-        if (result == REREVVED_GAMEPLAY_ERR_UNAVAILABLE)
+        GameplayState state{};
+        const int     result = api.getState(&state, sizeof(state));
+        if (result == GAMEPLAY_ERR_UNAVAILABLE)
         {
             ImGui::TextUnformatted("Waiting for the first gameplay frame.");
             return;
         }
-        if (result != REREVVED_GAMEPLAY_OK)
+        if (result != GAMEPLAY_OK)
         {
             ImGui::Text("Gameplay API error: %d", result);
             return;
         }
 
         const bool frontendKnown =
-            (state.validFields & REREVVED_GAMEPLAY_VALID_FRONTEND) != 0;
+            (state.validFields & GAMEPLAY_VALID_FRONTEND) != 0;
         const bool interfaceKnown =
-            (state.validFields & REREVVED_GAMEPLAY_VALID_INTERFACE) != 0;
+            (state.validFields & GAMEPLAY_VALID_INTERFACE) != 0;
         const bool turnKnown =
-            (state.validFields & REREVVED_GAMEPLAY_VALID_TURN) != 0;
+            (state.validFields & GAMEPLAY_VALID_TURN) != 0;
 
         ImGui::Text("Frame sequence: %" PRIu64, state.frameSequence);
         ImGui::Text("Available: %s", yesNo(state.available));

@@ -94,7 +94,7 @@ unit type, and identity, so ordinary Knights and other civilizations keep their
 native values.
 
 Unique Era Ability (UEA) replacements are registered through
-`unique_era_abilities.h`. ABI 2 replaces one civilization and unlock-era cell
+`unique_era_abilities.h`. ABI 3 replaces one civilization and unlock-era cell
 with another accepted UEA. Distinct cells compose. Multiple replacements for
 the same cell leave that cell at its native UEA, independent of plugin order.
 The API does not change Unique Abilities or exact-era lookup mode. Mods may use
@@ -109,11 +109,11 @@ cities, with Knowledge of Horseback Riding. Test it in a fresh game. Once the
 technology has been granted, its ordinary saved ownership persists after the
 mod is disabled or removed.
 
-Terrain Yield Rules are registered through `terrain_yield_rules.h`. ABI 1 lets
+Terrain Yield Rules are registered through `terrain_yield_rules.h`. ABI 2 lets
 mods add or replace one base Food, Production, or Trade value for a semantic
-terrain. Resolve `ReRevvedTerrainYieldRulesAbiVersion` and
-`ReRevvedRegisterTerrainYieldRule` from the host, check that the version is
-`REREVVED_TERRAIN_YIELD_RULES_ABI_VERSION`, then register a complete rule with
+terrain. Resolve `TerrainYieldRulesAbiVersion` and
+`RegisterTerrainYieldRule` from the host, check that the version is
+`TERRAIN_YIELD_RULES_ABI_VERSION`, then register a complete rule with
 stable lowercase provider and rule IDs. The title owns terrain conversion and
 yield composition; a mod only declares its target and scalar operation.
 
@@ -123,10 +123,10 @@ every player's Hills base Production increases by one. Load gameplay mods
 before starting a game;
 loadout changes apply after restart.
 
-Unit Movement Rules are registered through `unit_movement_rules.h`. ABI 1 lets
+Unit Movement Rules are registered through `unit_movement_rules.h`. ABI 2 lets
 mods add one signed movement value for an exact civilization, base unit type,
-and Unit Catalog identity. Resolve `ReRevvedUnitMovementRulesAbiVersion` and
-`ReRevvedRegisterUnitMovementRule` from the host, check the ABI version, then
+and Unit Catalog identity. Resolve `UnitMovementRulesAbiVersion` and
+`RegisterUnitMovementRule` from the host, check the ABI version, then
 register a complete rule. The target identity must be the intended unique unit;
 native reference identities are not additional targets.
 
@@ -134,7 +134,7 @@ native reference identities are not additional targets.
 Horsemen with the Keshik identity. The target uses the exact semantic
 civilization, base unit type, and identity IDs exposed by the public API.
 
-Nation Select Text ABI 1 lets a package replace complete printable ASCII lines
+Nation Select Text ABI 2 lets a package replace complete printable ASCII lines
 on the civilization information screen. `Mongol Horseback` replaces the
 Mongolian Ancient line with `Knowledge of Horseback Riding` only when its
 synthetic era ability is effective. `Keshik Movement` replaces the Special
@@ -142,11 +142,11 @@ Units line with `Keshik - Horseman with +1 movement`. Competing registrations
 for the same line preserve the native text.
 
 Unit Production Cost Rules are registered through
-`unit_production_cost_rules.h`. ABI 1 lets mods add signed percentage points to
+`unit_production_cost_rules.h`. ABI 2 lets mods add signed percentage points to
 the native 100 percent production cost for an exact civilization, base unit
 type, and Unit Catalog identity. Resolve
-`ReRevvedUnitProductionCostRulesAbiVersion` and
-`ReRevvedRegisterUnitProductionCostRule` from the host, check the ABI version,
+`UnitProductionCostRulesAbiVersion` and
+`RegisterUnitProductionCostRule` from the host, check the ABI version,
 then register a complete rule. The title applies the resulting positive
 percentage after native production discounts.
 
@@ -155,12 +155,12 @@ for Greek Phalanx units with the Hoplite identity. The current percentage API
 composes the native 100 percent cost, so 15 * 67 / 100 truncates to 10
 Production.
 
-Unit Effect Rules are registered through `unit_effect_rules.h`. ABI 2 exposes
+Unit Effect Rules are registered through `unit_effect_rules.h`. ABI 3 exposes
 the creation-time Veteran grant and the nine named native special upgrades:
 Blitz, Infiltration, Guerilla, Loyalty, Engineer, Leadership, March, Medic, and
 Scout. Rules target an exact civilization, base unit type, and Unit Catalog
-identity. Resolve `ReRevvedUnitEffectRulesAbiVersion` and
-`ReRevvedRegisterUnitEffectRule` from the host, check the ABI version, then
+identity. Resolve `UnitEffectRulesAbiVersion` and
+`RegisterUnitEffectRule` from the host, check the ABI version, then
 register the named effect.
 
 `Hoplite Loyalty` registers the creation-time
@@ -168,11 +168,11 @@ Loyalty effect for Greek Phalanx units with the Hoplite identity. The same
 package resolves and registers both the Unit Effect Rules and Unit Production
 Cost Rules APIs; the title applies Loyalty only when the unit is created.
 
-Unit Combat Rules are registered through `unit_combat_rules.h`. ABI 1 lets
+Unit Combat Rules are registered through `unit_combat_rules.h`. ABI 2 lets
 mods add signed percentage points to the native 100 percent combat scalar for
 an exact civilization, base unit type, identity, defender battle tile, and
-ATTACK or DEFENSE property. Resolve `ReRevvedUnitCombatRulesAbiVersion` and
-`ReRevvedRegisterUnitCombatRule` from the host, check the ABI version, then
+ATTACK or DEFENSE property. Resolve `UnitCombatRulesAbiVersion` and
+`RegisterUnitCombatRule` from the host, check the ABI version, then
 register a complete rule. The terrain field is the defender's battle tile.
 
 `Jaguar Woodsman` registers +50 ATTACK and +50 DEFENSE for the

@@ -32,8 +32,9 @@ Keep the guide and formatter consistent when changing a formatting rule.
   `UPPER_SNAKE_CASE`.
 - Use namespaces and descriptive internal names instead of repeating the
   product name. Scoped enum values do not repeat their enum's name.
-  Preserve SDK overrides, plugin entry points, and public title API names,
-  including their prefixes. Do not add aliases solely to hide an API prefix.
+  Preserve SDK overrides, plugin entry points, and the feature-scoped names of
+  the public title API. Public title C names have no mandatory product prefix;
+  do not add aliases solely to reintroduce one.
 - Keep one statement per line. Use early returns for unavailable host APIs or
   rejected registrations where the existing lifecycle contract requires them.
 - Align consecutive declarations, assignments, enum values, macros, and

@@ -39,43 +39,43 @@ public:
     void OnModuleLaunched() override
     {
         const auto effectVersion =
-            resolveHostFunction<ReRevvedUnitEffectRulesAbiVersionFn>(
-                "ReRevvedUnitEffectRulesAbiVersion");
+            resolveHostFunction<UnitEffectRulesAbiVersionFn>(
+                "UnitEffectRulesAbiVersion");
         const auto registerEffect =
-            resolveHostFunction<ReRevvedRegisterUnitEffectRuleFn>(
-                "ReRevvedRegisterUnitEffectRule");
+            resolveHostFunction<RegisterUnitEffectRuleFn>(
+                "RegisterUnitEffectRule");
         const auto productionCostVersion =
-            resolveHostFunction<ReRevvedUnitProductionCostRulesAbiVersionFn>(
-                "ReRevvedUnitProductionCostRulesAbiVersion");
+            resolveHostFunction<UnitProductionCostRulesAbiVersionFn>(
+                "UnitProductionCostRulesAbiVersion");
         const auto registerProductionCost =
-            resolveHostFunction<ReRevvedRegisterUnitProductionCostRuleFn>(
-                "ReRevvedRegisterUnitProductionCostRule");
+            resolveHostFunction<RegisterUnitProductionCostRuleFn>(
+                "RegisterUnitProductionCostRule");
         if (!effectVersion || !registerEffect || !productionCostVersion ||
             !registerProductionCost ||
-            effectVersion() != REREVVED_UNIT_EFFECT_RULES_ABI_VERSION ||
+            effectVersion() != UNIT_EFFECT_RULES_ABI_VERSION ||
             productionCostVersion() !=
-                REREVVED_UNIT_PRODUCTION_COST_RULES_ABI_VERSION)
+                UNIT_PRODUCTION_COST_RULES_ABI_VERSION)
         {
             return;
         }
 
-        ReRevvedUnitEffectRule loyalty{};
+        UnitEffectRule loyalty{};
         loyalty.structSize   = sizeof(loyalty);
-        loyalty.civilization = REREVVED_CIVILIZATION_GREEK;
-        loyalty.baseUnitType = REREVVED_UNIT_TYPE_PHALANX;
-        loyalty.identity     = REREVVED_UNIT_IDENTITY_HOPLITE;
-        loyalty.effect       = REREVVED_UNIT_EFFECT_CREATION_LOYALTY;
+        loyalty.civilization = CIVILIZATION_GREEK;
+        loyalty.baseUnitType = UNIT_TYPE_PHALANX;
+        loyalty.identity     = UNIT_IDENTITY_HOPLITE;
+        loyalty.effect       = UNIT_EFFECT_CREATION_LOYALTY;
         std::memcpy(loyalty.providerId, kProviderId, sizeof(kProviderId));
         std::memcpy(loyalty.ruleId,
                     kLoyaltyRuleId,
                     sizeof(kLoyaltyRuleId));
         registerEffect(&loyalty);
 
-        ReRevvedUnitProductionCostRule productionCost{};
+        UnitProductionCostRule productionCost{};
         productionCost.structSize      = sizeof(productionCost);
-        productionCost.civilization    = REREVVED_CIVILIZATION_GREEK;
-        productionCost.baseUnitType    = REREVVED_UNIT_TYPE_PHALANX;
-        productionCost.identity        = REREVVED_UNIT_IDENTITY_HOPLITE;
+        productionCost.civilization    = CIVILIZATION_GREEK;
+        productionCost.baseUnitType    = UNIT_TYPE_PHALANX;
+        productionCost.identity        = UNIT_IDENTITY_HOPLITE;
         productionCost.percentageDelta = -33;
         std::memcpy(productionCost.providerId,
                     kProviderId,

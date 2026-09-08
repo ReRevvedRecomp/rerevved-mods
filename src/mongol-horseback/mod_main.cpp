@@ -38,48 +38,48 @@ public:
     void OnModuleLaunched() override
     {
         const auto version =
-            resolveHostFunction<ReRevvedUniqueEraAbilitiesAbiVersionFn>(
-                "ReRevvedUniqueEraAbilitiesAbiVersion");
+            resolveHostFunction<EraAbilitiesAbiVersionFn>(
+                "EraAbilitiesAbiVersion");
         const auto registerRule = resolveHostFunction<
-            ReRevvedRegisterUniqueEraAbilityReplacementFn>(
-            "ReRevvedRegisterUniqueEraAbilityReplacement");
+            RegisterEraAbilityReplacementFn>(
+            "RegisterEraAbilityReplacement");
         const auto presentationVersion = resolveHostFunction<
-            ReRevvedNationSelectTextAbiVersionFn>(
-            "ReRevvedNationSelectTextAbiVersion");
+            NationSelectTextAbiVersionFn>(
+            "NationSelectTextAbiVersion");
         const auto registerText = resolveHostFunction<
-            ReRevvedRegisterNationSelectTextRuleFn>(
-            "ReRevvedRegisterNationSelectTextRule");
+            RegisterNationSelectTextRuleFn>(
+            "RegisterNationSelectTextRule");
         if (!version || !registerRule || !presentationVersion ||
             !registerText ||
-            version() != REREVVED_UNIQUE_ERA_ABILITIES_ABI_VERSION ||
-            presentationVersion() != REREVVED_NATION_SELECT_TEXT_ABI_VERSION)
+            version() != ERA_ABILITIES_ABI_VERSION ||
+            presentationVersion() != NATION_SELECT_TEXT_ABI_VERSION)
         {
             return;
         }
 
-        ReRevvedUniqueEraAbilityReplacement rule{};
+        EraAbilityReplacement rule{};
         rule.structSize   = sizeof(rule);
-        rule.civilization = REREVVED_CIVILIZATION_MONGOLIAN;
-        rule.unlockEra    = REREVVED_UNIQUE_ERA_ANCIENT;
+        rule.civilization = CIVILIZATION_MONGOLIAN;
+        rule.unlockEra    = UNLOCK_ERA_ANCIENT;
         rule.replacementAbility =
-            REREVVED_UNIQUE_ERA_ABILITY_KNOWLEDGE_OF_HORSEBACK_RIDING;
+            ERA_ABILITY_KNOWLEDGE_OF_HORSEBACK_RIDING;
         std::memcpy(rule.providerId, kProviderId, sizeof(kProviderId));
         std::memcpy(rule.ruleId, kRuleId, sizeof(kRuleId));
-        if (registerRule(&rule) != REREVVED_UNIQUE_ERA_ABILITIES_OK)
+        if (registerRule(&rule) != ERA_ABILITIES_OK)
         {
             return;
         }
 
-        ReRevvedNationSelectTextRule text{};
+        NationSelectTextRule text{};
         text.structSize   = sizeof(text);
-        text.surface      = REREVVED_NATION_SELECT_TEXT_SURFACE_ERA_ABILITY;
-        text.civilization = REREVVED_CIVILIZATION_MONGOLIAN;
-        text.unlockEra    = REREVVED_UNIQUE_ERA_ANCIENT;
+        text.surface      = NATION_SELECT_TEXT_SURFACE_ERA_ABILITY;
+        text.civilization = CIVILIZATION_MONGOLIAN;
+        text.unlockEra    = UNLOCK_ERA_ANCIENT;
         text.ability =
-            REREVVED_UNIQUE_ERA_ABILITY_KNOWLEDGE_OF_HORSEBACK_RIDING;
-        text.baseUnitType            = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
-        text.identity                = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
-        text.displayForm             = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
+            ERA_ABILITY_KNOWLEDGE_OF_HORSEBACK_RIDING;
+        text.baseUnitType            = NATION_SELECT_TEXT_SELECTOR_UNUSED;
+        text.identity                = NATION_SELECT_TEXT_SELECTOR_UNUSED;
+        text.displayForm             = NATION_SELECT_TEXT_SELECTOR_UNUSED;
         constexpr char kTextRuleId[] = "mongol-ancient-horseback-riding-text";
         constexpr char kText[]       = "Knowledge of Horseback Riding";
         std::memcpy(text.providerId, kProviderId, sizeof(kProviderId));
