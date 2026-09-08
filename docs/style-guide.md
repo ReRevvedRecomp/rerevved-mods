@@ -27,7 +27,8 @@ Keep the guide and formatter consistent when changing a formatting rule.
 - Use `Type* pointer`, `const Type* pointer`, and `Type& reference`.
 - Use `UpperCamelCase` for types, scoped enum values, and namespaced functions;
   `lowerCamelCase` for variables, parameters, fields, and private helpers; and
-  `kLowerCamelCase` for internal constants. Plain enum values use
+  `k` followed by `UpperCamelCase` for internal constants, such as
+  `kProviderId`. Plain enum values use
   `UPPER_SNAKE_CASE`.
 - Use namespaces and descriptive internal names instead of repeating the
   product name. Scoped enum values do not repeat their enum's name.

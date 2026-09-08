@@ -21,7 +21,7 @@ constexpr char kProviderId[] = "aeshur.cataphracts-defense";
 constexpr char kRuleId[]     = "cataphract-defense";
 
 template <typename Function>
-Function ResolveHostFunction(const char* name)
+Function resolveHostFunction(const char* name)
 {
 #if defined(_WIN32)
     return reinterpret_cast<Function>(
@@ -37,28 +37,28 @@ public:
     void OnModuleLaunched() override
     {
         const auto version =
-            ResolveHostFunction<ReRevvedUniqueUnitRulesAbiVersionFn>(
+            resolveHostFunction<ReRevvedUniqueUnitRulesAbiVersionFn>(
                 "ReRevvedUniqueUnitRulesAbiVersion");
-        const auto register_rule =
-            ResolveHostFunction<ReRevvedRegisterUniqueUnitScalarRuleFn>(
+        const auto registerRule =
+            resolveHostFunction<ReRevvedRegisterUniqueUnitScalarRuleFn>(
                 "ReRevvedRegisterUniqueUnitScalarRule");
-        if (!version || !register_rule ||
+        if (!version || !registerRule ||
             version() != REREVVED_UNIQUE_UNIT_RULES_ABI_VERSION)
         {
             return;
         }
 
         ReRevvedUniqueUnitScalarRule rule{};
-        rule.struct_size    = sizeof(rule);
-        rule.civilization   = REREVVED_CIVILIZATION_ROMAN;
-        rule.base_unit_type = REREVVED_UNIT_TYPE_KNIGHTS;
-        rule.identity       = REREVVED_UNIT_IDENTITY_CATAPHRACT;
-        rule.property       = REREVVED_UNIQUE_UNIT_SCALAR_BASE_DEFENSE;
-        rule.operation      = REREVVED_UNIQUE_UNIT_SCALAR_ADD;
-        rule.value          = 1;
-        std::memcpy(rule.provider_id, kProviderId, sizeof(kProviderId));
-        std::memcpy(rule.rule_id, kRuleId, sizeof(kRuleId));
-        register_rule(&rule);
+        rule.structSize   = sizeof(rule);
+        rule.civilization = REREVVED_CIVILIZATION_ROMAN;
+        rule.baseUnitType = REREVVED_UNIT_TYPE_KNIGHTS;
+        rule.identity     = REREVVED_UNIT_IDENTITY_CATAPHRACT;
+        rule.property     = REREVVED_UNIQUE_UNIT_SCALAR_BASE_DEFENSE;
+        rule.operation    = REREVVED_UNIQUE_UNIT_SCALAR_ADD;
+        rule.value        = 1;
+        std::memcpy(rule.providerId, kProviderId, sizeof(kProviderId));
+        std::memcpy(rule.ruleId, kRuleId, sizeof(kRuleId));
+        registerRule(&rule);
     }
 };
 
@@ -70,10 +70,10 @@ extern "C" REX_MOD_PLUGIN_EXPORT uint32_t rex_mod_abi_version()
 }
 
 extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
-    uint32_t                           abi_version,
+    uint32_t                           abiVersion,
     const rex::system::ModHostContext* context)
 {
-    if (abi_version != rex::system::kModPluginAbiVersion || !context ||
+    if (abiVersion != rex::system::kModPluginAbiVersion || !context ||
         context->struct_size < sizeof(rex::system::ModHostContext))
     {
         return nullptr;

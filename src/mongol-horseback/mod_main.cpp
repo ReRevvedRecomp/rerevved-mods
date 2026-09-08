@@ -22,7 +22,7 @@ constexpr char kProviderId[] = "aeshur.mongol-horseback";
 constexpr char kRuleId[]     = "mongol-ancient-horseback-riding";
 
 template <typename Function>
-Function ResolveHostFunction(const char* name)
+Function resolveHostFunction(const char* name)
 {
 #if defined(_WIN32)
     return reinterpret_cast<Function>(
@@ -38,54 +38,54 @@ public:
     void OnModuleLaunched() override
     {
         const auto version =
-            ResolveHostFunction<ReRevvedUniqueEraAbilitiesAbiVersionFn>(
+            resolveHostFunction<ReRevvedUniqueEraAbilitiesAbiVersionFn>(
                 "ReRevvedUniqueEraAbilitiesAbiVersion");
-        const auto register_rule = ResolveHostFunction<
+        const auto registerRule = resolveHostFunction<
             ReRevvedRegisterUniqueEraAbilityReplacementFn>(
             "ReRevvedRegisterUniqueEraAbilityReplacement");
-        const auto presentation_version = ResolveHostFunction<
+        const auto presentationVersion = resolveHostFunction<
             ReRevvedNationSelectTextAbiVersionFn>(
             "ReRevvedNationSelectTextAbiVersion");
-        const auto register_text = ResolveHostFunction<
+        const auto registerText = resolveHostFunction<
             ReRevvedRegisterNationSelectTextRuleFn>(
             "ReRevvedRegisterNationSelectTextRule");
-        if (!version || !register_rule || !presentation_version ||
-            !register_text ||
+        if (!version || !registerRule || !presentationVersion ||
+            !registerText ||
             version() != REREVVED_UNIQUE_ERA_ABILITIES_ABI_VERSION ||
-            presentation_version() != REREVVED_NATION_SELECT_TEXT_ABI_VERSION)
+            presentationVersion() != REREVVED_NATION_SELECT_TEXT_ABI_VERSION)
         {
             return;
         }
 
         ReRevvedUniqueEraAbilityReplacement rule{};
-        rule.struct_size  = sizeof(rule);
+        rule.structSize   = sizeof(rule);
         rule.civilization = REREVVED_CIVILIZATION_MONGOLIAN;
-        rule.unlock_era   = REREVVED_UNIQUE_ERA_ANCIENT;
-        rule.replacement_ability =
+        rule.unlockEra    = REREVVED_UNIQUE_ERA_ANCIENT;
+        rule.replacementAbility =
             REREVVED_UNIQUE_ERA_ABILITY_KNOWLEDGE_OF_HORSEBACK_RIDING;
-        std::memcpy(rule.provider_id, kProviderId, sizeof(kProviderId));
-        std::memcpy(rule.rule_id, kRuleId, sizeof(kRuleId));
-        if (register_rule(&rule) != REREVVED_UNIQUE_ERA_ABILITIES_OK)
+        std::memcpy(rule.providerId, kProviderId, sizeof(kProviderId));
+        std::memcpy(rule.ruleId, kRuleId, sizeof(kRuleId));
+        if (registerRule(&rule) != REREVVED_UNIQUE_ERA_ABILITIES_OK)
         {
             return;
         }
 
         ReRevvedNationSelectTextRule text{};
-        text.struct_size  = sizeof(text);
+        text.structSize   = sizeof(text);
         text.surface      = REREVVED_NATION_SELECT_TEXT_SURFACE_ERA_ABILITY;
         text.civilization = REREVVED_CIVILIZATION_MONGOLIAN;
-        text.unlock_era   = REREVVED_UNIQUE_ERA_ANCIENT;
+        text.unlockEra    = REREVVED_UNIQUE_ERA_ANCIENT;
         text.ability =
             REREVVED_UNIQUE_ERA_ABILITY_KNOWLEDGE_OF_HORSEBACK_RIDING;
-        text.base_unit_type          = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
+        text.baseUnitType            = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
         text.identity                = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
-        text.display_form            = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
+        text.displayForm             = REREVVED_NATION_SELECT_TEXT_SELECTOR_UNUSED;
         constexpr char kTextRuleId[] = "mongol-ancient-horseback-riding-text";
         constexpr char kText[]       = "Knowledge of Horseback Riding";
-        std::memcpy(text.provider_id, kProviderId, sizeof(kProviderId));
-        std::memcpy(text.rule_id, kTextRuleId, sizeof(kTextRuleId));
+        std::memcpy(text.providerId, kProviderId, sizeof(kProviderId));
+        std::memcpy(text.ruleId, kTextRuleId, sizeof(kTextRuleId));
         std::memcpy(text.text, kText, sizeof(kText));
-        register_text(&text);
+        registerText(&text);
     }
 };
 
@@ -97,10 +97,10 @@ extern "C" REX_MOD_PLUGIN_EXPORT uint32_t rex_mod_abi_version()
 }
 
 extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
-    uint32_t                           abi_version,
+    uint32_t                           abiVersion,
     const rex::system::ModHostContext* context)
 {
-    if (abi_version != rex::system::kModPluginAbiVersion || !context ||
+    if (abiVersion != rex::system::kModPluginAbiVersion || !context ||
         context->struct_size < sizeof(rex::system::ModHostContext))
     {
         return nullptr;

@@ -25,7 +25,7 @@ namespace
 constexpr char kBindName[] = "bind_state_inspector";
 
 template <typename Function>
-Function ResolveHostFunction(const char* name)
+Function resolveHostFunction(const char* name)
 {
 #if defined(_WIN32)
     const HMODULE host = GetModuleHandleW(nullptr);
@@ -39,19 +39,19 @@ Function ResolveHostFunction(const char* name)
 struct GameplayApi
 {
     ReRevvedGameplayAbiVersionFn version =
-        ResolveHostFunction<ReRevvedGameplayAbiVersionFn>(
+        resolveHostFunction<ReRevvedGameplayAbiVersionFn>(
             "ReRevvedGameplayAbiVersion");
-    ReRevvedGetGameplayStateFn get_state =
-        ResolveHostFunction<ReRevvedGetGameplayStateFn>(
+    ReRevvedGetGameplayStateFn getState =
+        resolveHostFunction<ReRevvedGetGameplayStateFn>(
             "ReRevvedGetGameplayState");
 };
 
-const char* YesNo(int value)
+const char* yesNo(int value)
 {
     return value ? "yes" : "no";
 }
 
-const char* KnownUnknown(bool known)
+const char* knownUnknown(bool known)
 {
     return known ? "known" : "unknown";
 }
@@ -61,44 +61,44 @@ class StateInspectorDialog final : public rex::ui::ImGuiDialog
 public:
     StateInspectorDialog(rex::ui::ImGuiDrawer* drawer, const GameplayApi& api)
     : ImGuiDialog(drawer)
-    , api_(api)
+    , api(api)
     {
     }
 
     void ToggleVisible()
     {
-        visible_ = !visible_;
+        visible = !visible;
     }
 
 protected:
     void OnDraw(ImGuiIO&) override
     {
-        if (!visible_)
+        if (!visible)
         {
             return;
         }
 
         ImGui::SetNextWindowSize(ImVec2(430.0f, 260.0f), ImGuiCond_FirstUseEver);
-        if (!ImGui::Begin("State Inspector##rerevved", &visible_, ImGuiWindowFlags_NoCollapse))
+        if (!ImGui::Begin("State Inspector##rerevved", &visible, ImGuiWindowFlags_NoCollapse))
         {
             ImGui::End();
             return;
         }
 
-        DrawState();
+        drawState();
         ImGui::End();
     }
 
 private:
-    void DrawState() const
+    void drawState() const
     {
-        if (!api_.version || !api_.get_state)
+        if (!api.version || !api.getState)
         {
             ImGui::TextUnformatted("ReRevved gameplay API is not available.");
             return;
         }
 
-        const uint32_t version = api_.version();
+        const uint32_t version = api.version();
         if (version != REREVVED_GAMEPLAY_ABI_VERSION)
         {
             ImGui::Text("Gameplay API mismatch: host %" PRIu32 ", mod %u", version, REREVVED_GAMEPLAY_ABI_VERSION);
@@ -106,7 +106,7 @@ private:
         }
 
         ReRevvedGameplayState state{};
-        const int             result = api_.get_state(&state, sizeof(state));
+        const int             result = api.getState(&state, sizeof(state));
         if (result == REREVVED_GAMEPLAY_ERR_UNAVAILABLE)
         {
             ImGui::TextUnformatted("Waiting for the first gameplay frame.");
@@ -118,39 +118,39 @@ private:
             return;
         }
 
-        const bool frontend_known =
-            (state.valid_fields & REREVVED_GAMEPLAY_VALID_FRONTEND) != 0;
-        const bool interface_known =
-            (state.valid_fields & REREVVED_GAMEPLAY_VALID_INTERFACE) != 0;
-        const bool turn_known =
-            (state.valid_fields & REREVVED_GAMEPLAY_VALID_TURN) != 0;
+        const bool frontendKnown =
+            (state.validFields & REREVVED_GAMEPLAY_VALID_FRONTEND) != 0;
+        const bool interfaceKnown =
+            (state.validFields & REREVVED_GAMEPLAY_VALID_INTERFACE) != 0;
+        const bool turnKnown =
+            (state.validFields & REREVVED_GAMEPLAY_VALID_TURN) != 0;
 
-        ImGui::Text("Frame sequence: %" PRIu64, state.frame_sequence);
-        ImGui::Text("Available: %s", YesNo(state.available));
+        ImGui::Text("Frame sequence: %" PRIu64, state.frameSequence);
+        ImGui::Text("Available: %s", yesNo(state.available));
         ImGui::Separator();
-        ImGui::Text("Frontend: %s", KnownUnknown(frontend_known));
-        if (frontend_known)
+        ImGui::Text("Frontend: %s", knownUnknown(frontendKnown));
+        if (frontendKnown)
         {
             ImGui::SameLine();
-            ImGui::Text("(gameplay %s)", YesNo(state.gameplay_active));
+            ImGui::Text("(gameplay %s)", yesNo(state.gameplayActive));
         }
-        ImGui::Text("Interface: %s", KnownUnknown(interface_known));
-        if (interface_known)
+        ImGui::Text("Interface: %s", knownUnknown(interfaceKnown));
+        if (interfaceKnown)
         {
             ImGui::SameLine();
-            ImGui::Text("(updates %s)", YesNo(state.interface_update));
+            ImGui::Text("(updates %s)", yesNo(state.interfaceUpdate));
         }
-        ImGui::Text("Turn owner: %s", KnownUnknown(turn_known));
-        if (turn_known)
+        ImGui::Text("Turn owner: %s", knownUnknown(turnKnown));
+        if (turnKnown)
         {
-            ImGui::Text("Active player: %d", state.active_player);
-            ImGui::Text("Human player mask: 0x%08" PRIX32, state.human_player_mask);
-            ImGui::Text("Human turn: %s", YesNo(state.human_turn));
+            ImGui::Text("Active player: %d", state.activePlayer);
+            ImGui::Text("Human player mask: 0x%08" PRIX32, state.humanPlayerMask);
+            ImGui::Text("Human turn: %s", yesNo(state.humanTurn));
         }
     }
 
-    GameplayApi api_;
-    bool        visible_ = false;
+    GameplayApi api;
+    bool        visible = false;
 };
 
 class StateInspectorPlugin final : public rex::system::IModPlugin
@@ -158,41 +158,41 @@ class StateInspectorPlugin final : public rex::system::IModPlugin
 public:
     ~StateInspectorPlugin() override
     {
-        Shutdown();
+        shutdown();
     }
 
     void OnCreateDialogs(rex::ui::ImGuiDrawer* drawer) override
     {
-        dialog_ = std::make_unique<StateInspectorDialog>(drawer, api_);
+        dialog = std::make_unique<StateInspectorDialog>(drawer, api);
         rex::ui::RegisterBind(kBindName, "F6", "Toggle ReRevved state inspector", [this]
                               {
-                                  if (dialog_)
+                                  if (dialog)
                                   {
-                                      dialog_->ToggleVisible();
+                                      dialog->ToggleVisible();
                                   }
                               });
-        bind_registered_ = true;
+        bindRegistered = true;
     }
 
     void OnShutdown() override
     {
-        Shutdown();
+        shutdown();
     }
 
 private:
-    void Shutdown()
+    void shutdown()
     {
-        if (bind_registered_)
+        if (bindRegistered)
         {
             rex::ui::UnregisterBind(kBindName);
-            bind_registered_ = false;
+            bindRegistered = false;
         }
-        dialog_.reset();
+        dialog.reset();
     }
 
-    GameplayApi                           api_;
-    std::unique_ptr<StateInspectorDialog> dialog_;
-    bool                                  bind_registered_ = false;
+    GameplayApi                           api;
+    std::unique_ptr<StateInspectorDialog> dialog;
+    bool                                  bindRegistered = false;
 };
 
 } // namespace
@@ -203,10 +203,10 @@ extern "C" REX_MOD_PLUGIN_EXPORT uint32_t rex_mod_abi_version()
 }
 
 extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
-    uint32_t                           abi_version,
+    uint32_t                           abiVersion,
     const rex::system::ModHostContext* context)
 {
-    if (abi_version != rex::system::kModPluginAbiVersion || !context ||
+    if (abiVersion != rex::system::kModPluginAbiVersion || !context ||
         context->struct_size < sizeof(rex::system::ModHostContext))
     {
         return nullptr;

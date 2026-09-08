@@ -23,7 +23,7 @@ constexpr char kLoyaltyRuleId[]        = "hoplite-loyalty";
 constexpr char kProductionCostRuleId[] = "hoplite-production-cost";
 
 template <typename Function>
-Function ResolveHostFunction(const char* name)
+Function resolveHostFunction(const char* name)
 {
 #if defined(_WIN32)
     return reinterpret_cast<Function>(
@@ -38,52 +38,52 @@ class GreekHopliteTrainingPlugin final : public rex::system::IModPlugin
 public:
     void OnModuleLaunched() override
     {
-        const auto effect_version =
-            ResolveHostFunction<ReRevvedUnitEffectRulesAbiVersionFn>(
+        const auto effectVersion =
+            resolveHostFunction<ReRevvedUnitEffectRulesAbiVersionFn>(
                 "ReRevvedUnitEffectRulesAbiVersion");
-        const auto register_effect =
-            ResolveHostFunction<ReRevvedRegisterUnitEffectRuleFn>(
+        const auto registerEffect =
+            resolveHostFunction<ReRevvedRegisterUnitEffectRuleFn>(
                 "ReRevvedRegisterUnitEffectRule");
-        const auto production_cost_version =
-            ResolveHostFunction<ReRevvedUnitProductionCostRulesAbiVersionFn>(
+        const auto productionCostVersion =
+            resolveHostFunction<ReRevvedUnitProductionCostRulesAbiVersionFn>(
                 "ReRevvedUnitProductionCostRulesAbiVersion");
-        const auto register_production_cost =
-            ResolveHostFunction<ReRevvedRegisterUnitProductionCostRuleFn>(
+        const auto registerProductionCost =
+            resolveHostFunction<ReRevvedRegisterUnitProductionCostRuleFn>(
                 "ReRevvedRegisterUnitProductionCostRule");
-        if (!effect_version || !register_effect || !production_cost_version ||
-            !register_production_cost ||
-            effect_version() != REREVVED_UNIT_EFFECT_RULES_ABI_VERSION ||
-            production_cost_version() !=
+        if (!effectVersion || !registerEffect || !productionCostVersion ||
+            !registerProductionCost ||
+            effectVersion() != REREVVED_UNIT_EFFECT_RULES_ABI_VERSION ||
+            productionCostVersion() !=
                 REREVVED_UNIT_PRODUCTION_COST_RULES_ABI_VERSION)
         {
             return;
         }
 
         ReRevvedUnitEffectRule loyalty{};
-        loyalty.struct_size    = sizeof(loyalty);
-        loyalty.civilization   = REREVVED_CIVILIZATION_GREEK;
-        loyalty.base_unit_type = REREVVED_UNIT_TYPE_PHALANX;
-        loyalty.identity       = REREVVED_UNIT_IDENTITY_HOPLITE;
-        loyalty.effect         = REREVVED_UNIT_EFFECT_CREATION_LOYALTY;
-        std::memcpy(loyalty.provider_id, kProviderId, sizeof(kProviderId));
-        std::memcpy(loyalty.rule_id,
+        loyalty.structSize   = sizeof(loyalty);
+        loyalty.civilization = REREVVED_CIVILIZATION_GREEK;
+        loyalty.baseUnitType = REREVVED_UNIT_TYPE_PHALANX;
+        loyalty.identity     = REREVVED_UNIT_IDENTITY_HOPLITE;
+        loyalty.effect       = REREVVED_UNIT_EFFECT_CREATION_LOYALTY;
+        std::memcpy(loyalty.providerId, kProviderId, sizeof(kProviderId));
+        std::memcpy(loyalty.ruleId,
                     kLoyaltyRuleId,
                     sizeof(kLoyaltyRuleId));
-        register_effect(&loyalty);
+        registerEffect(&loyalty);
 
-        ReRevvedUnitProductionCostRule production_cost{};
-        production_cost.struct_size      = sizeof(production_cost);
-        production_cost.civilization     = REREVVED_CIVILIZATION_GREEK;
-        production_cost.base_unit_type   = REREVVED_UNIT_TYPE_PHALANX;
-        production_cost.identity         = REREVVED_UNIT_IDENTITY_HOPLITE;
-        production_cost.percentage_delta = -33;
-        std::memcpy(production_cost.provider_id,
+        ReRevvedUnitProductionCostRule productionCost{};
+        productionCost.structSize      = sizeof(productionCost);
+        productionCost.civilization    = REREVVED_CIVILIZATION_GREEK;
+        productionCost.baseUnitType    = REREVVED_UNIT_TYPE_PHALANX;
+        productionCost.identity        = REREVVED_UNIT_IDENTITY_HOPLITE;
+        productionCost.percentageDelta = -33;
+        std::memcpy(productionCost.providerId,
                     kProviderId,
                     sizeof(kProviderId));
-        std::memcpy(production_cost.rule_id,
+        std::memcpy(productionCost.ruleId,
                     kProductionCostRuleId,
                     sizeof(kProductionCostRuleId));
-        register_production_cost(&production_cost);
+        registerProductionCost(&productionCost);
     }
 };
 
@@ -95,10 +95,10 @@ extern "C" REX_MOD_PLUGIN_EXPORT uint32_t rex_mod_abi_version()
 }
 
 extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
-    uint32_t                           abi_version,
+    uint32_t                           abiVersion,
     const rex::system::ModHostContext* context)
 {
-    if (abi_version != rex::system::kModPluginAbiVersion || !context ||
+    if (abiVersion != rex::system::kModPluginAbiVersion || !context ||
         context->struct_size < sizeof(rex::system::ModHostContext))
     {
         return nullptr;

@@ -20,7 +20,7 @@ namespace
 constexpr char kProviderId[] = "aeshur.jaguar-woodsman";
 
 template <typename Function>
-Function ResolveHostFunction(const char* name)
+Function resolveHostFunction(const char* name)
 {
 #if defined(_WIN32)
     return reinterpret_cast<Function>(
@@ -30,21 +30,21 @@ Function ResolveHostFunction(const char* name)
 #endif
 }
 
-void RegisterRule(ReRevvedRegisterUnitCombatRuleFn register_rule,
-                  const char*                      rule_id,
-                  ReRevvedUnitCombatProperty       property)
+void registerForestRule(ReRevvedRegisterUnitCombatRuleFn registerRule,
+                        const char*                      ruleId,
+                        ReRevvedUnitCombatProperty       property)
 {
     ReRevvedUnitCombatRule rule{};
-    rule.struct_size      = sizeof(rule);
-    rule.civilization     = REREVVED_CIVILIZATION_AZTEC;
-    rule.base_unit_type   = REREVVED_UNIT_TYPE_WARRIOR;
-    rule.identity         = REREVVED_UNIT_IDENTITY_JAGUAR_WARRIOR;
-    rule.terrain          = REREVVED_TERRAIN_FOREST;
-    rule.property         = property;
-    rule.percentage_delta = 50;
-    std::memcpy(rule.provider_id, kProviderId, sizeof(kProviderId));
-    std::memcpy(rule.rule_id, rule_id, std::strlen(rule_id) + 1);
-    register_rule(&rule);
+    rule.structSize      = sizeof(rule);
+    rule.civilization    = REREVVED_CIVILIZATION_AZTEC;
+    rule.baseUnitType    = REREVVED_UNIT_TYPE_WARRIOR;
+    rule.identity        = REREVVED_UNIT_IDENTITY_JAGUAR_WARRIOR;
+    rule.terrain         = REREVVED_TERRAIN_FOREST;
+    rule.property        = property;
+    rule.percentageDelta = 50;
+    std::memcpy(rule.providerId, kProviderId, sizeof(kProviderId));
+    std::memcpy(rule.ruleId, ruleId, std::strlen(ruleId) + 1);
+    registerRule(&rule);
 }
 
 class AztecJaguarForestCombatPlugin final : public rex::system::IModPlugin
@@ -53,19 +53,19 @@ public:
     void OnModuleLaunched() override
     {
         const auto version =
-            ResolveHostFunction<ReRevvedUnitCombatRulesAbiVersionFn>(
+            resolveHostFunction<ReRevvedUnitCombatRulesAbiVersionFn>(
                 "ReRevvedUnitCombatRulesAbiVersion");
-        const auto register_rule =
-            ResolveHostFunction<ReRevvedRegisterUnitCombatRuleFn>(
+        const auto registerRule =
+            resolveHostFunction<ReRevvedRegisterUnitCombatRuleFn>(
                 "ReRevvedRegisterUnitCombatRule");
-        if (!version || !register_rule ||
+        if (!version || !registerRule ||
             version() != REREVVED_UNIT_COMBAT_RULES_ABI_VERSION)
         {
             return;
         }
 
-        RegisterRule(register_rule, "jaguar-warrior-forest-attack", REREVVED_UNIT_COMBAT_ATTACK);
-        RegisterRule(register_rule, "jaguar-warrior-forest-defense", REREVVED_UNIT_COMBAT_DEFENSE);
+        registerForestRule(registerRule, "jaguar-warrior-forest-attack", REREVVED_UNIT_COMBAT_ATTACK);
+        registerForestRule(registerRule, "jaguar-warrior-forest-defense", REREVVED_UNIT_COMBAT_DEFENSE);
     }
 };
 
@@ -77,10 +77,10 @@ extern "C" REX_MOD_PLUGIN_EXPORT uint32_t rex_mod_abi_version()
 }
 
 extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
-    uint32_t                           abi_version,
+    uint32_t                           abiVersion,
     const rex::system::ModHostContext* context)
 {
-    if (abi_version != rex::system::kModPluginAbiVersion || !context ||
+    if (abiVersion != rex::system::kModPluginAbiVersion || !context ||
         context->struct_size < sizeof(rex::system::ModHostContext))
     {
         return nullptr;
