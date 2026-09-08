@@ -1,5 +1,6 @@
 #include <rex/system/mod_plugin.h>
 
+#include <nation_select_text.h>
 #include <unique_unit_rules.h>
 
 #include <cstdint>
@@ -31,7 +32,7 @@ Function resolveHostFunction(const char* name)
 #endif
 }
 
-class RomanCataphractsDefensePlugin final : public rex::system::IModPlugin
+class CataphractsDefensePlugin final : public rex::system::IModPlugin
 {
 public:
     void OnModuleLaunched() override
@@ -42,8 +43,19 @@ public:
         const auto registerRule =
             resolveHostFunction<RegisterUniqueUnitScalarRuleFn>(
                 "RegisterUniqueUnitScalarRule");
-        if (!version || !registerRule ||
+        const auto textVersion =
+            resolveHostFunction<NationSelectTextAbiVersionFn>(
+                "NationSelectTextAbiVersion");
+        const auto registerNationSelectText =
+            resolveHostFunction<RegisterNationSelectTextRuleFn>(
+                "RegisterNationSelectTextRule");
+        if (!version || !registerRule || !textVersion ||
+            !registerNationSelectText ||
             version() != UNIQUE_UNIT_RULES_ABI_VERSION)
+        {
+            return;
+        }
+        if (textVersion() != NATION_SELECT_TEXT_ABI_VERSION)
         {
             return;
         }
@@ -58,7 +70,26 @@ public:
         rule.value        = 1;
         std::memcpy(rule.providerId, kProviderId, sizeof(kProviderId));
         std::memcpy(rule.ruleId, kRuleId, sizeof(kRuleId));
-        registerRule(&rule);
+        if (registerRule(&rule) != UNIQUE_UNIT_RULES_OK)
+        {
+            return;
+        }
+
+        NationSelectTextRule text{};
+        text.structSize              = sizeof(text);
+        text.surface                 = NATION_SELECT_TEXT_SURFACE_UNIQUE_UNIT;
+        text.civilization            = CIVILIZATION_ROMAN;
+        text.unlockEra               = NATION_SELECT_TEXT_SELECTOR_UNUSED;
+        text.ability                 = 0;
+        text.baseUnitType            = UNIT_TYPE_KNIGHTS;
+        text.identity                = UNIT_IDENTITY_CATAPHRACT;
+        text.displayForm             = UNIT_DISPLAY_FORM_UNIT;
+        constexpr char kTextRuleId[] = "cataphract-defense-text";
+        constexpr char kText[]       = "Cataphract - Knight with +1 base Defense";
+        std::memcpy(text.providerId, kProviderId, sizeof(kProviderId));
+        std::memcpy(text.ruleId, kTextRuleId, sizeof(kTextRuleId));
+        std::memcpy(text.text, kText, sizeof(kText));
+        (void)registerNationSelectText(&text);
     }
 };
 
@@ -78,5 +109,5 @@ extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
     {
         return nullptr;
     }
-    return new RomanCataphractsDefensePlugin();
+    return new CataphractsDefensePlugin();
 }

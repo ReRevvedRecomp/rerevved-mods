@@ -71,6 +71,9 @@ rexmod_add_plugin(example_mod mod_main.cpp)
 `rexmod_add_plugin` creates a shared library, requires C++23, links
 `rex::runtime`, and adds `src/common/api/` to the private include path.
 
+Follow the C++ and documentation conventions in the [style
+guide](style-guide.md).
+
 The title API mirror must match the public headers byte for byte at the commit
 in `rerevved-api.lock.json`. Build native plugins with the SDK repository,
 commit, and version recorded in `rexglue-sdk.lock.json`.
@@ -134,13 +137,6 @@ native reference identities are not additional targets.
 Horsemen with the Keshik identity. The target uses the exact semantic
 civilization, base unit type, and identity IDs exposed by the public API.
 
-Nation Select Text ABI 2 lets a package replace complete printable ASCII lines
-on the civilization information screen. `Mongol Horseback` replaces the
-Mongolian Ancient line with `Knowledge of Horseback Riding` only when its
-synthetic era ability is effective. `Keshik Movement` replaces the Special
-Units line with `Keshik - Horseman with +1 movement`. Competing registrations
-for the same line preserve the native text.
-
 Unit Production Cost Rules are registered through
 `unit_production_cost_rules.h`. ABI 2 lets mods add signed percentage points to
 the native 100 percent production cost for an exact civilization, base unit
@@ -150,10 +146,11 @@ type, and Unit Catalog identity. Resolve
 then register a complete rule. The title applies the resulting positive
 percentage after native production discounts.
 
-`Hoplite Loyalty` registers -33 percentage points
+`Hoplite Loyalty` registers -30 percentage points
 for Greek Phalanx units with the Hoplite identity. The current percentage API
-composes the native 100 percent cost, so 15 * 67 / 100 truncates to 10
-Production.
+composes the native 100 percent scalar before the title's army factor, so
+10 * 70 / 100 truncates to 7 and 3 * 7 / 2 truncates to 10 ordinary
+undiscounted Production.
 
 Unit Effect Rules are registered through `unit_effect_rules.h`. ABI 3 exposes
 the creation-time Veteran grant and the nine named native special upgrades:
@@ -188,6 +185,40 @@ tile is Forest. Its expected runtime matrix is:
 `State Inspector` is an optional development tool that provides a read-only
 state overlay for debugging and probing graphical errors. Keep it available
 when checking overlay regressions.
+
+## Nation Select Text
+
+Nation Select Text ABI 2 lets a package replace complete printable ASCII lines
+on the civilization information screen. A replacement must be an accurate,
+complete description of the modified line; update it whenever the gameplay
+rule changes. `Cataphracts Defense` uses `Cataphract - Knight with +1 base
+Defense`, `Hoplite Loyalty` uses `Hoplite - Starts with Loyalty; costs 10
+Production`, and `Jaguar Woodsman` uses `Jaguar Warrior - Warrior with +50%
+Attack and Defense in Forest`. `Mongol Horseback` replaces the Mongolian
+Ancient line with `Knowledge of Horseback Riding` only when its synthetic era
+ability is effective. `Keshik Movement` replaces the Special Units line with
+`Keshik - Horseman with +1 movement`.
+
+For a unique-unit line, set the surface to
+`NATION_SELECT_TEXT_SURFACE_UNIQUE_UNIT`, provide the exact civilization, base
+unit type, and Unit Catalog identity, set `displayForm` to
+`UNIT_DISPLAY_FORM_UNIT`, set `unlockEra` to
+`NATION_SELECT_TEXT_SELECTOR_UNUSED`, and set `ability` to `0`. Era ability
+lines use the civilization, unlock era, and ability selectors and leave the
+unit selectors unused. Other surfaces have their own selector shape; do not
+put a mod description in a global heading or civilization trait field.
+
+Resolve `NationSelectTextAbiVersion` and
+`RegisterNationSelectTextRule`, check the ABI version, and check each gameplay
+registration before registering its text rule. A competing replacement
+preserves the native line, and successful registration alone does not guarantee
+that the replacement is visible. Keep each provider and text rule ID stable for
+the process lifetime.
+
+`Hills Production` has a global terrain effect and `State Inspector` is a
+diagnostic overlay. Neither owns a civilization-specific line, so these mods
+intentionally register no nation-selection text and do not repurpose a global
+heading or civilization trait as a substitute.
 
 ## Build and package
 

@@ -32,7 +32,7 @@ Function resolveHostFunction(const char* name)
 #endif
 }
 
-class MongolHorsebackRidingPlugin final : public rex::system::IModPlugin
+class MongolHorsebackPlugin final : public rex::system::IModPlugin
 {
 public:
     void OnModuleLaunched() override
@@ -43,16 +43,16 @@ public:
         const auto registerRule = resolveHostFunction<
             RegisterEraAbilityReplacementFn>(
             "RegisterEraAbilityReplacement");
-        const auto presentationVersion = resolveHostFunction<
+        const auto textVersion = resolveHostFunction<
             NationSelectTextAbiVersionFn>(
             "NationSelectTextAbiVersion");
-        const auto registerText = resolveHostFunction<
+        const auto registerNationSelectText = resolveHostFunction<
             RegisterNationSelectTextRuleFn>(
             "RegisterNationSelectTextRule");
-        if (!version || !registerRule || !presentationVersion ||
-            !registerText ||
+        if (!version || !registerRule || !textVersion ||
+            !registerNationSelectText ||
             version() != ERA_ABILITIES_ABI_VERSION ||
-            presentationVersion() != NATION_SELECT_TEXT_ABI_VERSION)
+            textVersion() != NATION_SELECT_TEXT_ABI_VERSION)
         {
             return;
         }
@@ -85,7 +85,7 @@ public:
         std::memcpy(text.providerId, kProviderId, sizeof(kProviderId));
         std::memcpy(text.ruleId, kTextRuleId, sizeof(kTextRuleId));
         std::memcpy(text.text, kText, sizeof(kText));
-        registerText(&text);
+        (void)registerNationSelectText(&text);
     }
 };
 
@@ -105,5 +105,5 @@ extern "C" REX_MOD_PLUGIN_EXPORT rex::system::IModPlugin* rex_mod_create(
     {
         return nullptr;
     }
-    return new MongolHorsebackRidingPlugin();
+    return new MongolHorsebackPlugin();
 }

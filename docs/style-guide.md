@@ -4,6 +4,8 @@ This guide covers native plugins, package tooling, and authored documentation.
 The [contribution contract](../CONTRIBUTING.md) owns repository boundaries;
 [Making ReRevved mods](making-mods.md) owns API use, package layout, and build
 commands. Keep those contracts authoritative when changing implementation style.
+Its [Nation Select Text authoring section](making-mods.md#nation-select-text)
+owns the complete text and selector contract for civilization information lines.
 
 ## Plugin structure
 
