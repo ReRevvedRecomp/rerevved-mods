@@ -13,8 +13,8 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 from build_mods import (
-    PACKAGE_ID_RE,
     _validate_runtime_relative,
+    discover_mods,
     load_manifest,
     parse_manifest_data,
 )
@@ -138,21 +138,7 @@ def verify_public_tree(root, files):
 
 
 def verify_manifests(root):
-    mods = []
-    for directory in sorted((root / "src").iterdir()):
-        if not directory.is_dir() or directory.name == "common":
-            continue
-        if not PACKAGE_ID_RE.fullmatch(directory.name) or len(directory.name) > 63:
-            raise RuntimeError(f"invalid package source directory: {directory.name}")
-        manifest_path = directory / "mod.toml"
-        if not manifest_path.is_file():
-            raise RuntimeError(f"mod has no manifest: {directory.name}")
-        load_manifest(manifest_path, directory.name)
-        if not (directory / "CMakeLists.txt").is_file():
-            raise RuntimeError(
-                f"{directory.name}: native packages require a CMakeLists.txt payload"
-            )
-        mods.append(directory.name)
+    mods = discover_mods(root / "src")
     if not mods:
         raise RuntimeError("no mods found under src/")
     return mods

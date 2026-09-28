@@ -301,15 +301,16 @@ python scripts/verify_asset_packs.py
 
 Add `--package` to verify generated ZIP archives as well.
 
-Check manifests, lock files, tracked-file hygiene, whitespace, C/C++ formatting,
-and package archive layout with:
+Check source manifests, lock-file declarations, tracked-file hygiene, whitespace,
+Python lint and formatting, authored C++ formatting, and the focused Python tests
+with:
 
 ```text
 python scripts/verify.py
 ```
 
-Provide the locked title checkout and SDK tree to also check the title mirror,
-build and package the discovered mods, and inspect the archives:
+Provide the locked title checkout to verify the exact title API mirror, and the SDK
+tree to build and package the discovered mods and inspect their archives:
 
 ```text
 python scripts/verify.py --title-dir <rerevved> --sdk-dir <sdk>

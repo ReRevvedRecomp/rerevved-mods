@@ -262,7 +262,7 @@ def validate_runtime_tree(pack_dir):
     if not pack_dir.is_dir() or _is_reparse_point(pack_dir):
         raise RuntimeError(f"asset pack runtime directory is missing: {pack_dir}")
     files = []
-    asset_files = []
+    has_assets = False
     for path in sorted(pack_dir.rglob("*")):
         relative = PurePosixPath(path.relative_to(pack_dir).as_posix())
         if _is_reparse_point(path):
@@ -273,11 +273,11 @@ def validate_runtime_tree(pack_dir):
             raise RuntimeError(f"non-regular asset pack runtime entry: {relative}")
         _validate_runtime_relative(relative)
         if relative.parts and relative.parts[0] == ASSET_DIRECTORY:
-            asset_files.append(relative)
+            has_assets = True
         files.append((relative, path))
     if not any(relative == PurePosixPath("asset-pack.toml") for relative, _ in files):
         raise RuntimeError(f"asset pack runtime has no asset-pack.toml: {pack_dir}")
-    if not asset_files:
+    if not has_assets:
         raise RuntimeError(f"asset pack runtime has no assets: {pack_dir}")
     return files
 

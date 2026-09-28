@@ -15,7 +15,7 @@ from build_mods import (
     load_manifest,
     validate_runtime_tree,
 )
-from verify import verify_package_archive
+from verify import verify_manifests, verify_package_archive
 
 MANIFEST = """\
 manifest_version = 1
@@ -44,12 +44,69 @@ class PackagingTests(unittest.TestCase):
             ],
         )
 
-    def write_runtime(self, root, binary="example_test.dll"):
+    def write_runtime(self, root):
         package = root / "mods" / "example-test"
         (package / "code" / "windows-x64").mkdir(parents=True)
         (package / "mod.toml").write_text(MANIFEST, encoding="ascii")
-        (package / "code" / "windows-x64" / binary).write_bytes(b"plugin")
+        (package / "code" / "windows-x64" / "example_test.dll").write_bytes(b"plugin")
         return package
+
+    def test_verifier_requires_at_least_one_mod(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "src"
+            (source / "common").mkdir(parents=True)
+            self.assertEqual(discover_mods(source), [])
+            with self.assertRaisesRegex(RuntimeError, r"^no mods found under src/$"):
+                verify_manifests(root)
+
+    def test_verifier_reports_native_source_errors(self):
+        cases = (
+            ("Bad_ID", "invalid package source directory: Bad_ID", False),
+            ("valid-mod", "mod has no manifest: valid-mod", False),
+            (
+                "valid-mod",
+                "valid-mod: native packages require a CMakeLists.txt payload",
+                True,
+            ),
+        )
+        for package_id, message, write_manifest in cases:
+            with self.subTest(package_id=package_id, message=message):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    source = root / "src"
+                    package = source / package_id
+                    package.mkdir(parents=True)
+                    if write_manifest:
+                        manifest = MANIFEST.replace(
+                            'id = "example-test"', 'id = "valid-mod"'
+                        )
+                        (package / "mod.toml").write_text(manifest, encoding="ascii")
+                    with self.assertRaisesRegex(RuntimeError, message):
+                        discover_mods(source)
+                    with self.assertRaisesRegex(RuntimeError, message):
+                        verify_manifests(root)
+
+    def test_verifier_preserves_sorted_source_discovery(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "src"
+            source.mkdir()
+            (source / "ordinary.txt").write_text("ignored", encoding="ascii")
+            (source / "common").mkdir()
+            for package_id in ("z-mod", "a-mod"):
+                package = source / package_id
+                package.mkdir()
+                manifest = MANIFEST.replace(
+                    'id = "example-test"', f'id = "{package_id}"'
+                )
+                (package / "mod.toml").write_text(manifest, encoding="ascii")
+                (package / "CMakeLists.txt").write_text(
+                    "cmake_minimum_required(VERSION 3.25)\n", encoding="ascii"
+                )
+            expected = ["a-mod", "z-mod"]
+            self.assertEqual(discover_mods(source), expected)
+            self.assertEqual(verify_manifests(root), expected)
 
     def test_runtime_tree_rejects_source_leakage(self):
         with tempfile.TemporaryDirectory() as directory:

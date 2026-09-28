@@ -37,10 +37,10 @@ description = "Example title asset pack."
 
 
 class AssetPackTests(unittest.TestCase):
-    def write_source(self, root, manifest=MANIFEST, asset=True):
+    def write_source(self, root, asset=True):
         source = root / "asset-packs" / "example-pack"
         (source / "assets" / "file-data").mkdir(parents=True)
-        (source / "asset-pack.toml").write_text(manifest, encoding="ascii")
+        (source / "asset-pack.toml").write_text(MANIFEST, encoding="ascii")
         if asset:
             (source / "assets" / "file-data" / "logo.dds").write_bytes(b"DDS payload")
         return source
