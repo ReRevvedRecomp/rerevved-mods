@@ -316,7 +316,8 @@ def verify_asset_pack_archive(archive, package_id, source_pack):
             if info.filename in seen:
                 raise RuntimeError(f"duplicate asset pack entry: {info.filename}")
             seen.add(info.filename)
-            if info.is_dir() or stat.S_ISLNK(info.external_attr >> 16):
+            mode = info.external_attr >> 16
+            if info.is_dir() or stat.S_IFMT(mode) not in (0, stat.S_IFREG):
                 raise RuntimeError(f"non-regular asset pack entry: {info.filename}")
             path = _zip_entry_path(archive, info.filename)
             if path.parts[:2] != (RUNTIME_ROOT, package_id):

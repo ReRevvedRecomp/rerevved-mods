@@ -245,6 +245,8 @@ def verify_focused_tests(root):
 def _zip_entry_path(archive, name):
     if not name or name.endswith("/") or "\\" in name or "//" in name:
         raise RuntimeError(f"malformed archive entry in {archive.name}: {name}")
+    if any(part in {".", ".."} for part in name.split("/")):
+        raise RuntimeError(f"archive entry escapes its root in {archive.name}: {name}")
     path = PurePosixPath(name)
     if path.is_absolute() or ".." in path.parts:
         raise RuntimeError(f"archive entry escapes its root in {archive.name}: {name}")
@@ -260,7 +262,8 @@ def verify_package_archive(archive, package_id, source_mod):
             if info.filename in seen:
                 raise RuntimeError(f"duplicate package entry: {info.filename}")
             seen.add(info.filename)
-            if info.is_dir() or stat.S_ISLNK(info.external_attr >> 16):
+            mode = info.external_attr >> 16
+            if info.is_dir() or stat.S_IFMT(mode) not in (0, stat.S_IFREG):
                 raise RuntimeError(f"non-regular package entry: {info.filename}")
             path = _zip_entry_path(archive, info.filename)
             if path.parts[:2] != ("mods", package_id):

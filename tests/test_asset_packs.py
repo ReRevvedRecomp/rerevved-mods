@@ -1,5 +1,6 @@
 """Focused asset pack manifest, assembly, and archive checks."""
 
+import stat
 import sys
 import tempfile
 import unittest
@@ -153,6 +154,26 @@ class AssetPackTests(unittest.TestCase):
                     ),
                     b"DDS payload",
                 )
+
+    def test_asset_pack_archive_rejects_explicit_special_entry_types(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = self.write_source(root)
+            source_pack = load_asset_pack_manifest(
+                source / "asset-pack.toml", "example-pack"
+            )
+            archive = root / "fifo.zip"
+            info = zipfile.ZipInfo(
+                "asset-overrides/example-pack/assets/file-data/logo.dds"
+            )
+            info.external_attr = (stat.S_IFIFO | 0o644) << 16
+            with zipfile.ZipFile(archive, "w") as output:
+                output.writestr(
+                    "asset-overrides/example-pack/asset-pack.toml", MANIFEST
+                )
+                output.writestr(info, b"DDS payload")
+            with self.assertRaisesRegex(RuntimeError, "non-regular asset pack entry"):
+                verify_asset_pack_archive(archive, "example-pack", source_pack)
 
     def test_asset_pack_runtime_requires_nonempty_assets(self):
         with tempfile.TemporaryDirectory() as directory:

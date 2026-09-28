@@ -1,5 +1,6 @@
 """Focused native runtime package checks."""
 
+import stat
 import sys
 import tempfile
 import unittest
@@ -144,6 +145,45 @@ class PackagingTests(unittest.TestCase):
                 )
             with self.assertRaisesRegex(RuntimeError, "rooted at mods/example-test"):
                 verify_package_archive(malformed, "example-test", source_mod)
+
+    def test_archive_rejects_raw_dot_components(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = self.write_runtime(root)
+            source_mod = load_manifest(package / "mod.toml", "example-test")
+            for component in (".", ".."):
+                with self.subTest(component=component):
+                    archive = root / f"dot-{component.replace('.', 'dot')}.zip"
+                    with zipfile.ZipFile(archive, "w") as output:
+                        output.write(
+                            package / "mod.toml",
+                            "mods/example-test/mod.toml",
+                        )
+                        output.writestr(
+                            "mods/example-test/code/windows-x64/"
+                            f"{component}/example_test.dll",
+                            b"plugin",
+                        )
+                    with self.assertRaisesRegex(
+                        RuntimeError, "archive entry escapes its root"
+                    ):
+                        verify_package_archive(archive, "example-test", source_mod)
+
+    def test_archive_rejects_explicit_special_entry_types(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = self.write_runtime(root)
+            source_mod = load_manifest(package / "mod.toml", "example-test")
+            archive = root / "fifo.zip"
+            info = zipfile.ZipInfo(
+                "mods/example-test/code/windows-x64/example_test.dll"
+            )
+            info.external_attr = (stat.S_IFIFO | 0o644) << 16
+            with zipfile.ZipFile(archive, "w") as output:
+                output.write(package / "mod.toml", "mods/example-test/mod.toml")
+                output.writestr(info, b"plugin")
+            with self.assertRaisesRegex(RuntimeError, "non-regular package entry"):
+                verify_package_archive(archive, "example-test", source_mod)
 
     def test_debug_and_relwithdebinfo_stems_are_qualified(self):
         with tempfile.TemporaryDirectory() as directory:
