@@ -248,7 +248,7 @@ def _zip_entry_path(archive, name):
     if any(part in {".", ".."} for part in name.split("/")):
         raise RuntimeError(f"archive entry escapes its root in {archive.name}: {name}")
     path = PurePosixPath(name)
-    if path.is_absolute() or ".." in path.parts:
+    if path.is_absolute():
         raise RuntimeError(f"archive entry escapes its root in {archive.name}: {name}")
     return path
 
