@@ -15,6 +15,9 @@ from pathlib import Path, PurePosixPath
 from build_mods import (
     _validate_runtime_relative,
     discover_mods,
+    find_compiler,
+    host_platform,
+    installed_sdk,
     load_manifest,
     parse_manifest_data,
 )
@@ -121,6 +124,12 @@ def verify_locks(root):
         raise RuntimeError("rerevved-api.lock.json must pin Unit Combat Rules ABI 2")
     if title.get("nation_select_text_abi") != 2:
         raise RuntimeError("rerevved-api.lock.json must pin Nation Select Text ABI 2")
+    if title.get("building_effect_rules_abi") != 1:
+        raise RuntimeError(
+            "rerevved-api.lock.json must pin Building Effect Rules ABI 1"
+        )
+    if title.get("wonder_effect_rules_abi") != 1:
+        raise RuntimeError("rerevved-api.lock.json must pin Wonder Effect Rules ABI 1")
     return sdk, title
 
 
@@ -162,6 +171,8 @@ def verify_title_mirror(root, title_dir, title_lock):
         "unit_production_cost_rules.h",
         "unit_effect_rules.h",
         "unit_combat_rules.h",
+        "building_effect_rules.h",
+        "wonder_effect_rules.h",
     ):
         source = title_dir / "api" / name
         mirror = root / "src" / "common" / "api" / name
@@ -210,7 +221,8 @@ def verify_format(root):
     mirrored_api = root / "src" / "common" / "api"
     sources = sorted(
         path
-        for path in (root / "src").rglob("*")
+        for tree in (root / "src", root / "tests" / "native")
+        for path in tree.rglob("*")
         if path.is_file()
         and path.suffix.lower() in {".cpp", ".h"}
         and not path.is_relative_to(mirrored_api)
@@ -314,6 +326,32 @@ def verify_packages(root, mods):
     return inventory
 
 
+def verify_native_effect_plugins(root, title_dir, sdk_dir):
+    target = host_platform()
+    sdk = installed_sdk(sdk_dir, target)
+    build_dir = root / "out" / "build" / target / "effect-plugin-checks"
+    run(
+        [
+            "cmake",
+            "-S",
+            str(root / "tests" / "native"),
+            "-B",
+            str(build_dir),
+            "-G",
+            "Ninja",
+            "-DCMAKE_BUILD_TYPE=Release",
+            f"-DCMAKE_CXX_COMPILER={find_compiler()}",
+            f"-DMODS_ROOT={root}",
+            f"-DTITLE_DIR={title_dir}",
+            f"-DSDK_DIR={sdk}",
+            f"-DRUNTIME_PLATFORM={target}",
+        ],
+        root,
+    )
+    run(["cmake", "--build", str(build_dir)], root)
+    run(["ctest", "--test-dir", str(build_dir), "--output-on-failure"], root)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--title-dir", type=Path)
@@ -345,6 +383,10 @@ def main():
             root,
         )
         inventory = verify_packages(root, mods)
+        if args.title_dir:
+            verify_native_effect_plugins(
+                root, args.title_dir.resolve(), args.sdk_dir.resolve()
+            )
         run(
             [
                 sys.executable,

@@ -1,0 +1,10 @@
+manifest_version = 1
+
+[mod]
+id = "chinese-library-gold"
+name = "Chinese Library Gold"
+version = "1.0"
+author = "Aeshur"
+description = "Development consumer for Chinese-owned Libraries' fixed +1 Gold with native science preserved; inactive until title runtime support is available."
+code = "chinese_library_gold"
+plugin_abi = 1

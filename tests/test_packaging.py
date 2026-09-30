@@ -36,12 +36,14 @@ class PackagingTests(unittest.TestCase):
             discover_mods(Path(__file__).resolve().parents[1] / "src"),
             [
                 "cataphracts-defense",
+                "chinese-library-gold",
                 "hills-production",
                 "hoplite-loyalty",
                 "jaguar-woodsman",
                 "keshik-movement",
                 "mongol-horseback",
                 "state-inspector",
+                "stonehenge-religion",
             ],
         )
 

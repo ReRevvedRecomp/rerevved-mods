@@ -9,3 +9,5 @@ src/common/api/unit_production_cost_rules.h text eol=lf
 src/common/api/unit_effect_rules.h text eol=lf
 src/common/api/nation_select_text.h text eol=lf
 src/common/api/unit_combat_rules.h text eol=lf
+src/common/api/building_effect_rules.h text eol=lf
+src/common/api/wonder_effect_rules.h text eol=lf

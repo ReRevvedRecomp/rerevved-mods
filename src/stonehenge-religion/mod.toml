@@ -1,0 +1,10 @@
+manifest_version = 1
+
+[mod]
+id = "stonehenge-religion"
+name = "Stonehenge Religion"
+version = "1.0"
+author = "Aeshur"
+description = "Development consumer for Stonehenge's Religion and fixed +5 Culture replacement; inactive until title runtime support is available."
+code = "stonehenge_religion"
+plugin_abi = 1

@@ -186,6 +186,41 @@ tile is Forest. Its expected runtime matrix is:
 state overlay for debugging and probing graphical errors. Keep it available
 when checking overlay regressions.
 
+## Building and Wonder effects
+
+Building Effect Rules ABI 1 and Wonder Effect Rules ABI 1 expose complete
+semantic effect declarations, support queries, and stateless previews.
+**The pinned title has no runtime integration for either effect.** Support
+queries return `runtimeAvailable = 0`; valid registration returns
+`ERR_UNAVAILABLE` and retains no rule. Previews do not modify gameplay.
+The title's [effect contracts](https://github.com/ReRevvedRecomp/rerevved/blob/c4a7ccff9cff1524fd07fc83d00ef9092edb9721/docs/building-wonder-effects.md)
+own semantics, arithmetic, and integration limits.
+
+`Stonehenge Religion` declares the complete Stonehenge replacement: Religion
+only on new completion, and fixed +5 city Culture after native modifiers,
+including an existing Stonehenge without a retroactive grant.
+`Chinese Library Gold` declares fixed +1 final city Gold for Chinese-owned
+Libraries while preserving normal science. Both are inactive development
+consumers. They modify no guest state or entry metadata at this title revision.
+
+Each package resolves its domain version, support query, and registration
+export, checks the ABI before querying support, and reports failures to
+standard error. Unavailable support prevents registration. If support is
+available, the package submits one zero-initialized complete effect rule and
+checks its registration result. Support is not an activation guarantee.
+Neither package calls previews or maintains completion, ownership, or save
+state. Stonehenge's declaration is atomic, and the packages are independent.
+
+With both `--title-dir` and `--sdk-dir`, repository verification also loads the
+built packages into native test hosts. It checks plugin ABI/create guards,
+missing exports, title ABI mismatch, support failure and unavailability,
+exact rule requests, rejected registration, and both package orders. One host
+compiles the pinned title's actual effect implementation and confirms both
+packages stay inactive. Successful registration in a simulated host is a
+consumer protocol check, not gameplay evidence. Native gameplay acceptance,
+including save/load, ownership changes, fixed additions, and disabling, remains
+pending title integration. Loadout changes apply after restart.
+
 ## Nation Select Text
 
 Nation Select Text ABI 2 lets a package replace complete printable ASCII lines

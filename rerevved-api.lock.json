@@ -1,6 +1,6 @@
 {
   "repository": "https://github.com/ReRevvedRecomp/rerevved",
-  "commit": "ac8788024548bf1dd120773ce8d76a4a9ed02c35",
+  "commit": "c4a7ccff9cff1524fd07fc83d00ef9092edb9721",
   "gameplay_abi": 2,
   "unit_catalog_abi": 2,
   "nation_select_text_abi": 2,
@@ -10,5 +10,7 @@
   "unit_movement_rules_abi": 2,
   "unit_effect_rules_abi": 3,
   "unit_production_cost_rules_abi": 2,
-  "unit_combat_rules_abi": 2
+  "unit_combat_rules_abi": 2,
+  "building_effect_rules_abi": 1,
+  "wonder_effect_rules_abi": 1
 }
