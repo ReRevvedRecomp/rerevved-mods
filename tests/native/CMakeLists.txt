@@ -65,3 +65,33 @@ foreach(mode success unavailable)
 endforeach()
 add_plugin_check(both.pinned_title.forward title_effect_plugins_host unavailable "Chinese Library Gold:" wonder "${wonder}" building "${building}")
 add_plugin_check(both.pinned_title.reverse title_effect_plugins_host unavailable "Stonehenge Religion:" building "${building}" wonder "${wonder}")
+
+add_executable(registration_plugins_host registration_plugins_host.cpp)
+set_target_properties(registration_plugins_host PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED ON ENABLE_EXPORTS ON)
+target_include_directories(registration_plugins_host PRIVATE "${SDK_DIR}/include" "${MODS_ROOT}/src/common/api")
+target_compile_definitions(registration_plugins_host PRIVATE
+    TERRAIN_YIELD_RULES_API_EXPORTS UNIQUE_UNIT_RULES_API_EXPORTS
+    UNIT_EFFECT_RULES_API_EXPORTS UNIT_PRODUCTION_COST_RULES_API_EXPORTS
+    UNIT_COMBAT_RULES_API_EXPORTS UNIT_MOVEMENT_RULES_API_EXPORTS
+    ERA_ABILITIES_API_EXPORTS NATION_SELECT_TEXT_API_EXPORTS)
+if(UNIX)
+    target_link_libraries(registration_plugins_host PRIVATE ${CMAKE_DL_LIBS})
+endif()
+
+foreach(kind hills-production cataphracts-defense hoplite-loyalty jaguar-woodsman keshik-movement mongol-horseback)
+    string(REPLACE "-" "_" stem "${kind}")
+    set(plugin "${MODS_ROOT}/mods/${kind}/code/${RUNTIME_PLATFORM}/${prefix}${stem}${extension}")
+    set(modes success duplicate internal invalid)
+    if(NOT kind STREQUAL "hills-production")
+        list(APPEND modes gameplay-first)
+    endif()
+    if(kind STREQUAL "hoplite-loyalty" OR kind STREQUAL "jaguar-woodsman")
+        list(APPEND modes gameplay-second)
+    endif()
+    foreach(mode IN LISTS modes)
+        add_test(NAME registration.${kind}.${mode}
+            COMMAND "${CMAKE_COMMAND}" "-DHOST=$<TARGET_FILE:registration_plugins_host>"
+                "-DKIND=${kind}" "-DMODE=${mode}" "-DPLUGIN=${plugin}"
+                -P "${CMAKE_CURRENT_SOURCE_DIR}/check_registration_plugin.cmake")
+    endforeach()
+endforeach()

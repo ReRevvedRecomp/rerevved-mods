@@ -3,7 +3,8 @@
 #include <nation_select_text.h>
 #include <unique_era_abilities.h>
 
-#include <cstdint>
+#include <cinttypes>
+#include <cstdio>
 #include <cstring>
 
 #if defined(_WIN32)
@@ -85,7 +86,12 @@ public:
         std::memcpy(text.providerId, kProviderId, sizeof(kProviderId));
         std::memcpy(text.ruleId, kTextRuleId, sizeof(kTextRuleId));
         std::memcpy(text.text, kText, sizeof(kText));
-        (void)registerNationSelectText(&text);
+        const int32_t textResult = registerNationSelectText(&text);
+        if (textResult != NATION_SELECT_TEXT_OK)
+        {
+            std::fprintf(stderr, "Mongol Horseback: nation select text registration rejected (%" PRId32 "); gameplay rule remains registered.\n", textResult);
+            return;
+        }
     }
 };
 

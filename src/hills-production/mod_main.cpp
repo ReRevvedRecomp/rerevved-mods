@@ -2,7 +2,8 @@
 
 #include <terrain_yield_rules.h>
 
-#include <cstdint>
+#include <cinttypes>
+#include <cstdio>
 #include <cstring>
 
 #if defined(_WIN32)
@@ -56,7 +57,12 @@ public:
         rule.value      = 1;
         std::memcpy(rule.providerId, kProviderId, sizeof(kProviderId));
         std::memcpy(rule.ruleId, kRuleId, sizeof(kRuleId));
-        registerRule(&rule);
+        const int32_t result = registerRule(&rule);
+        if (result != TERRAIN_YIELD_RULES_OK)
+        {
+            std::fprintf(stderr, "Hills Production: terrain yield registration rejected (%" PRId32 ").\n", result);
+            return;
+        }
     }
 };
 
