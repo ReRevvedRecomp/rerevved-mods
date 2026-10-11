@@ -193,7 +193,7 @@ semantic effect declarations, support queries, and stateless previews.
 **The pinned title has no runtime integration for either effect.** Support
 queries return `runtimeAvailable = 0`; valid registration returns
 `ERR_UNAVAILABLE` and retains no rule. Previews do not modify gameplay.
-The title's [effect contracts](https://github.com/ReRevvedRecomp/rerevved/blob/c4a7ccff9cff1524fd07fc83d00ef9092edb9721/docs/building-wonder-effects.md)
+The title's [effect contracts](https://github.com/ReRevvedRecomp/rerevved/blob/1479fc720e5668e642d0f58b23becc8678284dfb/docs/building-wonder-effects.md)
 own semantics, arithmetic, and integration limits.
 
 `Stonehenge Religion` declares the complete Stonehenge replacement: Religion
