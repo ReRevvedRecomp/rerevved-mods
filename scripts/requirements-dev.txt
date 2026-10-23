@@ -1,0 +1,2 @@
+# Development tools used by repository verification and CI.
+ruff==0.15.21
