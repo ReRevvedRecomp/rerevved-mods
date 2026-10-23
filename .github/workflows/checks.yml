@@ -1,0 +1,58 @@
+name: Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-x64:
+    name: Linux x64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout mods
+        uses: actions/checkout@v7
+
+      - name: Resolve title lock
+        id: locks
+        shell: pwsh
+        run: |
+          $title = Get-Content rerevved-api.lock.json -Raw | ConvertFrom-Json
+          "title_sha=$($title.commit)" >> $env:GITHUB_OUTPUT
+
+      - name: Checkout title
+        uses: actions/checkout@v7
+        with:
+          repository: ReRevvedRecomp/rerevved
+          ref: ${{ steps.locks.outputs.title_sha }}
+          path: title-src
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Install verification tools
+        run: python -m pip install -r scripts/requirements-dev.txt
+
+      - name: Install Lua formatter
+        run: python scripts/format_lua.py install
+
+      - name: Verify and package mods
+        run: python scripts/verify.py --title-dir title-src
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: rerevved-mods-linux-x64
+          path: |
+            pkg/mods/*.zip
+            pkg/asset-overrides/*.zip
+          if-no-files-found: error
+          retention-days: 14
