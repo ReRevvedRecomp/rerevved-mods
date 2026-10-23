@@ -1,0 +1,15 @@
+manifest_version = 2
+
+[mod]
+id = "mongol-horseback"
+name = "Mongol Horseback"
+version = "1.0"
+author = "Aeshur"
+description = "Replaces the Mongolian Ancient era ability with Knowledge of Horseback Riding."
+
+[payload]
+kind = "lua"
+entry = "main.lua"
+api = "rerevved.rules"
+api_version = 1
+requires = ["era_technology_ability", "nation_select_text"]
