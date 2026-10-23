@@ -1,0 +1,15 @@
+manifest_version = 2
+
+[mod]
+id = "jaguar-woodsman"
+name = "Jaguar Woodsman"
+version = "1.0"
+author = "Aeshur"
+description = "Aztec Jaguar Warriors gain +50% Attack and Defense when the defender on Forest tiles."
+
+[payload]
+kind = "lua"
+entry = "main.lua"
+api = "rerevved.rules"
+api_version = 1
+requires = ["unit_combat", "nation_select_text"]
