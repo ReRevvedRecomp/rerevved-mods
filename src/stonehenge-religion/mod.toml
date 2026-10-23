@@ -1,0 +1,15 @@
+manifest_version = 2
+
+[mod]
+id = "stonehenge-religion"
+name = "Stonehenge Religion"
+version = "1.0"
+author = "Aeshur"
+description = "Completing Stonehenge also grants the Religion technology."
+
+[payload]
+kind = "lua"
+entry = "main.lua"
+api = "rerevved.rules"
+api_version = 1
+requires = ["wonder_completion_technology"]
