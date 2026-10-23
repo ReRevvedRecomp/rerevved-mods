@@ -1,0 +1,15 @@
+manifest_version = 2
+
+[mod]
+id = "hoplite-loyalty"
+name = "Hoplite Loyalty"
+version = "1.0"
+author = "Aeshur"
+description = "Greek Hoplites start with Loyalty and cost 10 Production instead of 15."
+
+[payload]
+kind = "lua"
+entry = "main.lua"
+api = "rerevved.rules"
+api_version = 1
+requires = ["unit_effect", "unit_production_cost", "nation_select_text"]
