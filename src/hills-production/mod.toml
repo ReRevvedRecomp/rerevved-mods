@@ -1,0 +1,16 @@
+manifest_version = 2
+
+[mod]
+id = "hills-production"
+name = "Hills Production"
+version = "1.0"
+author = "Aeshur"
+description = "Hills provide +1 base Production for every player."
+min_game_version = "0.5.0"
+
+[payload]
+kind = "lua"
+entry = "main.lua"
+api = "rerevved.rules"
+api_version = 1
+requires = ["terrain_yield"]
