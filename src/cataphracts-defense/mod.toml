@@ -1,0 +1,15 @@
+manifest_version = 2
+
+[mod]
+id = "cataphracts-defense"
+name = "Cataphracts Defense"
+version = "1.0"
+author = "Aeshur"
+description = "Roman Cataphracts gain +1 base Defense compared with ordinary Knights."
+
+[payload]
+kind = "lua"
+entry = "main.lua"
+api = "rerevved.rules"
+api_version = 1
+requires = ["unique_unit_scalar", "nation_select_text"]
