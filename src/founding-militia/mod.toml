@@ -1,0 +1,15 @@
+manifest_version = 2
+
+[mod]
+id = "founding-militia"
+name = "Founding Militia"
+version = "1.0"
+author = "Aeshur"
+description = "Every newly founded city receives a free Militia with Loyalty."
+
+[payload]
+kind = "lua"
+entry = "main.lua"
+api = "rerevved.rules"
+api_version = 1
+requires = ["city_founding_unit"]
