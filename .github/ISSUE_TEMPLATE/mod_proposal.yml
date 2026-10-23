@@ -1,0 +1,14 @@
+name: Mod proposal
+description: Propose a new mod or an improvement to an existing one
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: |
+        Describe the mod or change, what it should do for players, and any known
+        compatibility or dependency requirements.
+    validations:
+      required: true
