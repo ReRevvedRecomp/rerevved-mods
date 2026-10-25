@@ -2,10 +2,8 @@
 <img width="640" src="https://github.com/ReRevvedRecomp/rerevved/raw/main/res/rerevved_banner.png" alt="ReRevved banner">
 </p>
 
-<h1 align="center">ReRevved Mods</h1>
-
 <p align="center">
-First-party Lua mods for ReRevved.
+Lua mods for ReRevved.
 </p>
 
 <p align="center">
