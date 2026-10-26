@@ -12,7 +12,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 import format_lua
 
@@ -184,7 +184,7 @@ class LuaFormatterTests(unittest.TestCase):
                 ),
             ):
                 with self.assertRaisesRegex(
-                    format_lua.FormatterError, "python scripts/format_lua.py install"
+                    format_lua.FormatterError, "python tools/format_lua.py install"
                 ):
                     format_lua._binary_path()
 
@@ -192,25 +192,25 @@ class LuaFormatterTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             names = (
-                "src/example/main.lua",
-                "src/example/nested/extra.lua",
-                "src/common/helper.lua",
+                "mods/example/main.lua",
+                "mods/example/nested/extra.lua",
+                "mods/common/helper.lua",
                 "tests/fixture.lua",
             )
-            for name in (*names, "src/example/untracked.lua"):
+            for name in (*names, "mods/example/untracked.lua"):
                 path = root / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(b"return {}\n")
-            tracked = "\0".join((*names, "src/deleted/main.lua")) + "\0"
+            tracked = "\0".join((*names, "mods/deleted/main.lua")) + "\0"
             result = subprocess.CompletedProcess([], 0, tracked.encode(), b"")
             with (
                 mock.patch.object(format_lua, "ROOT", root),
                 mock.patch("format_lua.subprocess.run", return_value=result) as git,
             ):
-                self.assertEqual(format_lua._tracked_lua(), ["src/example/main.lua"])
+                self.assertEqual(format_lua._tracked_lua(), ["mods/example/main.lua"])
                 self.assertEqual(
                     git.call_args.args[0],
-                    ["git", "ls-files", "-z", "--", "src/*/*.lua"],
+                    ["git", "ls-files", "-z", "--", "mods/*/*.lua"],
                 )
 
     def test_scope_reports_git_failure(self):
@@ -224,7 +224,7 @@ class LuaFormatterTests(unittest.TestCase):
     def test_scope_rejects_linked_source_and_parents(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            relative = "src/example/main.lua"
+            relative = "mods/example/main.lua"
             source = root / relative
             source.parent.mkdir(parents=True)
             source.write_bytes(b"return {}\n")
@@ -271,12 +271,12 @@ class LuaFormatterTests(unittest.TestCase):
                 tempfile.TemporaryDirectory() as directory,
             ):
                 root = Path(directory)
-                source = root / "src/example/main.lua"
+                source = root / "mods/example/main.lua"
                 source.parent.mkdir(parents=True)
                 source.write_bytes(b"return {}\n")
 
                 def fail_after_edit(binary, workspace):
-                    (workspace / "src/example/main.lua").write_bytes(b"staged edit\n")
+                    (workspace / "mods/example/main.lua").write_bytes(b"staged edit\n")
                     return subprocess.CompletedProcess([], status, output, "")
 
                 with (
@@ -291,7 +291,7 @@ class LuaFormatterTests(unittest.TestCase):
                     contextlib.redirect_stderr(io.StringIO()),
                 ):
                     self.assertEqual(
-                        format_lua.run("format", ["src/example/main.lua"]), 1
+                        format_lua.run("format", ["mods/example/main.lua"]), 1
                     )
                 self.assertEqual(source.read_bytes(), b"return {}\n")
 
@@ -309,7 +309,7 @@ class LuaFormatterTests(unittest.TestCase):
                 tempfile.TemporaryDirectory() as directory,
             ):
                 root = Path(directory)
-                relative = "src/example/main.lua"
+                relative = "mods/example/main.lua"
                 source = root / relative
                 source.parent.mkdir(parents=True)
                 source.write_bytes(b"original\n")
@@ -341,7 +341,7 @@ class LuaFormatterTests(unittest.TestCase):
     def test_format_stabilizes_multiple_passes_and_check_does_not_write(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            relative = "src/example/main.lua"
+            relative = "mods/example/main.lua"
             source = root / relative
             source.parent.mkdir(parents=True)
             source.write_bytes(b"original\n")

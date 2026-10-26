@@ -158,8 +158,19 @@ def discover_asset_packs(source_root):
     return packs
 
 
-def _remove_generated_directory(path, generated_root):
+def _remove_generated_directory(path, generated_root, *, base=None):
     generated_root = Path(generated_root)
+    if base is not None:
+        base = Path(base)
+        if not generated_root.is_relative_to(base):
+            raise RuntimeError(
+                f"generated asset root is outside {base}: {generated_root}"
+            )
+        relative = generated_root.relative_to(base)
+        for depth in range(1, len(relative.parts) + 1):
+            link = base.joinpath(*relative.parts[:depth])
+            if _is_reparse_point(link):
+                raise RuntimeError(f"generated asset root is a reparse point: {link}")
     if _is_reparse_point(generated_root):
         raise RuntimeError(f"generated asset root is a reparse point: {generated_root}")
     resolved_root = generated_root.resolve(strict=False)
@@ -228,8 +239,8 @@ def assemble_asset_pack(root, package_id):
     source_dir = root / "asset-packs" / package_id
     manifest = source_dir / "asset-pack.toml"
     load_asset_pack_manifest(manifest, package_id)
-    destination = root / RUNTIME_ROOT / package_id
-    _remove_generated_directory(destination, root / RUNTIME_ROOT)
+    destination = root / "out" / RUNTIME_ROOT / package_id
+    _remove_generated_directory(destination, root / "out" / RUNTIME_ROOT, base=root)
     _copy_runtime_file(manifest, destination / "asset-pack.toml")
     for filename in OPTIONAL_PACKAGE_FILES:
         _copy_runtime_file(source_dir / filename, destination / filename)
@@ -283,9 +294,9 @@ def validate_runtime_tree(pack_dir):
 
 
 def package_asset_pack(root, package_id):
-    package_dir = root / "pkg" / RUNTIME_ROOT
+    package_dir = root / "out" / "pkg" / RUNTIME_ROOT
     package_dir.mkdir(parents=True, exist_ok=True)
-    pack_dir = root / RUNTIME_ROOT / package_id
+    pack_dir = root / "out" / RUNTIME_ROOT / package_id
     load_asset_pack_manifest(pack_dir / "asset-pack.toml", package_id)
     files = validate_runtime_tree(pack_dir)
     archive = package_dir / f"{package_id}.zip"

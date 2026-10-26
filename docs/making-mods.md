@@ -8,7 +8,7 @@ Do not copy guest addresses, layouts, or native state machines into a mod.
 
 ## Source layout
 
-Put each mod directly under `src/<id>/`. The directory name and `[mod].id`
+Put each mod directly under `mods/<id>/`. The directory name and `[mod].id`
 must match. IDs use one to 63 lowercase ASCII letters or digits, with single
 hyphens between groups, such as `hills-production`.
 
@@ -117,7 +117,7 @@ The tooling rejects links and reparse points.
 The assembled runtime tree has this layout:
 
 ```text
-mods/<id>/
+out/mods/<id>/
   mod.toml
   main.lua       the declared entry; another safe filename is allowed
   icon.png       optional

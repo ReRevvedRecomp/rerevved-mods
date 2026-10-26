@@ -21,7 +21,7 @@ checks; package validation does not execute Lua or prove a rule works.
 - Expected values come from the production constant or validator being tested.
   Use the documented 256 KiB limit as an independent boundary.
 - The test only checks repository layout, public-file hygiene, or lock values.
-  Keep those checks in [the verifier](../../scripts/verify.py). Tests of its
+  Keep those checks in [the verifier](../../tools/verify.py). Tests of its
   rejection behavior should use small fixtures.
 
 ## Choose the cheapest fixture that proves the claim
@@ -30,8 +30,8 @@ Pick the first level that can expose the defect:
 
 1. Literal dictionaries, bytes, or paths passed to `parse_manifest_data`,
    `validate_lua_source`, or `parse_asset_pack_data` in the
-   [mod](../../scripts/build_mods.py) and
-   [asset pack](../../scripts/build_asset_packs.py) tools.
+   [mod](../../tools/build_mods.py) and
+   [asset pack](../../tools/build_asset_packs.py) tools.
 2. One data test over authored manifests. Keep expected package IDs and domains
    independent, as in `LUA_PACKAGES` in
    [test_packaging.py](../../tests/test_packaging.py).
@@ -84,7 +84,7 @@ To select one module, add `-p test_format_lua.py`.
 [Checks and tests](../development.md#checks-and-tests) owns the full commands.
 
 Unit tests create temporary files and some assemble packages. The full
-`python scripts/verify.py` run also writes generated packages; neither is a
+`python tools/verify.py` run also writes generated packages; neither is a
 read-only check. Follow the task's execution limits.
 
 Assert the [Lua source contract](../making-mods.md#source-and-runtime-files)

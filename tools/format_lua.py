@@ -140,19 +140,19 @@ def _binary_path() -> Path:
     if not binary.is_file():
         raise FormatterError(
             f"CodeFormat {VERSION} is not installed; run "
-            "'python scripts/format_lua.py install' explicitly"
+            "'python tools/format_lua.py install' explicitly"
         )
     if os.name != "nt" and not os.access(binary, os.X_OK):
         raise FormatterError(
             f"CodeFormat {VERSION} is not executable; run "
-            "'python scripts/format_lua.py install' explicitly"
+            "'python tools/format_lua.py install' explicitly"
         )
     return binary
 
 
 def _tracked_lua() -> list[str]:
     result = subprocess.run(
-        ["git", "ls-files", "-z", "--", "src/*/*.lua"],
+        ["git", "ls-files", "-z", "--", "mods/*/*.lua"],
         cwd=ROOT,
         check=False,
         capture_output=True,
@@ -169,7 +169,7 @@ def _tracked_lua() -> list[str]:
     selected = []
     for relative in tracked:
         parts = Path(relative).parts
-        if len(parts) != 3 or parts[0] != "src" or parts[1] == "common":
+        if len(parts) != 3 or parts[0] != "mods" or parts[1] == "common":
             continue
         source = ROOT / Path(relative)
         if not source.is_file():

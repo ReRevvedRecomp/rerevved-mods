@@ -14,7 +14,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 from build_mods import (
     _remove_generated_directory,
@@ -84,7 +84,7 @@ def write_runtime(destination, package_id, name="Example Test", source=LUA_SOURC
 class LuaPackagingTests(unittest.TestCase):
     def test_repository_manifest_catalog(self):
         repository = Path(__file__).resolve().parents[1]
-        discovered = discover_mods(repository / "src")
+        discovered = discover_mods(repository / "mods")
         self.assertEqual(
             discovered,
             [
@@ -102,7 +102,7 @@ class LuaPackagingTests(unittest.TestCase):
         self.assertEqual(discovered, sorted(LUA_PACKAGES))
         for package_id, requires in LUA_PACKAGES.items():
             with self.subTest(package_id=package_id):
-                source = repository / "src" / package_id
+                source = repository / "mods" / package_id
                 manifest = tomllib.loads((source / "mod.toml").read_text("ascii"))
                 parse_manifest_data(manifest, source / "mod.toml", package_id)
                 self.assertEqual(manifest["manifest_version"], 2)
@@ -118,7 +118,7 @@ class LuaPackagingTests(unittest.TestCase):
                 )
 
     def write_source(self, root):
-        return write_runtime(root / "src" / "example-test", "example-test")
+        return write_runtime(root / "mods" / "example-test", "example-test")
 
     def test_lua_manifest_valid_contract(self):
         value = tomllib.loads(LUA_MANIFEST)
@@ -369,7 +369,7 @@ class LuaPackagingTests(unittest.TestCase):
                 else:
                     extra.write_text("project(leak)", encoding="ascii")
                 with self.assertRaisesRegex(RuntimeError, message):
-                    discover_mods(root / "src")
+                    discover_mods(root / "mods")
 
     def test_lua_entry_must_exist_and_be_regular(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -378,10 +378,10 @@ class LuaPackagingTests(unittest.TestCase):
             entry = package / "main.lua"
             entry.unlink()
             with self.assertRaisesRegex(RuntimeError, "regular file"):
-                discover_mods(root / "src")
+                discover_mods(root / "mods")
             entry.mkdir()
             with self.assertRaisesRegex(RuntimeError, "unsupported directory"):
-                discover_mods(root / "src")
+                discover_mods(root / "mods")
 
     def test_lua_reparse_points_rejected_before_assembly(self):
         for linked_name in (".", "mod.toml", "main.lua", "assets", "assets/item"):
@@ -399,17 +399,17 @@ class LuaPackagingTests(unittest.TestCase):
                     side_effect=lambda path: path == linked,
                 ):
                     with self.assertRaisesRegex(RuntimeError, "reparse point"):
-                        discover_mods(root / "src")
+                        discover_mods(root / "mods")
                     with self.assertRaisesRegex(RuntimeError, "reparse point"):
                         assemble_lua_mod(root, "example-test")
-                self.assertFalse((root / "mods").exists())
+                self.assertFalse((root / "out" / "mods").exists())
 
     def test_lua_only_build_packages_without_sdk_or_compiler(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             self.write_source(root)
             with (
-                mock.patch("build_mods.__file__", str(root / "scripts/build_mods.py")),
+                mock.patch("build_mods.__file__", str(root / "tools/build_mods.py")),
                 mock.patch.object(
                     sys, "argv", ["build_mods.py", "--mod", "example-test"]
                 ),
@@ -417,7 +417,7 @@ class LuaPackagingTests(unittest.TestCase):
                 mock.patch("sys.stdout", new_callable=io.StringIO),
             ):
                 build_main()
-            archive = root / "pkg/mods/example-test.zip"
+            archive = root / "out/pkg/mods/example-test.zip"
             with zipfile.ZipFile(archive) as package:
                 self.assertEqual(
                     sorted(package.namelist()),
@@ -426,10 +426,10 @@ class LuaPackagingTests(unittest.TestCase):
                 for name in ("main.lua", "mod.toml"):
                     self.assertEqual(
                         package.read(f"mods/example-test/{name}"),
-                        (root / "src/example-test" / name).read_bytes(),
+                        (root / "mods/example-test" / name).read_bytes(),
                     )
                 self.assertEqual(package.read("mods/example-test/main.lua"), LUA_SOURCE)
-            mod = load_manifest(root / "src/example-test/mod.toml")
+            mod = load_manifest(root / "mods/example-test/mod.toml")
             self.assertEqual(
                 verify_package_archive(archive, "example-test", mod), ["lua"]
             )
@@ -459,17 +459,17 @@ class LuaPackagingTests(unittest.TestCase):
                 [
                     relative.as_posix()
                     for relative, _ in validate_runtime_tree(
-                        root / "mods/example-test", mod
+                        root / "out/mods/example-test", mod
                     )
                 ],
             )
             self.assertEqual(
-                (root / "mods/example-test/assets/nested/logo.dds").read_bytes(),
+                (root / "out/mods/example-test/assets/nested/logo.dds").read_bytes(),
                 b"DDS payload",
             )
             with mock.patch("sys.stdout", new_callable=io.StringIO):
                 package_mod(root, "example-test")
-            with zipfile.ZipFile(root / "pkg/mods/example-test.zip") as archive:
+            with zipfile.ZipFile(root / "out/pkg/mods/example-test.zip") as archive:
                 for path in source.rglob("*"):
                     if path.is_file():
                         self.assertEqual(
@@ -558,7 +558,7 @@ class LuaPackagingTests(unittest.TestCase):
             binary = package / "code/windows-x64/example_test.dll"
             binary.parent.mkdir(parents=True)
             binary.write_bytes(b"plugin")
-            with zipfile.ZipFile(root / "pkg/mods/example-test.zip") as archive:
+            with zipfile.ZipFile(root / "out/pkg/mods/example-test.zip") as archive:
                 archive.extractall(installed)
             mod = load_manifest(package / "mod.toml")
             with self.assertRaisesRegex(RuntimeError, "code/"):
@@ -572,10 +572,10 @@ class PackagingTests(unittest.TestCase):
     def test_verifier_requires_at_least_one_mod(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            source = root / "src"
+            source = root / "mods"
             source.mkdir()
             self.assertEqual(discover_mods(source), [])
-            with self.assertRaisesRegex(RuntimeError, r"^no mods found under src/$"):
+            with self.assertRaisesRegex(RuntimeError, r"^no mods found under mods/$"):
                 verify_manifests(root)
 
     def test_discovery_reports_source_errors(self):
@@ -592,7 +592,7 @@ class PackagingTests(unittest.TestCase):
             with self.subTest(package_id=package_id, message=message):
                 with tempfile.TemporaryDirectory() as directory:
                     root = Path(directory)
-                    source = root / "src"
+                    source = root / "mods"
                     package = source / package_id
                     package.mkdir(parents=True)
                     if write_manifest:
@@ -610,12 +610,12 @@ class PackagingTests(unittest.TestCase):
         ) as discover:
             with self.assertRaisesRegex(RuntimeError, "mod has no manifest: valid-mod"):
                 verify_manifests(Path("fixture"))
-        discover.assert_called_once_with(Path("fixture/src"))
+        discover.assert_called_once_with(Path("fixture/mods"))
 
     def test_discovery_preserves_sorted_sources(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            source = root / "src"
+            source = root / "mods"
             source.mkdir()
             (source / "ordinary.txt").write_text("ignored", encoding="ascii")
             for package_id in ("z-mod", "a-mod"):
@@ -780,7 +780,7 @@ class PackagingTests(unittest.TestCase):
             ("selected", ["--mod", "z-mod"], ["a-mod", "z-mod"], ["z-mod"], None),
             ("list", ["--list"], ["a-mod", "z-mod"], [], "a-mod\nz-mod\n"),
             ("unknown", ["--mod", "missing"], ["a-mod", "z-mod"], [], None),
-            ("empty", [], [], [], "No mods found under src/.\n"),
+            ("empty", [], [], [], "No mods found under mods/.\n"),
         )
         for label, arguments, available, selected, output in cases:
             with (
@@ -926,7 +926,7 @@ class PackagingTests(unittest.TestCase):
     def test_generated_cleanup_stays_bounded_and_refuses_reparse_points(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            generated = root / "mods"
+            generated = root / "out" / "mods"
             package = generated / "example-test"
             linked = package / "linked"
             linked.mkdir(parents=True)
@@ -937,8 +937,12 @@ class PackagingTests(unittest.TestCase):
                 _remove_generated_directory(
                     root / "outside" / "example-test", generated
                 )
+            with self.assertRaisesRegex(RuntimeError, "outside"):
+                _remove_generated_directory(
+                    root / "x" / "example-test", root / "x", base=root / "out"
+                )
 
-            for reparse in (generated, package, linked):
+            for reparse in (root / "out", generated, package, linked):
                 with (
                     self.subTest(reparse=reparse),
                     mock.patch(
@@ -947,14 +951,14 @@ class PackagingTests(unittest.TestCase):
                     ),
                 ):
                     with self.assertRaisesRegex(RuntimeError, "reparse point"):
-                        _remove_generated_directory(package, generated)
+                        _remove_generated_directory(package, generated, base=root)
                     self.assertTrue(marker.is_file())
                     self.assertEqual(marker.read_text(encoding="ascii"), "keep")
 
     def test_generated_cleanup_replaces_only_selected_output(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            generated = root / "mods"
+            generated = root / "out" / "mods"
             package = generated / "example-test"
             stale = package / "nested/stale.txt"
             stale.parent.mkdir(parents=True)

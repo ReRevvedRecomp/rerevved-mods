@@ -149,9 +149,9 @@ def verify_public_tree(root, files):
 
 
 def verify_manifests(root):
-    mods = discover_mods(root / "src")
+    mods = discover_mods(root / "mods")
     if not mods:
-        raise RuntimeError("no mods found under src/")
+        raise RuntimeError("no mods found under mods/")
     return mods
 
 
@@ -164,9 +164,9 @@ def verify_title_checkout(title_dir, title_lock):
 
 
 def verify_python(root):
-    run([sys.executable, "-m", "ruff", "check", "scripts", "tests"], root)
+    run([sys.executable, "-m", "ruff", "check", "tools", "tests"], root)
     run(
-        [sys.executable, "-m", "ruff", "format", "--check", "scripts", "tests"],
+        [sys.executable, "-m", "ruff", "format", "--check", "tools", "tests"],
         root,
     )
 
@@ -251,10 +251,10 @@ def verify_package_archive(archive, package_id, source_mod):
 def verify_packages(root, mods):
     inventory = {}
     for name in mods:
-        archive = root / "pkg" / "mods" / f"{name}.zip"
+        archive = root / "out" / "pkg" / "mods" / f"{name}.zip"
         if not archive.is_file():
             raise RuntimeError(f"missing package: {archive}")
-        source_mod = load_manifest(root / "src" / name / "mod.toml", name)
+        source_mod = load_manifest(root / "mods" / name / "mod.toml", name)
         inventory[name] = verify_package_archive(archive, name, source_mod)
     return inventory
 
@@ -285,12 +285,12 @@ def main():
 
     if args.title_dir:
         verify_title_checkout(args.title_dir.resolve(), title_lock)
-    run([sys.executable, str(root / "scripts" / "build_mods.py")], root)
+    run([sys.executable, str(root / "tools" / "build_mods.py")], root)
     inventory = verify_packages(root, mods)
     run(
         [
             sys.executable,
-            str(root / "scripts" / "build_asset_packs.py"),
+            str(root / "tools" / "build_asset_packs.py"),
             "--package",
         ],
         root,

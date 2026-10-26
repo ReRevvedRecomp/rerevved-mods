@@ -13,7 +13,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 from build_asset_packs import (
     _copy_runtime_file,
@@ -174,13 +174,13 @@ class AssetPackTests(unittest.TestCase):
             )
 
             assemble_asset_pack(root, "example-pack")
-            runtime = root / "asset-overrides" / "example-pack"
+            runtime = root / "out" / "asset-overrides" / "example-pack"
             self.assertEqual(
                 (runtime / "assets" / "file-data" / "logo.dds").read_bytes(),
                 b"DDS payload",
             )
             package_asset_pack(root, "example-pack")
-            archive = root / "pkg" / "asset-overrides" / "example-pack.zip"
+            archive = root / "out" / "pkg" / "asset-overrides" / "example-pack.zip"
             source_pack = load_asset_pack_manifest(
                 source / "asset-pack.toml", "example-pack"
             )
@@ -203,13 +203,13 @@ class AssetPackTests(unittest.TestCase):
             self.write_source(root)
             assemble_asset_pack(root, "example-pack")
             mod = write_runtime(
-                root / "mods/example-pack",
+                root / "out/mods/example-pack",
                 "example-pack",
                 "Example Mod",
                 b"return {}\n",
             )
             entry_path = "mods/example-pack/main.lua"
-            source = root / "src" / "example-pack"
+            source = root / "mods" / "example-pack"
             source.mkdir(parents=True)
             (source / "mod.toml").write_bytes((mod / "mod.toml").read_bytes())
 
@@ -223,10 +223,12 @@ class AssetPackTests(unittest.TestCase):
             self.assertEqual(
                 verify_asset_packs(root, check_packages=True), ["example-pack"]
             )
-            with zipfile.ZipFile(root / "pkg" / "mods" / "example-pack.zip") as package:
+            with zipfile.ZipFile(
+                root / "out" / "pkg" / "mods" / "example-pack.zip"
+            ) as package:
                 self.assertEqual(package.read(entry_path), b"return {}\n")
             with zipfile.ZipFile(
-                root / "pkg" / "asset-overrides" / "example-pack.zip"
+                root / "out" / "pkg" / "asset-overrides" / "example-pack.zip"
             ) as package:
                 self.assertEqual(
                     package.read(
@@ -255,7 +257,7 @@ class AssetPackTests(unittest.TestCase):
     def test_asset_pack_runtime_requires_nonempty_assets(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            runtime = root / "asset-overrides" / "example-pack"
+            runtime = root / "out" / "asset-overrides" / "example-pack"
             runtime.mkdir(parents=True)
             (runtime / "asset-pack.toml").write_text(MANIFEST, encoding="ascii")
             with self.assertRaisesRegex(RuntimeError, "has no assets"):
@@ -270,7 +272,7 @@ class AssetPackTests(unittest.TestCase):
     def test_asset_pack_runtime_rejects_reparse_points(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            runtime = root / "asset-overrides" / "example-pack"
+            runtime = root / "out" / "asset-overrides" / "example-pack"
             linked = runtime / "assets" / "file-data" / "logo.dds"
             linked.parent.mkdir(parents=True)
             linked.write_bytes(b"DDS payload")
@@ -370,7 +372,7 @@ class AssetPackTests(unittest.TestCase):
             for name, data in files.items():
                 (source / name).write_bytes(data)
             assemble_asset_pack(root, "example-pack")
-            runtime = root / "asset-overrides/example-pack"
+            runtime = root / "out/asset-overrides/example-pack"
             for name, data in files.items():
                 with self.subTest(name=name):
                     self.assertEqual((runtime / name).read_bytes(), data)
@@ -417,7 +419,7 @@ class AssetPackTests(unittest.TestCase):
     def test_generated_cleanup_stays_bounded_and_refuses_reparse_points(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            generated = root / "asset-overrides"
+            generated = root / "out" / "asset-overrides"
             package = generated / "example-pack"
             linked = package / "linked"
             linked.mkdir(parents=True)
@@ -425,7 +427,11 @@ class AssetPackTests(unittest.TestCase):
             marker.write_bytes(b"keep")
             with self.assertRaisesRegex(RuntimeError, "outside"):
                 _remove_generated_directory(root / "outside/example-pack", generated)
-            for reparse in (generated, package, linked):
+            with self.assertRaisesRegex(RuntimeError, "outside"):
+                _remove_generated_directory(
+                    root / "x" / "example-pack", root / "x", base=root / "out"
+                )
+            for reparse in (root / "out", generated, package, linked):
                 with (
                     self.subTest(reparse=reparse),
                     mock.patch(
@@ -434,13 +440,13 @@ class AssetPackTests(unittest.TestCase):
                     ),
                 ):
                     with self.assertRaisesRegex(RuntimeError, "reparse point"):
-                        _remove_generated_directory(package, generated)
+                        _remove_generated_directory(package, generated, base=root)
                     self.assertEqual(marker.read_bytes(), b"keep")
 
     def test_generated_cleanup_replaces_only_selected_output(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            generated = root / "asset-overrides"
+            generated = root / "out" / "asset-overrides"
             package = generated / "example-pack"
             stale = package / "nested/stale.txt"
             stale.parent.mkdir(parents=True)
