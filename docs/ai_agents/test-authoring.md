@@ -84,7 +84,7 @@ To select one module, add `-p test_format_lua.py`.
 [Checks and tests](../development.md#checks-and-tests) owns the full commands.
 
 Unit tests create temporary files and some assemble packages. The full
-`python tools/verify.py` run also writes generated packages; neither is a
+`python tools/verify.py` run also writes generated packages. Neither is a
 read-only check. Follow the task's execution limits.
 
 Assert the [Lua source contract](../making-mods.md#source-and-runtime-files)

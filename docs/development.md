@@ -5,7 +5,7 @@ not require the ReXGlue SDK or a C++ compiler.
 
 ## Prerequisites
 
-- Python 3.11 or newer; the tools use the standard-library `tomllib` module.
+- Python 3.11 or newer. The tools use the standard-library `tomllib` module.
 - Git and a checkout for the formatter and full verification. They enumerate
   files with `git ls-files`; an exported source tree is enough for assembly,
   but is not a substitute for the checkout-based checks.
