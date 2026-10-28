@@ -39,9 +39,9 @@ Python 3.11 or newer is sufficient; no SDK or native build is required. Run
 from the repository root:
 
 ```text
-python scripts/build_asset_packs.py --list
-python scripts/build_asset_packs.py --pack <id> --package
-python scripts/verify_asset_packs.py --package
+python tools/build_asset_packs.py --list
+python tools/build_asset_packs.py --pack <id> --package
+python tools/verify_asset_packs.py --package
 ```
 
 Repeat `--pack` to select multiple packs, or omit it to build all discovered
@@ -53,16 +53,16 @@ asset-packs/<id>/             source
   asset-pack.toml
   assets/                    at least one file
 
-asset-overrides/<id>/         generated runtime tree
+out/asset-overrides/<id>/     generated runtime tree
   asset-pack.toml
   assets/
 
-pkg/asset-overrides/<id>.zip  archive rooted at asset-overrides/<id>/
+out/pkg/asset-overrides/<id>.zip  archive rooted at asset-overrides/<id>/
 ```
 
 Optional `icon.png`, `README.md`, and existing `LICENSE*` files are also copied
 from the pack root. Keep source edits outside generated output: assembly
-recreates each selected `asset-overrides/<id>/` folder.
+recreates each selected `out/asset-overrides/<id>/` folder.
 
 Without `--package`, `verify_asset_packs.py` checks source manifests and asset
 trees. With it, the script also checks the generated archives. It does not

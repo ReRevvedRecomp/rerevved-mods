@@ -5,20 +5,20 @@ not require the ReXGlue SDK or a C++ compiler.
 
 ## Prerequisites
 
-- Python 3.11 or newer; the scripts use the standard-library `tomllib` module.
+- Python 3.11 or newer. The tools use the standard-library `tomllib` module.
 - Git and a checkout for the formatter and full verification. They enumerate
   files with `git ls-files`; an exported source tree is enough for assembly,
   but is not a substitute for the checkout-based checks.
 - The pinned Python tools in
-  [`scripts/requirements-dev.txt`](../scripts/requirements-dev.txt).
+  [`tools/requirements-dev.txt`](../tools/requirements-dev.txt).
 - CodeFormat 1.6.0 for Lua formatting. The wrapper pins Windows x64 and Linux
   x64 assets with SHA-256 checks.
 
 Install the development tools explicitly:
 
 ```text
-python -m pip install -r scripts/requirements-dev.txt
-python scripts/format_lua.py install
+python -m pip install -r tools/requirements-dev.txt
+python tools/format_lua.py install
 ```
 
 These installation commands can download tools. Neither Lua `check` nor
@@ -29,26 +29,26 @@ These installation commands can download tools. Neither Lua `check` nor
 List package IDs without generating output:
 
 ```text
-python scripts/build_mods.py --list
+python tools/build_mods.py --list
 ```
 
 Assemble all packages, or select IDs with repeated `--mod` options:
 
 ```text
-python scripts/build_mods.py
-python scripts/build_mods.py --mod hills-production
-python scripts/build_mods.py --mod founding-militia --mod chinese-library-gold
+python tools/build_mods.py
+python tools/build_mods.py --mod hills-production
+python tools/build_mods.py --mod founding-militia --mod chinese-library-gold
 ```
 
 Every selected package produces both:
 
-- `mods/<id>/`, the runtime tree containing the manifest, Lua entry, and
+- `out/mods/<id>/`, the runtime tree containing the manifest, Lua entry, and
   allowed optional files.
-- `pkg/mods/<id>.zip`, rooted at `mods/<id>/` for installation.
+- `out/pkg/mods/<id>.zip`, rooted at `mods/<id>/` for installation.
 
 `--package` is accepted but unnecessary for Lua mods: archives are always
-written. Assembly recreates each selected generated `mods/<id>/` folder.
-Keep edits in `src/<id>/`, not the generated tree. The
+written. Assembly recreates each selected generated `out/mods/<id>/` folder.
+Keep edits in `mods/<id>/`, not the generated tree. The
 [authoring guide](making-mods.md#source-and-runtime-files) defines the contents;
 the title's [mods guide](https://github.com/ReRevvedRecomp/rerevved/blob/main/docs/mods.md#install-or-customize-a-package)
 covers installation.
@@ -61,11 +61,11 @@ what to assemble. An invalid unselected package can therefore block a build.
 After installing the tools, run:
 
 ```text
-python scripts/format_lua.py check
-python -m ruff check scripts tests
-python -m ruff format --check scripts tests
+python tools/format_lua.py check
+python -m ruff check tools tests
+python -m ruff format --check tools tests
 python -m unittest discover -s tests
-python scripts/verify.py
+python tools/verify.py
 ```
 
 `verify.py` includes those formatter, lint, and unit-test checks. It also
@@ -77,7 +77,7 @@ check. The unit tests also exercise assembly and packaging in temporary trees.
 On a host without a pinned CodeFormat asset, use:
 
 ```text
-python scripts/verify.py --skip-lua-format
+python tools/verify.py --skip-lua-format
 ```
 
 That skips only CodeFormat; Lua source checks and every other verification
@@ -99,7 +99,7 @@ expected title ABI fields; it does not fetch or run either dependency.
 To also require a local title checkout's HEAD to match the title lock:
 
 ```text
-python scripts/verify.py --title-dir <title-checkout>
+python tools/verify.py --title-dir <title-checkout>
 ```
 
 This is an exact commit check, not a gameplay test or an SDK checkout check.
@@ -113,17 +113,17 @@ The root [`.editorconfig`](../.editorconfig) uses the Lua settings from
 at commit `6f40ea8625f1baf10b7060210937491b28181a4e`: four-space indentation,
 single quotes, and Allman table braces.
 
-[`scripts/format_lua.py`](../scripts/format_lua.py) wraps
+[`tools/format_lua.py`](../tools/format_lua.py) wraps
 [EmmyLuaCodeStyle CodeFormat 1.6.0](https://github.com/CppCXY/EmmyLuaCodeStyle/releases/tag/1.6.0).
 After installation:
 
 ```text
-python scripts/format_lua.py format
-python scripts/format_lua.py check
+python tools/format_lua.py format
+python tools/format_lua.py check
 ```
 
 The wrapper selects tracked Lua files directly inside each package directory
-(`src/*/*.lua`), excluding `src/common/`. Track new files before expecting the
+(`mods/*/*.lua`), excluding `mods/common/`. Track new files before expecting the
 formatter to check them.
 Formatting stabilizes in a temporary workspace before writing source; a failed
 pass writes no source.
@@ -141,7 +141,7 @@ requests, and manual dispatch. Its Linux x64 job uses Ubuntu 24.04 and Python
 3.12, checks out the locked title revision, installs the pinned tools, and
 runs `verify.py --title-dir title-src`.
 
-It uploads `pkg/mods/*.zip` and `pkg/asset-overrides/*.zip` as the
+It uploads `out/pkg/mods/*.zip` and `out/pkg/asset-overrides/*.zip` as the
 `rerevved-mods-linux-x64` workflow artifact, retained for 14 days. This workflow
 does not publish a title release. The title chooses the mods revision and
 [bundled package set](packages.md#bundled-packages) in its own packaging flow.

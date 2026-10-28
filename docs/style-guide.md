@@ -26,12 +26,12 @@ Use four spaces, `snake_case` functions and variables, and `UPPER_SNAKE_CASE`
 constants. Follow the standard-library scripts and `unittest` tests already
 in the repository. Keep filesystem effects explicit and paths bounded.
 
-Ruff is pinned in `scripts/requirements-dev.txt`; its configuration targets
+Ruff is pinned in `tools/requirements-dev.txt`. Its configuration targets
 Python 3.11 and uses an 88-character line length. For local fixes:
 
 ```text
-python -m ruff check --fix scripts tests
-python -m ruff format scripts tests
+python -m ruff check --fix tools tests
+python -m ruff format tools tests
 ```
 
 Use the [development checks](development.md#checks-and-tests) afterward.

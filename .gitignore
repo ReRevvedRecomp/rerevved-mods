@@ -5,10 +5,6 @@
 /CLAUDE.md
 /docs/ai_agents/local/
 
-/sdk/
 /out/
-/mods/
-/asset-overrides/
-/pkg/
 __pycache__/
 *.pyc

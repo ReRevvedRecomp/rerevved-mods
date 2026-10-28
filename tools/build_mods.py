@@ -313,8 +313,19 @@ def _reparse_points(root):
                 pending.append(child)
 
 
-def _remove_generated_directory(path, generated_root):
+def _remove_generated_directory(path, generated_root, *, base=None):
     generated_root = Path(generated_root)
+    if base is not None:
+        base = Path(base)
+        if not generated_root.is_relative_to(base):
+            raise RuntimeError(
+                f"generated package root is outside {base}: {generated_root}"
+            )
+        relative = generated_root.relative_to(base)
+        for depth in range(1, len(relative.parts) + 1):
+            link = base.joinpath(*relative.parts[:depth])
+            if _is_reparse_point(link):
+                raise RuntimeError(f"generated package root is a reparse point: {link}")
     if _is_reparse_point(generated_root):
         raise RuntimeError(
             f"generated package root is a reparse point: {generated_root}"
@@ -348,7 +359,7 @@ def _remove_generated_directory(path, generated_root):
 
 
 def assemble_lua_mod(root, package_id):
-    source_dir = root / "src" / package_id
+    source_dir = root / "mods" / package_id
     if _is_reparse_point(source_dir):
         raise RuntimeError(f"reparse point in Lua package: {source_dir}")
     linked = next(_reparse_points(source_dir), None)
@@ -356,8 +367,8 @@ def assemble_lua_mod(root, package_id):
         raise RuntimeError(f"reparse point in Lua package: {linked}")
     mod = load_manifest(source_dir / "mod.toml", package_id)
     files = validate_runtime_tree(source_dir, mod)
-    destination = root / "mods" / package_id
-    _remove_generated_directory(destination, root / "mods")
+    destination = root / "out" / "mods" / package_id
+    _remove_generated_directory(destination, root / "out" / "mods", base=root)
     for relative, source in files:
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -413,9 +424,9 @@ def validate_runtime_tree(mod_dir, mod):
 
 
 def package_mod(root, package_id):
-    package_dir = root / "pkg" / "mods"
+    package_dir = root / "out" / "pkg" / "mods"
     package_dir.mkdir(parents=True, exist_ok=True)
-    mod_dir = root / "mods" / package_id
+    mod_dir = root / "out" / "mods" / package_id
     mod = load_manifest(mod_dir / "mod.toml", package_id)
     files = validate_runtime_tree(mod_dir, mod)
     archive = package_dir / f"{package_id}.zip"
@@ -440,7 +451,7 @@ def main():
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent.parent
-    available = discover_mods(root / "src")
+    available = discover_mods(root / "mods")
     if args.list:
         for name in available:
             print(name)
@@ -451,7 +462,7 @@ def main():
     if unknown:
         raise RuntimeError(f"unknown mod(s): {', '.join(unknown)}")
     if not selected:
-        print("No mods found under src/.")
+        print("No mods found under mods/.")
         return
 
     for name in selected:

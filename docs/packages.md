@@ -2,7 +2,7 @@
 
 Every title release includes the nine packages below, disabled by default.
 The title's [mods guide](https://github.com/ReRevvedRecomp/rerevved/blob/main/docs/mods.md) covers enabling them. Each
-package has a manifest and a single Lua declaration under `src/<id>/`.
+package has a manifest and a single Lua declaration under `mods/<id>/`.
 
 ## Bundled packages
 
@@ -20,7 +20,7 @@ package has a manifest and a single Lua declaration under `src/<id>/`.
 
 ## Editable values
 
-Edit the local values in `src/<id>/main.lua`, not generated output, then
+Edit the local values in `mods/<id>/main.lua`, not generated output, then
 [build the package](development.md#build-packages) and install it as a
 [custom copy](https://github.com/ReRevvedRecomp/rerevved/blob/main/docs/mods.md#install-or-customize-a-package).
 
