@@ -158,6 +158,12 @@ class AssetPackTests(unittest.TestCase):
                     )
                 self.assertIn("unknown", warnings_output.getvalue())
 
+    def test_manifest_rejects_map_packs(self):
+        value = tomllib.loads(MANIFEST)
+        value["map_pack"] = {"slot": 5, "scenarios": [{"id": 100, "name": "Map"}]}
+        with self.assertRaisesRegex(RuntimeError, r"\[map_pack\].*maps/"):
+            parse_asset_pack_data(value, "fixture")
+
     def test_discovery_rejects_empty_asset_tree(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

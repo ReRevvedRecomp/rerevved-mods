@@ -48,6 +48,11 @@ def parse_asset_pack_data(value, source, expected_id=None):
     """Validate and return an asset pack's [asset_pack] table."""
     if not isinstance(value, dict):
         raise RuntimeError(f"{source}: asset-pack manifest must be a TOML table")
+    if "map_pack" in value:
+        raise RuntimeError(
+            f"{source}: [map_pack] marks a map pack, which installs under maps/ "
+            "and is not an asset override"
+        )
     _warn_unknown(source, "top-level", value.keys(), MANIFEST_TOP_LEVEL_KEYS)
     if type(value.get("manifest_version")) is not int or value["manifest_version"] != 1:
         raise RuntimeError(f"{source}: manifest_version must be integer 1")

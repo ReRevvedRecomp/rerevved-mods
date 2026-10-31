@@ -28,6 +28,10 @@ are optional strings. The version uses exactly two non-negative ASCII numeric
 components, `major.minor`. Unknown top-level or `[asset_pack]` fields produce
 warnings in the package tooling.
 
+A manifest with a top-level `[map_pack]` table is a map pack. Map packs install
+under the title's `maps/` folder with their own load order, not under
+`asset-overrides/`, so these tools reject them.
+
 Asset paths are relative to the package and use forward slashes. The tools
 validate regular files and reject unsafe paths, links, and reparse points; they
 do not validate a general archive format or define which files the title consumes.
