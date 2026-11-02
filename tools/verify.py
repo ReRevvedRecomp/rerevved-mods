@@ -22,6 +22,7 @@ from build_mods import (
 )
 from format_lua import main as format_lua_main
 from verify_asset_packs import verify_asset_packs
+from verify_map_packs import verify_map_packs
 
 TEXT_SUFFIXES = {
     ".json",
@@ -275,6 +276,7 @@ def main():
     verify_public_tree(root, files)
     mods = verify_manifests(root)
     asset_packs = verify_asset_packs(root)
+    map_packs = verify_map_packs(root)
     if args.skip_lua_format:
         print("Lua formatter check explicitly skipped; Lua source checks retained.")
     elif format_lua_main(["check"]):
@@ -302,8 +304,8 @@ def main():
     )
 
     print(
-        f"Verified {len(mods)} mod(s) and {len(asset_packs)} asset pack(s) "
-        f"with recorded SDK {sdk_lock['version']}."
+        f"Verified {len(mods)} mod(s), {len(asset_packs)} asset pack(s) and "
+        f"{len(map_packs)} map pack(s) with recorded SDK {sdk_lock['version']}."
     )
 
 

@@ -14,7 +14,7 @@ packages and how to build your own.
 - [Making mods](making-mods.md): declare a Lua package and use the gameplay API
 - [Lua rules contract](https://github.com/ReRevvedRecomp/rerevved/blob/main/docs/modding-api.md#lua-rules-contract-1):
   which rule fields and tokens the title accepts
-- [Asset packs](asset-packs.md): assemble an asset override pack
+- [Asset packs](asset-packs.md): build asset overrides and check map packs
 - [Development](development.md): tools, package builds, checks, and CI
 
 ## Contribute
