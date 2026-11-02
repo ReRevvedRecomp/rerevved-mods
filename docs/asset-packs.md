@@ -37,6 +37,22 @@ validate regular files and reject unsafe paths, links, and reparse points; they
 do not validate a general archive format or define which files the title consumes.
 Use only original or otherwise authorized assets, not extracted retail files.
 
+## Map packs
+
+Map packs bundled with ReRevved live in `maps/<id>/`. Each contains exactly
+`asset-pack.toml` and a nonempty `assets/map-pack/dlc.fpk`, with only the
+required directories and no links. A missing or empty `maps/` folder is valid.
+
+All asset pack fields above are required and nonempty. The ID must match the
+folder name and be at most 39 characters. If present, `[map_pack]` requires an
+integer `slot` from 5 to 31. Its optional `[[map_pack.scenarios]]` entries each
+require an integer `id` of 100 or more and a nonempty `name`. Slots cannot be
+shared across packs, and scenario IDs cannot repeat within or across packs.
+
+`python tools/verify_map_packs.py` checks these rules; `verify.py` includes this
+check. The title bundles the listed packs in releases, disabled by default.
+The map pack verifier does not build or package them.
+
 ## Build and check
 
 Python 3.11 or newer is sufficient; no SDK or native build is required. Run
