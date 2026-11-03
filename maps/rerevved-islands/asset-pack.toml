@@ -1,0 +1,27 @@
+manifest_version = 1
+
+[asset_pack]
+id = "rerevved-islands"
+name = "ReRevved Islands"
+version = "1.0"
+author = "Aeshur"
+description = "Four maps of islands."
+
+[map_pack]
+slot = 6
+
+[[map_pack.scenarios]]
+id = 107
+name = "Archipelago"
+
+[[map_pack.scenarios]]
+id = 108
+name = "Large Islands"
+
+[[map_pack.scenarios]]
+id = 109
+name = "Tiny Islands"
+
+[[map_pack.scenarios]]
+id = 110
+name = "Four Corners"

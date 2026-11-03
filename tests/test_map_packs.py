@@ -42,7 +42,17 @@ class MapPackTests(unittest.TestCase):
 
     def test_shipped_packs_pass(self):
         root = Path(__file__).resolve().parents[1]
-        self.assertIn("west-vs-east-duel", verify_map_packs(root))
+        self.assertEqual(
+            verify_map_packs(root),
+            [
+                "rerevved-climates",
+                "rerevved-inland-water",
+                "rerevved-islands",
+                "rerevved-landmasses",
+                "rerevved-matchups",
+                "rerevved-real-world",
+            ],
+        )
 
     def test_missing_or_empty_maps_folder_is_valid(self):
         with tempfile.TemporaryDirectory() as directory:

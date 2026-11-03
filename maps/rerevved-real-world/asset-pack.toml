@@ -1,0 +1,47 @@
+manifest_version = 1
+
+[asset_pack]
+id = "rerevved-real-world"
+name = "ReRevved Real World"
+version = "1.0"
+author = "Aeshur"
+description = "Nine maps of real places."
+
+[map_pack]
+slot = 10
+
+[[map_pack.scenarios]]
+id = 130
+name = "Earth"
+
+[[map_pack.scenarios]]
+id = 131
+name = "Japanese Mainland"
+
+[[map_pack.scenarios]]
+id = 132
+name = "British Isles"
+
+[[map_pack.scenarios]]
+id = 133
+name = "Mediterranean"
+
+[[map_pack.scenarios]]
+id = 134
+name = "Americas"
+
+[[map_pack.scenarios]]
+id = 135
+name = "Europe"
+
+[[map_pack.scenarios]]
+id = 136
+name = "Africa"
+
+[[map_pack.scenarios]]
+id = 137
+name = "Australia"
+
+[[map_pack.scenarios]]
+id = 138
+name = "Caribbean"

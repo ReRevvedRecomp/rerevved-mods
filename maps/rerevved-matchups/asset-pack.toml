@@ -1,0 +1,43 @@
+manifest_version = 1
+
+[asset_pack]
+id = "rerevved-matchups"
+name = "ReRevved Matchups"
+version = "1.0"
+author = "Aeshur"
+description = "Eight mirrored maps: a duel and a 2v2 game on each matchup land."
+
+[map_pack]
+slot = 8
+
+[[map_pack.scenarios]]
+id = 115
+name = "Skirmish Duel"
+
+[[map_pack.scenarios]]
+id = 116
+name = "Skirmish 2v2"
+
+[[map_pack.scenarios]]
+id = 117
+name = "Hemispheres Duel"
+
+[[map_pack.scenarios]]
+id = 118
+name = "Hemispheres 2v2"
+
+[[map_pack.scenarios]]
+id = 119
+name = "North vs South Duel"
+
+[[map_pack.scenarios]]
+id = 120
+name = "North vs South 2v2"
+
+[[map_pack.scenarios]]
+id = 121
+name = "West vs East Duel"
+
+[[map_pack.scenarios]]
+id = 122
+name = "West vs East 2v2"
