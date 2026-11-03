@@ -23,7 +23,7 @@ packages.
 
 - [Package catalog](docs/packages.md): what each mod changes and the values you can edit
 - [Making mods](docs/making-mods.md): write a Lua package for the title's gameplay API
-- [Asset packs](docs/asset-packs.md): build an asset override pack
+- [Asset packs](docs/asset-packs.md): build asset overrides and check map packs
 - [Development](docs/development.md): build packages, run checks, and open pull requests
 - [Documentation index](docs/README.md): everything else
 
