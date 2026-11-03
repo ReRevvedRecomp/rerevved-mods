@@ -1,0 +1,27 @@
+manifest_version = 1
+
+[asset_pack]
+id = "rerevved-inland-water"
+name = "ReRevved Inland Water"
+version = "1.0"
+author = "Aeshur"
+description = "Four maps with seas and lakes inside the land."
+
+[map_pack]
+slot = 7
+
+[[map_pack.scenarios]]
+id = 111
+name = "Ring"
+
+[[map_pack.scenarios]]
+id = 112
+name = "Donut"
+
+[[map_pack.scenarios]]
+id = 113
+name = "Inland Sea"
+
+[[map_pack.scenarios]]
+id = 114
+name = "Lakes"

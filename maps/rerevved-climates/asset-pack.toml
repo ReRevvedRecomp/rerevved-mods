@@ -1,0 +1,39 @@
+manifest_version = 1
+
+[asset_pack]
+id = "rerevved-climates"
+name = "ReRevved Climates"
+version = "1.0"
+author = "Aeshur"
+description = "Seven maps, each with its own climate."
+
+[map_pack]
+slot = 9
+
+[[map_pack.scenarios]]
+id = 123
+name = "Highlands"
+
+[[map_pack.scenarios]]
+id = 124
+name = "Arborea"
+
+[[map_pack.scenarios]]
+id = 125
+name = "Sandstorm"
+
+[[map_pack.scenarios]]
+id = 126
+name = "Ice Age"
+
+[[map_pack.scenarios]]
+id = 127
+name = "Frontier"
+
+[[map_pack.scenarios]]
+id = 128
+name = "Great Plains"
+
+[[map_pack.scenarios]]
+id = 129
+name = "Boreal"

@@ -1,0 +1,39 @@
+manifest_version = 1
+
+[asset_pack]
+id = "rerevved-landmasses"
+name = "ReRevved Landmasses"
+version = "1.0"
+author = "Aeshur"
+description = "Seven maps built around continents and landmasses."
+
+[map_pack]
+slot = 5
+
+[[map_pack.scenarios]]
+id = 100
+name = "Pangaea"
+
+[[map_pack.scenarios]]
+id = 101
+name = "Continents"
+
+[[map_pack.scenarios]]
+id = 102
+name = "Small Continents"
+
+[[map_pack.scenarios]]
+id = 103
+name = "Oval"
+
+[[map_pack.scenarios]]
+id = 104
+name = "Fractal"
+
+[[map_pack.scenarios]]
+id = 105
+name = "Terra"
+
+[[map_pack.scenarios]]
+id = 106
+name = "Tilted Axis"

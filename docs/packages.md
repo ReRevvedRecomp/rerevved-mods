@@ -60,7 +60,7 @@ Do not treat every syntactically valid number as a supported gameplay value.
 - Chinese Library Gold applies to existing Libraries as well as new ones.
   Previously credited Gold is not undone by disabling the package. Signed
   amounts and overflow handling follow the title's
-  [effect contracts](https://github.com/ReRevvedRecomp/rerevved/blob/main/docs/building-wonder-effects.md#v2-adjustable-amounts).
+  [effect contracts](https://github.com/ReRevvedRecomp/rerevved/blob/main/docs/modding-api.md#v2-amounts).
 
 Keep backups when testing. For each change, distinguish what the source
 requests, what F2 accepts, and what was observed in the game.
